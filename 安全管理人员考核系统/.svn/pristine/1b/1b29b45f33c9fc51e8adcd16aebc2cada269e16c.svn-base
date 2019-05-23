@@ -1,0 +1,157 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div class="main-container">
+
+    <div class="container hidden" id="divStartExam_NoInfo">
+        <h3 class="text-center padding-top-10 padding-bottom-5">暂无考试计划</h3>
+    </div>
+    <div class="container hidden" id="divStartExam_Info">
+        <h3 class="text-center padding-top-5 padding-bottom-2">建筑安管人员考核管理系统</h3>
+        <input id="examId" type="hidden" />@*考试id*@
+        <input id="paperId" type="hidden" />@*考试的试卷id*@
+        <input id="idNumber" type="hidden" />@*考试的身份证号*@
+        <!--考试核心 考试Id-->
+        <input id="examCoreExamId" type="hidden" />
+        <!--考试开始时间-->
+        <input id="ExamDateTimeBegin" type="hidden" />
+        <!--安全知识考试开始时间-->
+        <input id="AExamDateTimeBegin" type="hidden" />
+        <!--安全知识考试结束时间-->
+        <input id="AExamDateTimeEnd" type="hidden" />
+        <!--管理能力考试开始时间-->
+        <input id="BExamDateTimeBegin" type="hidden" />
+        <!--管理能力考试结束时间-->
+        <input id="BExamDateTimeEnd" type="hidden" />
+
+        <table class="table table-bordered text-center table ">
+            <tr>
+                <td>考生姓名</td>
+                <td name="EmployeeName"></td>
+                <td colspan="1" rowspan="10">
+                    <h3>视频监控</h3>
+                    <div id="camera">
+                    </div>
+                    <canvas id="pic" class="hidden"></canvas>
+
+                </td>
+            </tr>
+            <tr>
+                <td>准考证号</td>
+                <td name="ExamRegistrationNumber"></td>
+            </tr>
+            <tr>
+                <td>身份证号</td>
+                <td name="IDNumber"></td>
+
+            </tr>
+            <tr>
+                <td>报考科目</td>
+                <td name="ExamType"></td>
+            </tr>
+            <tr>
+                <td>性别    </td>
+                <td name="Sex"></td>
+            </tr>
+            <tr>
+                <td>考试时间</td>
+                <td name="ExamTime"></td>
+            </tr>
+            <tr>
+                <td>考场    </td>
+                <td colspan="1" name="ExamRoomName"></td>
+
+
+            </tr>
+            <tr>
+                <td>工作单位    </td>
+                <td colspan="1" name="EnterpriseName"></td>
+            </tr>
+            <tr>
+                <td>考试地点    </td>
+                <td colspan="1" name="ExamAddress"></td>
+            </tr>
+            <tr>
+                <td>系统时间    </td>
+                <td colspan="1" name="CurrentDateTime" class="text-danger">121212</td>
+            </tr>
+        </table>
+
+
+        <h3 class="text-center text-warning padding-top-5" name="Countdown">倒计时:0分0秒</h3>
+
+        <div class="padding-top-6 row">
+            <div class="col-xs-3"></div>
+            <a id="btnPrintAdmissionticket" class=" btn btn-info col-xs-6" href="#">打印准考证</a>
+            <div class="col-xs-3"></div>
+        </div>
+
+        <div class="padding-top-6 row">
+            <div class="col-xs-3"></div>
+            <a id="btnDownloadAdmissionticket" class=" btn btn-info col-xs-6" href="#">下载准考证</a>
+            <div class="col-xs-3"></div>
+        </div>
+
+        <div class="padding-top-6 row">
+            <div class="col-xs-3"></div>
+            <a class=" btn btn-danger col-xs-6 disabled" id="btnStartExam" href="#">开始考试</a>
+            <div class="col-xs-3"></div>
+        </div>
+
+        @*<div class="padding-top-6 row">
+                <div class="col-xs-3"></div>
+                <a class=" btn btn-success  col-xs-6" id="btnViewExamResult" href="#">查看考试结果</a>
+                <div class="col-xs-3"></div>
+            </div>*@
+
+        <!--考试结果modal-->
+        <div class="modal fade" id="mdlStartExam_ExamResult">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3 class="modal-title">考试成绩</h3>
+                    </div>
+                    <div class="modal-body">
+                        <div class="alert alert-success hidden" name="divSafetyKnowledgeExamScore">
+                            <p>
+                                <strong>
+                                    <i class="ace-icon fa fa-check-square-o"></i>
+                                    安全知识考试成绩
+                                </strong>
+                                <span class="padding-left-5" name="spanSafetyKnowledgeExamScore"></span>
+                            </p>
+                        </div>
+                        <div class="alert alert-success hidden" name="divManagementAbilityExamScore">
+                            <p>
+                                <strong>
+                                    <i class="ace-icon fa fa-check-square-o"></i>
+                                    管理能力考试结果
+                                </strong>
+                                <span class="padding-left-5" name="spanManagementAbilityExamScore"></span>
+                            </p>
+                        </div>
+                        <div class="alert alert-success hidden" name="divFieldExamResult">
+                            <p>
+                                <strong>
+                                    <i class="ace-icon fa fa-check-square-o"></i>
+                                    实操考核结果
+                                </strong>
+                                <span class="padding-left-5" name="spanFieldExamResult">合格</span>
+                            </p>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-sm" data-dismiss="modal">关闭</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+@section scripts
+{
+    @*<script src="~/Public/WebCamera/js/WebCamera.js"></script>*@
+    <script src="~/Public/jquery-webcam/jquery.webcam.min.js"></script>
+    <script src="~/Public/content/startexam/js/startexam.js?v=@DateTime.Now.ToString("ffff")"></script>
+}

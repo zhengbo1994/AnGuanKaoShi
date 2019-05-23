@@ -1,0 +1,176 @@
+﻿@{
+    Layout = null;
+    string returnUrl = ViewBag.ReturnUrl;
+}
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <meta charset="utf-8">
+    <meta name="renderer" content="webkit">
+    <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    @*<link href="/Content/img/Eceping.ico" mce_href="/Content/img/Eceping.ico" rel="bookmark" type="image/x-icon" />
+        <link href="/Content/img/Eceping.ico" mce_href="/Content/img/Eceping.ico" rel="icon" type="image/x-icon" />
+        <link href="/Content/img/Eceping.ico" mce_href="/Content/img/Eceping.ico" rel="shortcut icon" type="image/x-icon" />*@
+    <title>安管测评登录</title>
+    <link href="~/Public/content/login2/css/passport.css" rel="stylesheet" />
+    @*<link href="~/Content/css/others/passport.css" rel="stylesheet" />*@
+</head>
+
+<body>
+    <div class="passport-wrapper">
+        <header id="header" class="passport-header">
+            <div id="logo">
+                <a href="~/Login2">
+                    <img src="~/Public/content/login2/image/anguanlogo.png">
+                </a>
+            </div>
+        </header>	<!--feg-box-- -->
+        <div id="container" align="center">
+            <div class="passport-sign">
+                <div class="main-form main-form-sign">
+                    <div class="passport-tab" id="login-tabs">
+                        <div class="tabs">
+                            <h2>欢迎登录</h2>
+                        </div>
+                        <div class="tabbed">
+                            <!-- tab-group -->
+                            <div class="tab-group" style="display: block;">
+                                <!-- form -->
+                                <div class="passport-form passport-form-sign" id="divLogin_AccountInfo">
+                                    @*<input type="hidden" id="ApplicationID" name="ApplicationID" value="@ViewBag.ApplicationID" />
+                                        <input type="hidden" id="ReturnUrl" name="ReturnUrl" value="@ViewBag.ReturnUrl" />*@
+                                    <div class="form-item">
+                                        <div class="form-cont">
+                                            <input autocomplete="off" name="loginname" class="passport-txt xl w-full" tabindex="1" placeholder="请输入用户名" type="text">
+                                        </div>
+                                    </div>
+                                    <div class="form-item">
+                                        <div class="form-cont">
+                                            <input autocomplete="off" name="password" class="passport-txt xl w-full" tabindex="2" placeholder="请输入密码" type="password">
+                                        </div>
+                                    </div>
+                                    <!--<div class="form-item form-imgcode mb-25">
+                                        <div class="form-cont">
+                                            <div class="layout-inner">
+                                                <input autocomplete="off" name="ValidCodes" class="passport-txt xl w-lg" tabindex="3" placeholder="验证码" type="text">
+                                            </div>
+                                            <div class="imgcode">
+                                                <img id="validcodeimg" alt="验证码" src="/Login/GetValidCodeImg" style="text-align:center;" class="verifyCode" />
+                                                <a id="refreshvalidcodeimg" class="five" href="#">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
+                                            </div>
+                                        </div>
+                                    </div>-->
+                                    <!--<div class="form-item form-sevenday">
+                                        <div class="form-cont clearfix">
+                                            @*<label><input class="passport-sevenday" type="checkbox">7天内免登录</label>*@
+                                            @*<a href="/ModifyPassword?applicationID=@ViewBag.ApplicationID&returnurl=@HttpUtility.UrlEncode(returnUrl)" class="forget-link">修改密码</a>*@
+                                            <a href="#" class="forget-link">忘记密码</a>
+                                        </div>
+                                    </div>-->
+                                    <div class="form-item">
+                                        <div class="form-cont">
+                                            <button type="button" id="btnLogin" class="passport-btn passport-btn-def xl w-full" tabindex="4" href="javascript:;">登录</button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- form end -->
+                            </div>
+                            <!-- tab-group end -->
+                            <!-- tab-group -->
+                            <div style="display: none;" class="tab-group">
+                                <!-- form -->
+                                <form class="passport-form passport-form-sign" id="fastlogin-form" action="/submit/login_phone" method="get">
+
+                                    <input value="http://www.jikexueyuan.com/" name="referer" type="hidden">
+
+                                    <div class="form-item">
+                                        <div class="form-cont">
+                                            <input autocomplete="off" name="phone" class="passport-txt xl w-full" tabindex="1" placeholder="请输入手机号" type="text">
+                                        </div>
+                                    </div>
+                                    <div class="form-item form-imgcode">
+                                        <div class="form-cont">
+                                            <div class="layout-inner">
+                                                <input autocomplete="off" name="verify" class="passport-txt xl w-lg" tabindex="2" placeholder="验证码" type="text">
+                                            </div>
+                                            <div class="imgcode">
+                                                <img src="js/verify.gif" alt="验证码" class="verifyCode">
+                                                <i class="passport-icon icon-refresh refreshCode"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-item form-mcode mb-25">
+                                        <div class="form-cont">
+                                            <input autocomplete="off" name="verify_code" class="passport-txt xl w-full" tabindex="3" placeholder="动态码" type="text">
+
+                                            <div class="btn-getcode">
+                                                <button type="button" class="passport-btn js-getcode">获取动态码</button>
+                                            </div>
+                                            <div class="passport-sms getVoice" style="display: none;">未收到短信？使用<a href="javascript:;" class="js-getvoice">语音动态码</a></div>
+                                            <div class="passport-sms reVoice" style="display: none;"><span class="js-revoice"></span>，请注意接听来电</div>
+                                        </div>
+                                    </div>
+                                    <div class="form-item form-rememb">
+                                        <div class="form-cont">
+                                            <label><input class="rememb" id="remember" type="checkbox">记住手机号</label>
+                                        </div>
+                                    </div>
+                                    <div class="form-item">
+                                        <div class="form-cont">
+                                            <button type="button" id="fastlogin" class="passport-btn passport-btn-def xl w-full" tabindex="4" href="javascript:;">登录</button>
+                                        </div>
+                                    </div>
+                                </form>
+                                <!-- form end -->
+                            </div>
+                            <!-- tab-group end -->
+                        </div>
+                    </div>
+                </div>
+
+
+
+                <div class="aside" style="display:none;">
+                    <div class="passport-goto">
+                        @*没有账号？<a href="/AnGuan/Registration?applicationID=@ViewBag.ApplicationID&returnurl=@HttpUtility.UrlEncode(returnUrl)" tabindex="5">免费注册</a>
+                            <br />
+                            点击这里：<a href="/AnGuan/ModifyPassword?applicationID=@ViewBag.ApplicationID&returnurl=@HttpUtility.UrlEncode(returnUrl)" tabindex="5">修改密码</a>*@
+                    </div>
+                    <div class="passport-third">
+                        <header class="hd">
+                            <div class="layout-inner">
+                                <h3>合作方帐号登录</h3>
+                            </div>
+                        </header>
+                        <div class="links">
+                            <a class="one" href="#"></a>
+                            <a class="two" href="#"></a>
+                            <a class="three" href="#"></a>
+                            <a class="four" href="#"></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div  style="width:100%; display:table-row;font-size:18px;">
+                <div class="col-xs-1" style=" width:20%; display:table-cell; padding-right:20px;">
+                    友情链接:
+                </div>
+                <div class="col-xs-10" style=" width:80%; text-align:left;display:table-cell;">
+                    <a target="_blank" href="http://www.eceping.net">E测评</a>
+                </div>
+            </div>
+          
+        </div>
+    </div>
+    <br />
+    <div class="text-center" id="FailMessage" style="color:red;"></div>
+    <div class="text-center" id="SuccessMessage" style="color:green;"></div>
+    <script src="~/Public/base/jsApp.js"></script>
+    <script src="~/Public/base/jsFn.js"></script>
+    <script src="~/Public/jquery/js/jquery-1.10.2.min.js"></script>
+    <script src="~/Public/md5/js/md5.js"></script>
+    <script src="~/Public/content/login2/js/login2.js?v=@DateTime.Now.ToString("ffff")"></script>
+</body>
+</html>

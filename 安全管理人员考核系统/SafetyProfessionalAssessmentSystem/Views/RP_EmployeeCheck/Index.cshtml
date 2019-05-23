@@ -1,0 +1,199 @@
+﻿@{
+    Layout = null;
+}
+
+<link href="~/Public/datetimepicker/css/bootstrap-datetimepicker.css" rel="stylesheet" />
+<link href="~/Public/content/rpemployeecheck/css/rp_employeecheck.css" rel="stylesheet" />
+<!--查询区-->
+<div class="row">
+    <div class="col-xs-12">
+        <div class="widget-box">
+            <div class="widget-header">
+                <h4 class="widget-title">查询区域</h4>
+                <div class="widget-toolbar">
+                    <a href="#" data-action="collapse">
+                        <i class="ace-icon fa fa-chevron-up"></i>
+                    </a>
+                </div>
+                <div class="widget-toolbar">
+                    <a id="btnRP_EmployeeCheck_Query" href="#">
+                        <i class="ace-icon fa fa-search">查询</i>
+                    </a>
+                </div>
+            </div>
+
+            <div class="widget-body" style="display: block;">
+                <div id="divRP_EmployeeCheck_QueryArea" class="widget-main form-horizontal ">
+                    <div class="row">
+                        <div class="col-xs-4 ">
+                            <label class="control-label col-xs-4 ">姓名</label>
+                            <input class="col-xs-8" type="text" name="EmployeeName">
+                        </div>
+                        <div class="col-xs-4 ">
+                            <label class="control-label col-xs-4 ">身份证号</label>
+                            <input class="col-xs-8" type="text" name="IdNumber">
+                        </div>
+                        <div class="col-xs-4 ">
+                            <label class="control-label col-xs-3 ">报考科目</label>
+                            <select class="col-xs-9" name="ExamType"></select>
+                        </div>
+
+                    </div>
+                    <br />
+                    <div class="row">
+                        <div class="col-xs-4 ">
+                            <label class="control-label col-xs-4 ">企业名称</label>
+                            <input class="col-xs-8" type="text" name="EnterpriseName">
+                        </div>
+
+                        <div class="col-xs-4 ">
+                            <label class="control-label col-xs-4 ">审核状态</label>
+                            <select class="col-xs-8" name="CheckStatus">
+                                <option value="">全部</option>
+                                <option value="未审核">未审核</option>
+                                <option value="审核通过">审核通过</option>
+                                <option value="审核不通过">审核不通过</option>
+
+                            </select>
+                        </div>
+                        <div class="col-xs-4 ">
+                            <label class="control-label col-xs-3 ">审核日期</label>
+                            <input class="col-xs-4" type="text" name="CheckDateBegin">
+                            <label class="control-label col-xs-1 ">~</label>
+                            <input class="col-xs-4" type="text" name="CheckDateEnd">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<br />
+<!--grid-->
+<div class="row">
+    <div class="col-xs-12">
+        <div class="widget-box">
+            <div class="widget-header">
+                <h4 class="widget-title">人员资料审核记录</h4>
+                <div class="widget-toolbar">
+                    <a href="#" id="btnRP_EmployeeCheck_Check">
+                        <i class="ace-icon fa fa-check">审核</i>
+                    </a>
+                </div>
+                <div class="widget-toolbar">
+                    <a href="#" data-toggle="modal" data-target="#mdlRP_EmployeeCheck_ReturnInfo" class="hidden">
+                        <i class="ace-icon fa fa-ban red">退回</i>
+                    </a>
+                </div>
+            </div>
+            <table id="gridRP_EmployeeCheck_main"></table>
+            <div id="pagerRP_EmployeeCheck_main"></div>
+
+        </div>
+    </div>
+
+</div>
+
+<!--审核modal--开始-->
+<div class="modal fade" id="mdlRP_EmployeeCheck_CheckInfo">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header no-padding">
+                <div class="table-header">
+                    人员审核
+                </div>
+            </div>
+            <div class="modal-body">
+                <div id="divRP_EmployeeCheck_CheckInfo" class="form-horizontal">
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">审核意见</label>
+                        <div class="col-sm-8">
+                            <textarea name="Remark" class="width-100" cols="3" rows="3" data-verify="notempty" data-verify-errormessage="审核意见为必填项，请检查"></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button name="btnCheckedPass" class="btn btn-info btn-sm">审核通过</button>
+                <button name="btnCheckedNoPass" class="btn btn-danger btn-sm">审核不通过</button>
+                <button class="btn btn-sm" data-dismiss="modal">关闭</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!--审核modal--结束-->
+
+<!--培训结果modal--开始-->
+<div class="modal fade" id="mdlRP_EmployeeCheck_TrainingRecordInfo">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">
+                    <span>&times;</span>
+                </button>
+                <h4 class="modal-title">培训结果</h4>
+            </div>
+            <div class="modal-body">
+
+                <div id="divRP_EmployeeCheck_TrainingRecordInfo" class="form-horizontal">
+                    <input type="hidden" name="Id" />
+                    <input type="hidden" name="EmployeeId" />
+                    <div class="form-group">
+                        <label class="col-sm-4 control-label">累计学习时长</label>
+                        <div class="col-sm-6">
+                            <input type="text" name="StudyTime" class="width-100" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-4 control-label">累计练习时长</label>
+                        <div class="col-sm-6">
+                            <input type="text" name="PracticeTime" class="width-100" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-4 control-label">能力测试成绩</label>
+                        <div class="col-sm-6">
+                            <input type="text" name="AbilityTestResult" class="width-100" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-4 control-label">备注</label>
+                        <div class="col-sm-6">
+                            <textarea name="Remark" cols="3" rows="3"></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-sm" data-dismiss="modal">关闭</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!--培训结果modal--结束-->
+<!--在线学习记录modal--开始-->
+<div class="modal fade" id="mdlRP_EmployeeCheck_TrainingRecordStudyInfo">
+    <div class="modal-dialog modal-lg ">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">
+                    <span>&times;</span>
+                </button>
+                <h4 class="modal-title">在线学习记录</h4>
+            </div>
+            <div class="modal-body">
+                <div id="divRP_EmployeeCheck_TrainingRecordStudyInfo" class="form-horizontal">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-sm" data-dismiss="modal">关闭</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!--在线学习记录modal--结束-->
+
+<script src="~/Public/datetimepicker/js/bootstrap-datetimepicker.js"></script>
+<script src="~/Public/datetimepicker/js/bootstrap-datetimepicker.zh-CN.js"></script>
+<script src="~/Public/content/rp_employeecheck/js/rp_employeecheck.js?v=@DateTime.Now.ToString("ffff")"></script>

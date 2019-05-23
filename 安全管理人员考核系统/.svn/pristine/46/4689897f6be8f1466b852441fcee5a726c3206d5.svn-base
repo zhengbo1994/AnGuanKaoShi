@@ -1,0 +1,249 @@
+﻿using DAL;
+using Model;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+
+using Library.baseFn;
+using System.Data;
+using System.Xml;
+
+namespace BLL
+{
+    public class EnterpriseCtrl : IEnterpriseCtrl
+    {
+        private Uow uow;
+        private Sys_Account account;
+
+        public EnterpriseCtrl(Sys_Account account)
+        {
+            if (uow == null)
+            {
+                uow = new Uow();
+            }
+            this.account = account;
+
+        }
+        public void InsertEnterprise(Biz_Enterprise enterprise, string accountName = null, string password = null)
+        {
+            try
+            {
+
+                int existsCount = uow.Biz_Enterprise.GetAll().Where(p => p.SocialCreditCode == enterprise.SocialCreditCode).Count();
+                if (existsCount > 0)
+                {
+                    throw new Exception("信用代码已经存在");
+                }
+                if (enterprise.LocaltionCity.IsNull())
+                {
+                    enterprise.LocaltionCity = enterprise.City;
+                }
+                enterprise.CreateDate = DateTime.Now;
+                //增加企业
+                uow.Biz_Enterprise.Add(enterprise);
+                uow.Commit();
+                //生成账户
+
+                string defaultPassword = System.Web.Configuration.WebConfigurationManager.AppSettings["DefaultPassword"];
+                string accname = enterprise.SocialCreditCode;
+                if (!accountName.IsNull())
+                {
+                    accname = accountName;
+                }
+                string pwd = defaultPassword;
+                if (!password.IsNull())
+                {
+                    pwd = password;
+                }
+                IAccountCtrl accountCtrl = new AccountCtrl(account);
+                Sys_Account newaccount = new Sys_Account()
+                {
+                    AccountName = accname,
+                    Password = pwd,
+                    UserId = enterprise.Id
+                };
+                accountCtrl.AddAccount(newaccount);
+                IRoleCtrl roleCtrl = new RoleCtrl(account);
+                roleCtrl.Assigning2Role(newaccount.Id, "Enterprise");
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        public void UpdateEnterprise(Biz_Enterprise enterprise)
+        {
+            int existsCount = uow.Biz_Enterprise.GetAll().Where(p => p.SocialCreditCode == enterprise.SocialCreditCode).Where(p => p.Id != enterprise.Id).Count();
+            if (existsCount > 0)
+            {
+                throw new Exception("信用代码已经存在");
+            }
+            Biz_Enterprise oldEnterprise = uow.Biz_Enterprise.GetById(enterprise.Id);
+            oldEnterprise.EnterpriseName = enterprise.EnterpriseName;
+            //oldEnterprise.SocialCreditCode = enterprise.SocialCreditCode;
+            //oldEnterprise.City = enterprise.City;
+            oldEnterprise.Area = enterprise.Area;
+            //oldEnterprise.LocaltionCity = enterprise.LocaltionCity;
+            oldEnterprise.EnterpriseAddress = enterprise.EnterpriseAddress;
+            oldEnterprise.LegalRepresentative = enterprise.LegalRepresentative;
+            oldEnterprise.LegalRepresentativeNumber = enterprise.LegalRepresentativeNumber;
+            oldEnterprise.ContactPerson = enterprise.ContactPerson;
+            oldEnterprise.ContactNumber = enterprise.ContactNumber;
+            oldEnterprise.Email = enterprise.Email;
+            uow.Biz_Enterprise.Update(oldEnterprise);
+            uow.Commit();
+        }
+        public void DeleteEnterprise(int enterpriseId)
+        {
+            Biz_Enterprise enterorise = uow.Biz_Enterprise.GetById(enterpriseId);
+            uow.Biz_Enterprise.Delete(enterorise);
+            uow.Commit();
+        }
+        public Biz_Enterprise GetEnterpriseById(int enterpriseById)
+        {
+            return uow.Biz_Enterprise.GetById(enterpriseById);
+        }
+
+
+        public List<Biz_Enterprise> GetEnterpriseList(string EnterpriseName, string SocialCreditCode, string City, string Area, int page, int rows, ref int totalCount, List<string> cityList)
+        {
+            IQueryable<Biz_Enterprise> enterpriseQueryable = uow.Biz_Enterprise.GetAll();
+
+            #region //数据权限 本市看本市自己的考核点 管理员和省总站看所有
+            if (account.RoleList.Where(p => p.RoleType == RoleCtrl.RoleType.Admin).Count() > 0)
+            {
+
+            }
+            else if (account.RoleList.Where(p => p.RoleType == RoleCtrl.RoleType.Master).Count() > 0)
+            {//不显示测试市 数据
+                enterpriseQueryable = enterpriseQueryable.Where(p => p.City != "测试市");
+            }
+            else if (account.RoleList.Where(p => p.RoleType == RoleCtrl.RoleType.Manager).Count() > 0)
+            {
+                enterpriseQueryable = enterpriseQueryable.Where(p => cityList.Contains(p.City));
+            }
+            else
+            {
+                enterpriseQueryable = enterpriseQueryable.Where(p => false);
+            }
+            #endregion
+
+            if (!EnterpriseName.IsNull())
+            {
+                enterpriseQueryable = enterpriseQueryable.Where(p => p.EnterpriseName.Contains(EnterpriseName));
+            }
+            if (!SocialCreditCode.IsNull())
+            {
+                enterpriseQueryable = enterpriseQueryable.Where(p => p.SocialCreditCode == SocialCreditCode);
+            }
+            if (!City.IsNull())
+            {
+                enterpriseQueryable = enterpriseQueryable.Where(p => p.City == City);
+            }
+            if (!Area.IsNull())
+            {
+                enterpriseQueryable = enterpriseQueryable.Where(p => p.Area == Area);
+            }
+
+            totalCount = enterpriseQueryable.Count();
+            int indexBegin = (page - 1) * rows;
+            enterpriseQueryable = enterpriseQueryable.OrderBy(P => P.Id).Skip(indexBegin).Take(rows);
+
+            List<Biz_Enterprise> enterpriseList = enterpriseQueryable.ToList();
+
+            return enterpriseList;
+        }
+
+        public List<Biz_Enterprise> GetEnterpriseInfoByIdList(List<int> enterpriseIdList)
+        {
+            List<Biz_Enterprise> enterpriseList = uow.Biz_Enterprise.GetAll().Where(p => enterpriseIdList.Contains(p.Id)).ToList();
+            return enterpriseList;
+        }
+        public void RegisterEnterprise(string socialCreditCode, string enterpriseName, string city, string area)
+        {
+            Biz_Enterprise enterprise = new Biz_Enterprise();
+            enterprise.SocialCreditCode = socialCreditCode;
+            enterprise.EnterpriseName = enterpriseName;
+            enterprise.City = city;
+            enterprise.Area = area;
+            enterprise.LocaltionCity = city;
+            this.InsertEnterprise(enterprise);
+        }
+
+        //将webservice结果的城市规范为本系统城市
+        string GetCity(string strCity)
+        {
+            string cityName = "";
+            Biz_City city = uow.Biz_City.GetAll().Where(p => strCity.IndexOf(p.CityName.Replace("市", "").Replace("州", "")) > -1).FirstOrDefault();
+            if (city == null)
+            {
+                cityName = strCity;
+            }
+            else
+            {
+                cityName = city.CityName;
+            }
+            return cityName;
+        }
+        public void RefreshEnterprise(int enterpriseId, string socialCreditCode, string enterpriseType, string serviceAccountName, string servicePassword, XmlNode dataSetXmlNode)
+        {
+            DataSet ds = new DataSet();
+            //const string SERVICEACCOUNTNAME = "AgryServiceAccount001";
+            //const string SERVICEPASSWORD = "AgryServicePassword001";
+            try
+            {
+                //EnterpriseInfoWebServices.AgryService webService = new EnterpriseInfoWebServices.AgryService();
+                //XmlNode xmlnode = webService.clsEnterprise(socialCreditCode.Trim(), enterpriseType.Trim(), SERVICEACCOUNTNAME, SERVICEPASSWORD);
+                string serviceResultXML = dataSetXmlNode.OuterXml;
+                Biz_EnterpriseWebServiceResult EnterpriseWebServiceResult = new Biz_EnterpriseWebServiceResult()
+                {
+                    SocialCreditCode = socialCreditCode.Trim(),
+                    EnterpriseType = enterpriseType.Trim(),
+                    ServiceAccountName = serviceAccountName,
+                    ServicePassword = servicePassword,
+                    ServiceResultXML = serviceResultXML,
+                    Remark = "同步",
+                    CreateDate = DateTime.Now
+                };
+                uow.Biz_EnterpriseWebServiceResult.Add(EnterpriseWebServiceResult);
+                uow.Commit();
+                XmlNodeReader xmlReader = new XmlNodeReader(dataSetXmlNode);
+                ds.ReadXml(xmlReader);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("调用一体化平台web服务出错", ex);
+            }
+            if (ds.Tables.Count < 1)
+            {
+                throw new Exception("没有找到此企业信息");
+            }
+            DataTable dt_enterprise = ds.Tables[0];
+            Biz_Enterprise enterprise = uow.Biz_Enterprise.GetAll().Where(p => p.SocialCreditCode == socialCreditCode).FirstOrDefault();
+            enterprise.EnterpriseType = enterpriseType;
+            enterprise.EnterpriseName = dt_enterprise.Columns.Contains("ENTERPRISENAME") ? Convert.ToString(dt_enterprise.Rows[0]["ENTERPRISENAME"]) : "";
+            enterprise.SocialCreditCode = dt_enterprise.Columns.Contains("SOCIALCREDITCODE") ? Convert.ToString(dt_enterprise.Rows[0]["SOCIALCREDITCODE"]) : "";
+            enterprise.City = dt_enterprise.Columns.Contains("CITY") ? GetCity(Convert.ToString(dt_enterprise.Rows[0]["CITY"])) : "";
+            enterprise.Area = dt_enterprise.Columns.Contains("AREA") ? Convert.ToString(dt_enterprise.Rows[0]["AREA"]) : "";
+            enterprise.EnterpriseAddress = dt_enterprise.Columns.Contains("EnterpriseAddress") ? Convert.ToString(dt_enterprise.Rows[0]["EnterpriseAddress"]) : "";
+            enterprise.LegalRepresentative = dt_enterprise.Columns.Contains("LEGALREPRESENTATIVE") ? Convert.ToString(dt_enterprise.Rows[0]["LEGALREPRESENTATIVE"]) : "";
+            enterprise.LegalRepresentativeNumber = dt_enterprise.Columns.Contains("LEGALREPRESENTATIVENUMBER") ? Convert.ToString(dt_enterprise.Rows[0]["LEGALREPRESENTATIVENUMBER"]) : "";
+            enterprise.ContactPerson = dt_enterprise.Columns.Contains("CONTACTPERSON") ? Convert.ToString(dt_enterprise.Rows[0]["CONTACTPERSON"]) : "";
+            enterprise.ContactNumber = dt_enterprise.Columns.Contains("CONTACTNUMBER") ? Convert.ToString(dt_enterprise.Rows[0]["CONTACTNUMBER"]) : "";
+            enterprise.Email = dt_enterprise.Columns.Contains("EMAIL") ? Convert.ToString(dt_enterprise.Rows[0]["EMAIL"]) : "";
+            uow.Commit();
+        }
+
+        public List<Biz_Enterprise> GetEnterpriseListByCityList(List<string> cityList)
+        {
+            IQueryable<Biz_Enterprise> enterpriseQueryable = uow.Biz_Enterprise.GetAll();
+            if (!cityList.IsNull() && cityList.Count() > 0)
+            {
+                enterpriseQueryable = enterpriseQueryable.Where(p => cityList.Contains(p.City));
+            }
+            return enterpriseQueryable.ToList();
+        }
+    }
+}

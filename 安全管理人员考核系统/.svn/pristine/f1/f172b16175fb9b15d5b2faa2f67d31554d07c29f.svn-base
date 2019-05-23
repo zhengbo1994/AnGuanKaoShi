@@ -1,0 +1,366 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using Library.baseFn;
+using Model;
+using DAL;
+using System.Data;
+using System.Security.Cryptography;
+using System.IO;
+using Library.LogFn;
+
+namespace BLL
+{
+    public class SmrzServiceCtrl : ISmrzServiceCtrl
+    {
+        private Uow uow;
+        private Sys_Account loginAccount;
+        private string SMRZUserName = null;
+        private string SMRZPassword = null;
+        public SmrzServiceCtrl(Sys_Account account)
+        {
+            if (uow == null)
+            {
+                uow = new Uow();
+            }
+            loginAccount = account;
+
+            SMRZUserName = AppFn.GetAppSettingsValue("SMRZUserName");
+            SMRZPassword = AppFn.GetAppSettingsValue("SMRZPassword");
+        }
+
+        public void newCertificateAuthentication(int employeeId)
+        {
+            //IEmployeeCtrl employeeCtrl = new EmployeeCtrl(this.loginAccount);
+            //Biz_EmployeeFile employeePhoto = employeeCtrl.GetEmployeePhoto(employeeId);
+            //string fileRootDirectory = AppFn.GetAppSettingsValue("FileRootDirectory");
+            //string filePath = string.Format("{0}{1}", fileRootDirectory.TrimEnd('\\'), employeePhoto.FilePath.TrimStart('\\'));
+            //byte[] photoBytes = AppFn.FileContent(filePath);
+
+            Smrz.RyxxModel ryxxModel = uow.Biz_Employee.GetAll().Where(p => p.Id == employeeId)
+                  .Join(uow.Biz_Enterprise.GetAll(), a => a.EnterpriseId, b => b.Id, (a, b) => new { a, b })
+                  .Join(uow.Biz_RelEmployeeCertificate.GetAll(), o => o.a.Id, c => c.EmployeeId, (o, c) => new { o.a, o.b, c })
+                  .Join(uow.Biz_Certificate.GetAll(), o => o.c.CertificateId, d => d.Id, (o, d) => new { o.a, o.b, o.c, d })
+                  .GroupJoin(uow.Biz_EmployeeAuthentication.GetAll(), o => o.a.Id, e => e.EmployeeId, (o, e) => new { o.a, o.b, o.c, o.d, e = e.OrderByDescending(p => p.Id).FirstOrDefault() })
+                  .Select(o => new Smrz.RyxxModel()
+                  {
+                      XM = o.a.EmployeeName,
+                      XB = o.a.Sex,
+                      MZ = o.e == null ? "" : o.e.Nation,
+                      CSRQ = o.a.Birthday,
+                      JTDZ = o.e == null ? "" : o.e.CertAddress,
+                      SFZH = o.a.IDNumber,
+                      FZJG = o.e == null ? "" : o.e.CertOrg,
+                      //SFZYXKSRQ = o.e == null ? (new DateTime()) : o.e.EffDate.ConvertToDateTime(),
+                      //SFZYXJZRQ = o.e == null ? (new DateTime()) : o.e.ExpDate.ConvertToDateTime(),
+                      SFZYXKSRQ = new DateTime(),
+                      SFZYXJZRQ = new DateTime(),
+                      SBH = o.e == null ? "" : o.e.SamId,
+                      //ZP = photoBytes,
+                      SJHM = "",
+                      QYMC = o.b.EnterpriseName,
+                      ZZJGDM = o.b.SocialCreditCode,
+                      ZW = o.a.Job,
+                      ZC = o.a.Title4Technical,
+                      ZSLX = o.a.ExamType,
+                      ZSBH = o.d.CertificateNo,
+                      ZSBM = o.d.CertificateNo,
+                      ZSMC = "安全生产考核合格证书",
+                      FZRQ = o.d.StartCertificateDate,
+                      ZSYXJZRQ = o.d.EndCertificateDate,
+                      STATE = "正常",
+                      ZSSCSJ=DateTime.Now
+                  }).Single();
+
+            try
+            {
+                Smrz.SmrzService smrzService = new Smrz.SmrzService();
+                string result = smrzService.AddOrUpdateRyksl(ryxxModel, SMRZUserName, SMRZPassword);
+                if (result.ToLower() != "true")
+                {
+                    throw new Exception(result);
+                }
+                else
+                {
+                    #region 记录成功传输的证书
+                    Biz_CertificateAuthenticationLog certificateAuthenticationLog = new Biz_CertificateAuthenticationLog()
+                    {
+                        XM = ryxxModel.XM,
+                        XB = ryxxModel.XB,
+                        MZ = ryxxModel.MZ,
+                        CSRQ = ryxxModel.CSRQ,
+                        JTDZ = ryxxModel.JTDZ,
+                        SFZH = ryxxModel.SFZH,
+                        FZJG = ryxxModel.FZJG,
+                        //SFZYXKSRQ = ryxxModel.SFZYXKSRQ,
+                        //SFZYXJZRQ = ryxxModel.SFZYXJZRQ,
+                        SBH = ryxxModel.SBH,
+                        ZP = ryxxModel.ZP,
+                        SJHM = ryxxModel.SJHM,
+                        QYMC = ryxxModel.QYMC,
+                        ZZJGDM = ryxxModel.ZZJGDM,
+                        ZW = ryxxModel.ZW,
+                        ZC = ryxxModel.ZC,
+                        ZSLX = ryxxModel.ZSLX,
+                        ZSBH = ryxxModel.ZSBH,
+                        ZSBM = ryxxModel.ZSBM,
+                        FZRQ = ryxxModel.FZRQ,
+                        ZSYXJZRQ = ryxxModel.ZSYXJZRQ,
+                        STATE = ryxxModel.STATE,
+                        Result = result,
+                    };
+                    uow.Biz_CertificateAuthenticationLog.Add(certificateAuthenticationLog);
+                    uow.Commit();
+                    #endregion
+                }
+            }
+            catch (Exception ex)
+            {
+                #region 记录传输出错的证书
+                Biz_CertificateAuthenticationLog certificateAuthenticationLog = new Biz_CertificateAuthenticationLog()
+                {
+                    XM = ryxxModel.XM,
+                    XB = ryxxModel.XB,
+                    MZ = ryxxModel.MZ,
+                    CSRQ = ryxxModel.CSRQ,
+                    JTDZ = ryxxModel.JTDZ,
+                    SFZH = ryxxModel.SFZH,
+                    FZJG = ryxxModel.FZJG,
+                    //SFZYXKSRQ = ryxxModel.SFZYXKSRQ,
+                    //SFZYXJZRQ = ryxxModel.SFZYXJZRQ,
+                    SBH = ryxxModel.SBH,
+                    ZP = ryxxModel.ZP,
+                    SJHM = ryxxModel.SJHM,
+                    QYMC = ryxxModel.QYMC,
+                    ZZJGDM = ryxxModel.ZZJGDM,
+                    ZW = ryxxModel.ZW,
+                    ZC = ryxxModel.ZC,
+                    ZSLX = ryxxModel.ZSLX,
+                    ZSBH = ryxxModel.ZSBH,
+                    ZSBM = ryxxModel.ZSBM,
+                    FZRQ = ryxxModel.FZRQ,
+                    ZSYXJZRQ = ryxxModel.ZSYXJZRQ,
+                    STATE = ryxxModel.STATE,
+                    Result = ex.Message,
+                };
+                uow.Biz_CertificateAuthenticationLog.Add(certificateAuthenticationLog);
+                uow.Commit();
+                #endregion
+                string errorMessage = string.Format("证书实名认证失败：身份证号：{0} 证书编号：{1} 错误信息{2}", ryxxModel.SFZH, ryxxModel.ZSBH, ex.Message);
+                throw new Exception(errorMessage, ex);
+            }
+        }
+
+        public string KeyLogin(string keyCode, string socialCreditCode)
+        {
+            string result = "true";
+            try
+            {
+                Smrz.SmrzService smrzService = new Smrz.SmrzService();
+                result = smrzService.GetKeyLogin(keyCode, socialCreditCode, SMRZUserName, SMRZPassword);
+            }
+            catch (Exception ex)
+            {
+                result = string.Format("加密锁验证失败：{0}", ex.Message);
+            }
+            return result;
+        }
+        public class CerificateInfo
+        {
+            /// <summary>
+            /// 姓名
+            /// </summary>
+            public string name { get; set; }
+            /// <summary>
+            /// 性别
+            /// </summary>
+            public string sex { get; set; }
+            /// <summary>
+            /// 生日
+            /// </summary>
+            public string born { get; set; }
+            /// <summary>
+            /// 证书编号
+            /// </summary>
+            public string cardno { get; set; }
+            /// <summary>
+            /// 企业名称
+            /// </summary>
+            public string qymc { get; set; }
+            /// <summary>
+            /// 职务
+            /// </summary>
+            public string zhiwu { get; set; }
+            /// <summary>
+            /// 职称
+            /// </summary>
+            public string zhicheng { get; set; }
+            /// <summary>
+            /// 证书编号
+            /// </summary>
+            public string zsbh { get; set; }
+            /// <summary>
+            /// 有效期开始时间
+            /// </summary>
+            public DateTime yxqkssj { get; set; }
+            /// <summary>
+            /// 有效期结束时间
+            /// </summary>
+            public DateTime yxqjssj { get; set; }
+
+        }
+        public List<CerificateInfo> GetCertificateListByIDNumber(string iDNumber)
+        {
+            List<CerificateInfo> resultList = new List<CerificateInfo>();
+            try
+            {
+                Smrz.SmrzService smrzService = new Smrz.SmrzService();
+                DataSet ds = smrzService.GetZSByZSBH(iDNumber, SMRZUserName, SMRZPassword);
+                if (ds.Tables.Count > 0 && ds.Tables[0].Rows.Count != 0)//找到以后存下来
+                {
+                    int rowsCount = ds.Tables[0].Rows.Count;
+                    for (int i = 0; i < rowsCount; i++)
+                    {
+                        DataRow dataRow = ds.Tables[0].Rows[0];
+                        CerificateInfo result = new CerificateInfo()
+                        {
+                            name = dataRow["name"].ConvertToString(),
+                            sex = dataRow["sex"].ConvertToString(),
+                            born = dataRow["born"].ConvertToString(),
+                            cardno = dataRow["cardno"].ConvertToString(),
+                            qymc = dataRow["qymc"].ConvertToString(),
+                            zhiwu = dataRow["zhiwu"].ConvertToString(),
+                            zhicheng = dataRow["zhicheng"].ConvertToString(),
+                            zsbh = dataRow["zsbh"].ConvertToString(),
+                            yxqkssj = dataRow["yxqkssj"].ConvertToDateTime(),
+                            yxqjssj = dataRow["yxqjssj"].ConvertToDateTime()
+                        };
+                        resultList.Add(result);
+                    }
+
+                }
+            }
+            catch (Exception ex)
+            {
+                string strMsg = string.Format("从建委信息中心获取证书失败：{0}", ex.Message);
+                throw new Exception(strMsg, ex);
+            }
+            return resultList;
+        }
+
+        public CerificateInfo GetCertificateByCertificateNo(string certificateNo)
+        {
+            CerificateInfo result = null;
+            try
+            {
+                Smrz.SmrzService smrzService = new Smrz.SmrzService();
+                DataSet ds = smrzService.GetZSByZSBH(certificateNo, SMRZUserName, SMRZPassword);
+                if (ds.Tables.Count > 0 && ds.Tables[0].Rows.Count != 0)//找到以后存下来
+                {
+                    DataRow dataRow = ds.Tables[0].Rows[0];
+                    result = new CerificateInfo()
+                    {
+                        name = dataRow["name"].ConvertToString(),
+                        sex = dataRow["sex"].ConvertToString(),
+                        born = dataRow["born"].ConvertToString(),
+                        cardno = dataRow["cardno"].ConvertToString(),
+                        qymc = dataRow["qymc"].ConvertToString(),
+                        zhiwu = dataRow["zhiwu"].ConvertToString(),
+                        zhicheng = dataRow["zhicheng"].ConvertToString(),
+                        zsbh = dataRow["zsbh"].ConvertToString(),
+                        yxqkssj = dataRow["yxqkssj"].ConvertToDateTime(),
+                        yxqjssj = dataRow["yxqjssj"].ConvertToDateTime()
+                    };
+                }
+
+                if (result.IsNull())
+                {
+                    throw new Exception("此证书不存在");
+                }
+                if (result.yxqjssj < DateTime.Now)
+                {
+                    throw new Exception("证书超过有效期");
+                }
+            }
+            catch (Exception ex)
+            {
+                string strMsg = string.Format("从建委信息中心获取证书失败：{0}", ex.Message);
+                new Exception(strMsg, ex);
+            }
+            return result;
+        }
+
+
+        public class AGRYEnterpriseInfo
+        {
+            /// <summary>
+            /// 组织机构代码
+            /// </summary>
+            public string zzjgdm3 { get; set; }
+            /// <summary>
+            /// 企业名称
+            /// </summary>
+            public string qymc { get; set; }
+            /// <summary>
+            /// 0表示注销 1表示正常
+            /// </summary>
+            public string zhuxiao { get; set; }
+
+        }
+        #region 获取企业信息
+        public AGRYEnterpriseInfo GetAGRYEnterpriseInfo(string keyCode)
+        {
+            AGRYEnterpriseInfo agryEnterprise = new AGRYEnterpriseInfo();
+            try
+            {
+                Smrz.SmrzService webService = new Smrz.SmrzService();
+                string encryptKey = EncryptDog(keyCode);
+                DataSet enterpriseDS = webService.GetKeyLoginStr(encryptKey, SMRZUserName, SMRZPassword);
+
+                if (enterpriseDS.Tables.Count < 1 || enterpriseDS.Tables[0].Rows.Count < 1)
+                {
+                    agryEnterprise = null;
+                }
+                else
+                {
+                    agryEnterprise.zhuxiao = enterpriseDS.Tables[0].Rows[0]["zhuxiao"].ToString();
+                    agryEnterprise.zzjgdm3 = enterpriseDS.Tables[0].Rows[0]["zzjgdm3"].ToString();
+                    agryEnterprise.qymc = enterpriseDS.Tables[0].Rows[0]["qymc"].ToString();
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(string.Format("从建委信息中心获取企业信息出错：{0}", ex.Message), ex);
+            }
+            return agryEnterprise;
+        }
+
+        #region 加密锁 加密
+        public string EncryptDog(string PassWord)
+        {
+            string DogWordKey = "cdgsabcd";
+            return this.Encrypt(PassWord, DogWordKey);
+        }
+        private string Encrypt(string pToEncrypt, string sKey)
+        {
+            DESCryptoServiceProvider provider = new DESCryptoServiceProvider();
+            byte[] bytes = Encoding.Default.GetBytes(pToEncrypt);
+            provider.Key = Encoding.ASCII.GetBytes(sKey);
+            provider.IV = Encoding.ASCII.GetBytes(sKey);
+            MemoryStream stream = new MemoryStream();
+            CryptoStream stream2 = new CryptoStream(stream, provider.CreateEncryptor(), CryptoStreamMode.Write);
+            stream2.Write(bytes, 0, bytes.Length);
+            stream2.FlushFinalBlock();
+            StringBuilder builder = new StringBuilder();
+            foreach (byte num in stream.ToArray())
+            {
+                builder.AppendFormat("{0:X2}", num);
+            }
+            builder.ToString();
+            return builder.ToString();
+        }
+        #endregion
+        #endregion
+    }
+}

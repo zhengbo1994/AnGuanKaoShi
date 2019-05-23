@@ -1,0 +1,40 @@
+﻿@{
+    ViewBag.Title = "考核结果公示";
+    Layout = "~/Views/Shared/_Layout2.cshtml";
+}
+@section scripts{
+    <script src="~/Public/content/examresultdetailview/js/examresultdetailview.js?v=@DateTime.Now.ToString("HHmmss")"></script>
+}
+
+@section styles{
+
+} 
+
+<input type="hidden" id="ExamPlanId" value="@ViewBag.ExamPlanId" />
+
+<div class="padding-top-10 padding-bottom-10" id="Content">
+    <h3 class="text-center">考核结果公示-<span name="ExamPlanNumber"></span></h3>
+    <br />
+    <table class="table table-bordered text-center">
+        <tr>
+            <td><b>考核计划流水号</b></td>
+            <td><span name="ExamPlanNumber"></span></td>
+            <td><b>参加考核人数</b></td>
+            <td><span name="TotalEmployeeCount"></span></td>
+        </tr>
+        <tr>
+            <td><b>考试开始时间</b></td>
+            <td><span name="ExamDateTimeBegin"></span></td>
+            <td><b>考试结束时间</b></td>
+            <td><span name="ExamDateTimeEnd"></span></td>
+        </tr>
+        <tr>
+            <td style="vertical-align:middle"><b>考试地址</b></td>
+            <td colspan="3" class="text-left" name="TrainingInstitutions"></td>
+        </tr>
+        <tr>
+            <td style="vertical-align:middle"><b>参加考试人员名单</b></td>
+            <td colspan="3" class="text-left" name="Employees"></td>
+        </tr>
+    </table>
+</div>

@@ -1,0 +1,10 @@
+﻿@{
+    ViewBag.Title = ViewBag.News.NewsTitle;
+    Layout = "~/Views/Shared/_Layout2.cshtml";
+}
+<div class="padding-top-10 text-center">
+    <h3>@ViewBag.News.NewsTitle</h3>
+</div>
+<div class="padding-top-10 padding-bottom-10" id="Content">
+    @Html.Raw(HttpUtility.UrlDecode(ViewBag.News.NewsContent))
+</div>

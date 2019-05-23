@@ -1,0 +1,151 @@
+﻿@{
+    Layout = null;
+}
+
+<link href="~/Public/datetimepicker/css/bootstrap-datetimepicker.css" rel="stylesheet" />
+<link href="~/Public/content/CertificateEnterpriseChange/css/CertificateEnterpriseChange.css" rel="stylesheet" />
+
+<div class="row">
+    <div class="col-xs-12">
+        <div class="widget-box">
+            <div class="widget-header">
+                <h4 class="widget-title">查询区</h4>
+
+                <div class="widget-toolbar">
+                    <a href="#" data-action="collapse">
+                        <i class="ace-icon fa fa-chevron-up"></i>
+                    </a>
+                </div>
+                <div class="widget-toolbar">
+                    <a id="btnCertificateManagement_Query" href="#">
+                        <i class="ace-icon fa fa-search">查询</i>
+                    </a>
+                </div>
+            </div>
+
+            <div class="widget-body" style="display: block;">
+                <div id="divCertificateManagement_QueryArea" class="widget-main form-horizontal ">
+                    <div class="row">
+                        <div class="col-xs-4 ">
+                            <label class="control-label col-xs-4 ">持证人姓名</label>
+                            <input class="col-xs-8" type="text" name="HolderOfTheCertificate">
+                        </div>
+                        <div class="col-xs-4 ">
+                            <label class="control-label col-xs-4 ">证书编号</label>
+                            <input class="col-xs-8" type="text" name="CertificateNumber">
+                        </div>
+                        <div class="col-xs-4 ">
+                            <label class="control-label col-xs-4 ">证书状态</label>
+                            <select class="col-xs-8" name="CertificateStatus">
+                                <option value="正常">正常</option>
+                                <option value="注销">注销</option>
+                                <option value="遗失补办中">遗失补办中</option>
+                                <option value="暂扣">暂扣</option>
+                            </select>
+                        </div>
+                    </div>
+                    <br />
+                    <div class="row">
+                        <div class="col-xs-4 ">
+                            <label class="control-label col-xs-4 ">企业名称</label>
+                            <input class="col-xs-8" type="text" name="EnterpriseName">
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<br />
+
+<div class="row">
+    <div class="col-xs-12">
+        <div class="widget-box">
+            <div class="widget-header">
+                <h4 class="widget-title">证书企业变更申请列表</h4>
+                <div class="widget-toolbar">
+                    <a href="#" id="btnCertificateEntChange_EntChange">
+                        <i class="ace-icon fa fa-refresh">证书企业变更申请</i>
+                    </a>
+                </div>
+            </div>
+            <table id="gridCertificateEntChang_main"></table>
+            <div id="pagerCertificateEntChang_main"></div>
+        </div>
+    </div>
+
+</div>
+<div class="modal fade" id="mdlCertificateEntChange_CertificateEntChangeInfo">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">
+                    <span>&times;</span>
+                </button>
+                <h3 class="modal-title">证书企业变更申请</h3>
+            </div>
+            <div class="modal-body">
+                <div id="divCertificateEntChange_CertificateEntChangeInfo" class="form-horizontal">
+
+
+                    <input type="hidden" name="Id" />
+                    <table class="table table-bordered text-center table">
+                        <tr>
+                            <td colspan="1">变更后企业</td>
+                            <td colspan="3"><input type="text" name="CertificateNumber" readonly /></td>
+                        </tr>
+                        <tr>
+
+                            <td colspan="1">证书编号</td>
+                            <td colspan="1"><input type="text" name="CertificateNumber" placeholder="请输入证书编号" /></td>
+                            <td colspan="1">持证人姓名</td>
+                            <td colspan="1"><input type="text" name="ValidityOfTheCertificate" readonly /></td>
+
+                        </tr>
+                        <tr>
+                            <td colspan="1">性别</td>
+                            <td colspan="1"><input type="text" name="IDNumber" readonly /></td>
+                            <td colspan="1">出生年月</td>
+                            <td colspan="1"><input type="text" name="IDNumber" readonly /></td>
+                        </tr>
+                        <tr>
+                            <td colspan="1">身份证号</td>
+                            <td colspan="1"><input type="text" name="IDNumber" readonly /></td>
+                            <td colspan="1">联系方式</td>
+                            <td colspan="1"><input type="text" name="IDNumber" readonly /></td>
+                        </tr>
+                        <tr>
+                            <td colspan="1">企业名称</td>
+                            <td colspan="1"><input type="text" name="IDNumber" readonly /></td>
+                            <td colspan="1">职务</td>
+                            <td colspan="1"><input type="text" name="IDNumber" readonly /></td>
+                        </tr>
+                        <tr>
+                            <td colspan="1">技术职称</td>
+                            <td colspan="1"><input type="text" name="IDNumber" readonly /></td>
+                            <td colspan="1">证书类别</td>
+                            <td colspan="1"><input type="text" name="IDNumber" readonly /></td>
+                        </tr>
+                        <tr>
+                            <td colspan="1">证书状态</td>
+                            <td colspan="1"><input type="text" name="IDNumber" readonly /></td>
+                            <td colspan="1">证书有效期</td>
+                            <td colspan="1"><input type="text" name="IDNumber" readonly /></td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="btnCertificateEntChange_CertificateEntChangeInfoConfirm" class="btn btn-info btn-sm">提交</button>
+                <button class="btn btn-sm" data-dismiss="modal">取消</button>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<script src="~/Public/datetimepicker/js/bootstrap-datetimepicker.js"></script>
+<script src="~/Public/datetimepicker/js/bootstrap-datetimepicker.zh-CN.js"></script>
+<script src="~/Public/content/CertificateEnterpriseChange/js/CertificateEnterpriseChange.js?v=@DateTime.Now.ToString("yyyyMMddHHmmss")"></script>

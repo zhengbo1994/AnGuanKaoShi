@@ -1,0 +1,11 @@
+D:\项目\安全管理人员考核系统\Models\bin\Debug\Model.dll
+D:\项目\安全管理人员考核系统\Models\bin\Debug\Model.pdb
+D:\项目\安全管理人员考核系统\Models\bin\Debug\EntityFramework.dll
+D:\项目\安全管理人员考核系统\Models\bin\Debug\EntityFramework.SqlServer.dll
+D:\项目\安全管理人员考核系统\Models\bin\Debug\EntityFramework.xml
+D:\项目\安全管理人员考核系统\Models\bin\Debug\EntityFramework.SqlServer.xml
+D:\项目\安全管理人员考核系统\Models\bin\Debug\zh-Hans\EntityFramework.resources.dll
+D:\项目\安全管理人员考核系统\Models\bin\Debug\zh-Hans\EntityFramework.SqlServer.resources.dll
+D:\项目\安全管理人员考核系统\Models\obj\Debug\Model.dll
+D:\项目\安全管理人员考核系统\Models\obj\Debug\Model.pdb
+D:\项目\安全管理人员考核系统\Models\obj\Debug\Model.csprojResolveAssemblyReference.cache

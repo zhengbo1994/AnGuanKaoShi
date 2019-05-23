@@ -1,0 +1,31 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout2.cshtml";
+}
+@section styles{
+    <link href="~/Public/jquery.pagenation/css/jqpagination.css" rel="stylesheet" />
+    <link href="~/Public/content/news/css/news.css" rel="stylesheet" />
+}
+@section scripts{
+    <script src="~/Public/jquery.pagenation/js/jquery.jqpagination.js"></script>
+    <script src="~/Public/content/news/js/news.js?v=@DateTime.Now.ToString("yyyyMMddHHmm")"></script>
+}
+<div class="list">
+    <ul id="NewsList">
+        @*<li><a href="#">建筑施工企业安全生产许可证管理规定</a><span class="data">2016-08-25</span></li>
+            <li><a href="#">建筑施工企业安全生产许可证管理规定</a><span class="data">2016-08-25</span></li>
+            <li><a href="#">建筑施工企业安全生产许可证管理规定</a><span class="data">2016-08-25</span></li>
+            <li><a href="#">建筑施工企业安全生产许可证管理规定</a><span class="data">2016-08-25</span></li>
+            <li><a href="#">建筑施工企业安全生产许可证管理规定</a><span class="data">2016-08-25</span></li>*@
+    </ul>
+</div>
+
+
+<div class="center">
+    <div class="pagination" id="jqpQuestionBankDetail">
+        <a href="#" class="first" data-action="first">首页</a>
+        <a href="#" class="previous" data-action="previous">上一页</a>
+        <input type="text" readonly="readonly" data-max-page="40" />
+        <a href="#" class="next" data-action="next">下一页</a>
+        <a href="#" class="last" data-action="last">末页</a>
+    </div>
+</div>

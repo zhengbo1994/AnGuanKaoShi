@@ -1,0 +1,175 @@
+﻿@{
+    Layout = null;
+}
+
+<link href="~/Public/datetimepicker/css/bootstrap-datetimepicker.css" rel="stylesheet" />
+<link href="~/Public/content/CertificateManagement/css/CertificateManagement.css" rel="stylesheet" />
+
+<div class="row">
+    <div class="col-xs-12">
+        <div class="widget-box">
+            <div class="widget-header">
+                <h4 class="widget-title">查询区域</h4>
+
+                <div class="widget-toolbar">
+                    <a href="#" data-action="collapse">
+                        <i class="ace-icon fa fa-chevron-up"></i>
+                    </a>
+                </div>
+                <div class="widget-toolbar">
+                    <a id="btnCertificateManagement_Query" href="#">
+                        <i class="ace-icon fa fa-search">查询</i>
+                    </a>
+                </div>
+            </div>
+
+            <div class="widget-body">
+                <div id="divCertificateManagement_QueryArea" class="widget-main form-horizontal ">
+                    <div class="row">
+                        <div class="col-xs-3 ">
+                            <label class="control-label col-xs-4 ">持证人姓名</label>
+                            <input class="col-xs-8" type="text" name="employeeName">
+                        </div>
+                        <div class="col-xs-3 ">
+                            <label class="control-label col-xs-4 ">身份证号</label>
+                            <input class="col-xs-8" type="text" name="idNumber">
+                        </div>
+                        <div class="col-xs-3 ">
+                            <label class="control-label col-xs-4 ">证书编号</label>
+                            <input class="col-xs-8" type="text" name="certificateNo">
+                        </div>
+                        <div class="col-xs-3 ">
+                            <label class="control-label col-xs-4 ">证书状态</label>
+                            <select class="col-xs-8" name="certificateStatus">
+                                <option value="">全部</option>
+                                <option selected value="有效的">有效的</option>
+                                <option value="无效的">无效的</option>
+                            </select>
+                        </div>
+                    </div>
+                    <br />
+                    <div class="row">
+                        <div class="col-xs-3 ">
+                            <label class="control-label col-xs-4 ">企业名称</label>
+                            <input class="col-xs-8" type="text" name="enterpriseName">
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<br />
+
+<div class="row">
+    <div class="col-xs-12">
+        <div class="widget-box">
+            <div class="widget-header">
+                <h4 class="widget-title">证书管理</h4>
+            </div>
+            <table id="gridCertificateManagement_main"></table>
+            <div id="pagerCertificateManagement_main"></div>
+
+        </div>
+    </div>
+
+</div>
+<div class="modal fade" id="mdlCertificateManagement_CertificateManagementInfo">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">
+                    <span>&times;</span>
+                </button>
+                <h3 class="modal-title">证书变更申请</h3>
+            </div>
+            <div class="modal-body">
+                <div id="divCertificateManagement_CertificateManagementInfo" class="form-horizontal">
+
+
+                    <input type="hidden" name="Id" />
+                    <table class="table table-bordered text-center table">
+                        <tr>
+                            <td colspan="1">证书编号<span class="text-danger"> ❉ </span></td>
+                            <td colspan="1"><input type="text" name="CertificateNumber" data-verify="notempty" data-verify-errormessage="姓名为必填项，请检查" @*data-placement="right"*@ /></td>
+                            <td colspan="1">证书状态</td>
+                            <td colspan="1"><input type="text" name="CertificateStatus" data-verify="notempty" data-verify-errormessage="姓名为必填项，请检查" @*data-placement="right"*@ /></td>
+                        </tr>
+                        <tr>
+                            <td colspan="1">证书有效期<span class="text-danger"> ❉ </span></td>
+                            <td colspan="1"><input type="text" name="ValidityOfTheCertificate" data-verify="notempty" data-verify-errormessage="身份证号为必填项，请检查" /></td>
+                            <td colspan="1">姓名</td>
+                            <td colspan="1"><input type="text" name="HolderOfTheCertificate" data-verify="notempty" data-verify-errormessage="身份证号为必填项，请检查" /></td>
+                        </tr>
+
+                        <tr>
+                            <td colspan="1">身份证号<span class="text-danger"> ❉ </span></td>
+                            <td colspan="1"><input type="text" name="IDNumber" data-verify="notempty" data-verify-errormessage="职务为必填项，请检查" /></td>
+                            <td colspan="1">联系方式<span class="text-danger"> ❉ </span></td>
+                            <td colspan="1"><input type="text" name="Title4Technical" data-verify="notempty" data-verify-errormessage="技术职称为必填项，请检查" /></td>
+                        </tr>
+                        <tr>
+                            <td colspan="1">证书类别<span class="text-danger"> ❉ </span></td>
+                            <td colspan="1"><input type="text" name="City" data-verify="notempty" data-verify-errormessage="报考城市为必填项，请检查"></td>
+                            <td colspan="1">所属公司<span class="text-danger"> ❉ </span></td>
+                            <td colspan="1"><input type="text" name="EnterpriseName" data-verify="notempty" data-verify-errormessage="报考科目为必填项，请检查"></td>
+                        </tr>
+                        <tr>
+                            <td colspan="1">备注</td>
+                            <td colspan="3"><input type="text" name="Remark" /></td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="btnCertificateManagement_CertificateManagementInfoConfirm" class="btn btn-info btn-sm">确定</button>
+                <button class="btn btn-sm" data-dismiss="modal">关闭</button>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+
+
+<div class="modal fade" id="mdlCertificateManagement_StatusChange">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">
+                    <span>&times;</span>
+                </button>
+                <h4 class="modal-title" name="title">确认</h4>
+            </div>
+            <div class="modal-body">
+                <div id="divCertificateManagement_StatusChange" class="form-horizontal">
+                    <input type="hidden" name="operateType" />
+                    <input type="hidden" name="certificateId" />
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">证书编号</label>
+                        <div class="col-sm-8">
+                            <input type="text" name="certificateNo" class="width-100" disabled />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">备注</label>
+                        <div class="col-sm-8">
+                            <textarea name="remark" class="width-100" rows="3"></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button name="Ok" class="btn btn-info btn-sm">确定</button>
+                <button class="btn btn-sm" data-dismiss="modal">关闭</button>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<script src="~/Public/datetimepicker/js/bootstrap-datetimepicker.js"></script>
+<script src="~/Public/datetimepicker/js/bootstrap-datetimepicker.zh-CN.js"></script>
+<script src="~/Public/content/CertificateManagement/js/CertificateManagement.js?v=@DateTime.Now.ToString("yyyyMMddHHmmss")"></script>

@@ -1,0 +1,147 @@
+﻿@{
+    Layout = null;
+}
+
+<link href="~/Public/content/CertificateInfoChange/css/CertificateInfoChange.css" rel="stylesheet" />
+
+<!--查询区域-->
+<div class="row">
+    <div class="col-xs-12">
+        <div class="widget-box">
+            <div class="widget-header">
+                <h4 class="widget-title">查询区</h4>
+
+                <div class="widget-toolbar">
+                    <a href="#" data-action="collapse">
+                        <i class="ace-icon fa fa-chevron-up"></i>
+                    </a>
+                </div>
+                <div class="widget-toolbar">
+                    <a id="btnCertificateInfoChange_Query" href="#">
+                        <i class="ace-icon fa fa-search">查询</i>
+                    </a>
+                </div>
+            </div>
+
+            <div class="widget-body" style="display: block;">
+                <div id="divCertificateInfoChange_QueryArea" class="widget-main form-horizontal ">
+                    <div class="row">
+                        <div class="col-xs-4 ">
+                            <label class="control-label col-xs-4 ">持证人姓名</label>
+                            <input class="col-xs-8" type="text" name="employeeName">
+                        </div>
+                        <div class="col-xs-4 ">
+                            <label class="control-label col-xs-4 ">证书编号</label>
+                            <input class="col-xs-8" type="text" name="certificateNo">
+                        </div>
+                        <div class="col-xs-4 ">
+                            <label class="control-label col-xs-4 ">申请状态</label>
+                            <select class="col-xs-8" name="certificateChangeStatus">
+                                <option value=""></option>
+                                <option value="未提交">未提交</option>
+                                <option value="已提交">已提交</option>
+                                <option value="审核通过">审核通过</option>
+                                <option value="审核不通过">审核不通过</option>
+                            </select>
+                        </div>
+                    </div>
+                    <br />
+                    <div class="row">
+                        <div class="col-xs-4 ">
+                            <label class="control-label col-xs-4 ">原企业名称</label>
+                            <input class="col-xs-8" type="text" name="oldEnterpriseName">
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<br />
+<!--数据表格-->
+<div class="row">
+    <div class="col-xs-12">
+        <div class="widget-box">
+            <div class="widget-header">
+                <h4 class="widget-title">证书信息变更申请列表</h4>
+                <div class="widget-toolbar">
+                    <a href="#" id="btnCertificateInfoChange">
+                        <i class="ace-icon fa fa-plus">证书信息变更申请</i>
+                    </a>
+                </div>
+            </div>
+            <table id="gridCertificateInfoChang_main"></table>
+            <div id="pagerCertificateInfoChang_main"></div>
+        </div>
+    </div>
+</div>
+<!--信息变更modal-->
+<div class="modal fade" id="mdlCertificateInfoChange_CertificateInfoChange">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">
+                    <span>&times;</span>
+                </button>
+                <h3 class="modal-title">证书个人信息变更申请</h3>
+            </div>
+            <div class="modal-body">
+                <div id="divCertificateInfoChange_CertificateInfoChange" class="form-horizontal">
+                    <input type="hidden" name="id" />
+                    <table class="table table-bordered text-center table">
+                        <tr>
+                            <td colspan="1">变更后企业</td>
+                            <td colspan="1"><input type="text" name="enterpriseName" readonly /></td>
+                        </tr>
+                        <tr>
+                            <td colspan="1">证书编号<span class="text-danger"> ❉ </span></td>
+                            <td colspan="1"><input type="text" name="certificateNo" placeholder="请输入证书编号" data-verify="notempty" data-verify-errormessage="证书编号为必填项，请检查" /></td>
+                        </tr>
+                        <tr>
+                            <td colspan="1">持证人姓名</td>
+                            <td colspan="1"><input type="text" name="employeeName" readonly /></td>
+                        </tr>
+                        <tr>
+                            <td colspan="1">性别</td>
+                            <td colspan="1">
+                                <label><input type="radio" checked name="Sex" value="男" />男</label>
+                                <label><input type="radio" name="Sex" value="女" />女</label>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="1">出生年月</td>
+                            <td colspan="1"><input type="text" name="birthday" readonly /></td>
+                        </tr>
+                        <tr>
+                            <td colspan="1">身份证号</td>
+                            <td colspan="1"><input type="text" name="iDNumber" readonly /></td>
+                        </tr>
+                        <tr>
+                            <td colspan="1">原企业名称</td>
+                            <td colspan="1"><input type="text" name="oldEnterpriseName" readonly /></td>
+                        </tr>
+                        <tr>
+                            <td colspan="1">职务</td>
+                            <td colspan="1"><input type="text" name="job" data-verify="notempty" data-verify-errormessage="职务为必填项，请检查" /></td>
+                        </tr>
+                        <tr>
+                            <td colspan="1">技术职称<span class="text-danger"> ❉ </span></td>
+                            <td colspan="1"><input type="text" name="title4Technical" data-verify="notempty" data-verify-errormessage="技术职称为必填项，请检查" /></td>
+                        </tr>
+                        <tr>
+                            <td colspan="1">证书有效期</td>
+                            <td colspan="1"><input type="text" name="endCertificateDate" readonly /></td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button name="btnSave" class="btn btn-info btn-sm">保存</button>
+                <button class="btn btn-sm" data-dismiss="modal">取消</button>
+            </div>
+        </div>
+    </div>
+
+</div>
+<script src="~/Public/content/certificateinfochange/js/CertificateInfoChange.js?v=@DateTime.Now.ToString("ffff")"></script>

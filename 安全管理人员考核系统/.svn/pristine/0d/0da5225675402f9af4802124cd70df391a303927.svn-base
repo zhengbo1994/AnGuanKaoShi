@@ -1,0 +1,350 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+using System.Web.Mvc;
+
+using Model;
+using BLL;
+using Library.baseFn;
+using System.IO;
+
+namespace SafetyProfessionalAssessmentSystem.Controllers
+{
+    public class AuthenticationController : BaseController
+    {
+        //
+        // GET: /Authentication/
+
+        public ActionResult Index()
+        {
+            return View();
+        }
+
+        #region 根据查询条件获取jqgrid人员信息
+        public class GetAuthenticationEmployeeListForJqgridParam
+        {
+            public string ExamPlanNumber { get; set; }
+            public int ExamRoomId { get; set; }
+
+        }
+        public JsonResult GetAuthenticationEmployeeListForJqgrid(GetAuthenticationEmployeeListForJqgridParam param)
+        {
+            JqGridData dataResult;
+
+            string examPlanNumber = param.ExamPlanNumber;
+            int examRoomId = param.ExamRoomId;
+
+            if (examPlanNumber.IsNull() || examRoomId == 0)
+            {
+                dataResult = ConvertIListToJqGridData(1, 1, 0, null);
+                return Json(dataResult, JsonRequestBehavior.AllowGet);
+            }
+
+
+            Sys_Account account = LoginAccount as Sys_Account;
+            IEmployeeCtrl employeeCtrl = new EmployeeCtrl(account);
+            IEnterpriseCtrl enterpriseCtrl = new EnterpriseCtrl(account);
+
+            List<Biz_Employee> employeeList = employeeCtrl.GetEmployeeListForAuthentication(examPlanNumber, examRoomId);
+            List<Biz_Enterprise> enterpriseList = enterpriseCtrl.GetEnterpriseInfoByIdList(employeeList.Select(p => p.EnterpriseId).Distinct().ToList());
+            List<int> employeeIdList = employeeList.Select(p => p.Id).ToList();
+            List<Biz_EmployeeAuthentication> employeeAuthenticationList = employeeCtrl.GetEmployeeAuthenticationListByEmployeeIdList(employeeIdList);
+            List<Biz_EmployeeFile> employeePhotoList = employeeCtrl.GetEmployeePhotoListByEmployeeIdList(employeeIdList);
+
+            List<GetAuthenticationEmployeeListForJqgridJsonResult> getAuthenticationEmployeeListForJqgridJsonResultList =
+                employeeList.Join(enterpriseList, a => a.EnterpriseId, b => b.Id, (a, b) => new { a, b })
+                .GroupJoin(employeeAuthenticationList, o => o.a.Id, c => c.EmployeeId, (o, c) => new { o.a, o.b, c = c.FirstOrDefault() })
+                .GroupJoin(employeePhotoList, o => o.a.Id, d => d.EmployeeId, (o, d) => new { o.a, o.b, o.c, d = d.FirstOrDefault() })
+                .Select(o => new GetAuthenticationEmployeeListForJqgridJsonResult()
+            {
+                EmployeeId = o.a.Id,
+                Age = DateTime.Now.Year - o.a.Birthday.Year,
+                ConstructorCertificateNo = o.a.ConstructorCertificateNo,
+                EnterpriseName = o.b.EnterpriseName,
+                EmployeeName = o.a.EmployeeName,
+                Sex = o.a.Sex,
+                ExamType = o.a.ExamType,
+                IDNumber = o.a.IDNumber,
+                Industry = o.a.Industry,
+                Job = o.a.Job,
+                Title4Technical = o.a.Title4Technical,
+                TrainingType = o.a.TrainingType,
+                AuthenticationStatus = o.c != null ? true : false,
+                ImageStatus = o.d != null ? true : false,
+            }).ToList();
+
+            dataResult = ConvertIListToJqGridData(1, getAuthenticationEmployeeListForJqgridJsonResultList.Count, getAuthenticationEmployeeListForJqgridJsonResultList.Count, getAuthenticationEmployeeListForJqgridJsonResultList);
+            return Json(dataResult, JsonRequestBehavior.AllowGet);
+        }
+
+
+
+        public class GetAuthenticationEmployeeListForJqgridJsonResult
+        {
+            public int EmployeeId { get; set; }
+            public string EmployeeName { get; set; }
+
+            public string Sex { get; set; }
+
+            public int Age { get; set; }
+
+            public string IDNumber { get; set; }
+
+            public string EnterpriseName { get; set; }
+
+            public string Job { get; set; }
+
+            public string Title4Technical { get; set; }
+
+            public string ExamType { get; set; }
+
+            public string Industry { get; set; }
+            public string TrainingType { get; set; }
+            public string ConstructorCertificateNo { get; set; }
+            public bool AuthenticationStatus { get; set; }
+            public bool ImageStatus { get; set; }
+        }
+
+        #endregion
+
+        #region 验证取证人员是否属于本次考核
+        public bool VerifyEmployeeByIdNumber(VerifyEmployeeByIdNumberParam param)
+        {
+            string idNumber = param.IdNumber;
+            string examPlanNumber = param.ExamPlanNumber;
+            int examRoomId = param.ExamRoomId;
+
+            Sys_Account account = LoginAccount as Sys_Account;
+            IEmployeeCtrl employeeCtrl = new EmployeeCtrl(account);
+            bool result = employeeCtrl.VerifyEmployeeForAuthentication(idNumber, examPlanNumber, examRoomId);
+            return result;
+
+        }
+
+        public class VerifyEmployeeByIdNumberParam
+        {
+
+            public string IdNumber { get; set; }
+            public string ExamPlanNumber { get; set; }
+            public int ExamRoomId { get; set; }
+
+        }
+
+        #endregion
+
+        #region 上传取证人员的实名认证信息
+        public void UploadCertInfo(UploadCertInfoParam param)
+        {
+
+            Sys_Account account = LoginAccount as Sys_Account;
+            IEmployeeCtrl employeeCtrl = new EmployeeCtrl(account);
+            try
+            {
+                int employeeId = employeeCtrl.GetEmployeeIdForAuthentication(param.CertNumber, param.ExamPlanNumber, param.ExamRoomId);
+
+                Biz_EmployeeAuthentication employeeAuthentication = new Biz_EmployeeAuthentication()
+                {
+                    EmployeeId = employeeId,
+                    Nation = param.Nation,
+                    BornDay = param.BornDay,
+                    CertAddress = param.CertAddress,
+                    CertNumber = param.CertNumber,
+                    CertOrg = param.CertOrg,
+                    EffDate = param.EffDate,
+                    ExpDate = param.ExpDate,
+                    Gender = param.Gender,
+                    Handjpg = param.Handjpg,
+                    PartyName = param.PartyName,
+                    SamId = param.SamId
+                };
+
+                employeeCtrl.AddEmployeeAuthentication(employeeAuthentication);
+            }
+            catch (Exception ex)
+            {
+
+            }
+        }
+
+        public class UploadCertInfoParam
+        {
+            public string PartyName { get; set; }
+            public string Gender { get; set; }
+            public string Nation { get; set; }
+            public string BornDay { get; set; }
+            public string CertAddress { get; set; }
+            public string CertNumber { get; set; }
+            public string CertOrg { get; set; }
+            public string EffDate { get; set; }
+            public string ExpDate { get; set; }
+            public string Handjpg { get; set; }
+            public string SamId { get; set; }
+            public string ExamPlanNumber { get; set; }
+            public int ExamRoomId { get; set; }
+        }
+
+
+
+
+        #endregion
+
+        #region 获取考试列表
+        public JsonResult GetExamPlanNumberList()
+        {
+            Sys_Account account = LoginAccount as Sys_Account;
+            IWorkFlowCtrl workFlowCtrl = new WorkFlowCtrl(account);
+            List<Biz_ExamPlanRecord> examPlanRecordList = workFlowCtrl.GetExamPlanRecordListByTrainingInstitutionId(account.UserId);
+            List<string> examPlanNumberList = examPlanRecordList.Select(p => p.ExamPlanNumber).ToList();
+            return Json(examPlanNumberList, JsonRequestBehavior.AllowGet);
+        }
+
+
+
+
+        #endregion
+
+        #region 获取考场列表
+        public JsonResult GetExaminationRoomList()
+        {
+            Sys_Account account = LoginAccount as Sys_Account;
+            IWorkFlowCtrl workFlowCtrl = new WorkFlowCtrl(account);
+            List<Biz_ExaminationRoom> examinationRoomList = workFlowCtrl.GetExaminationRoomListByTrainingInstitutionId(account.UserId);
+            List<GetExaminationRoomListResult> getExaminationRoomListResultList = examinationRoomList.Select(p => new GetExaminationRoomListResult()
+            {
+                ExaminationRoomId = p.Id,
+                ExaminationRoomName = p.ExamRoomName
+            }).ToList();
+            return Json(getExaminationRoomListResultList, JsonRequestBehavior.AllowGet);
+        }
+
+        public class GetExaminationRoomListResult
+        {
+            public int ExaminationRoomId { get; set; }
+            public string ExaminationRoomName { get; set; }
+        }
+
+
+
+        #endregion
+
+        #region 保存登记照
+        public class SaveEmployeePhotoParam
+        {
+            public int employeeId { get; set; }
+            public string fileInBase64 { get; set; }
+        }
+        public JsonResult SaveEmployeePhoto(SaveEmployeePhotoParam param)
+        {
+            FileStream fs = null;
+            MemoryStream ms = null;
+            try
+            {
+                Sys_Account account = base.LoginAccount as Sys_Account;
+                IEmployeeCtrl employeeCtrl = new EmployeeCtrl(account);
+                IWorkFlowCtrl workFlowCtrl = new WorkFlowCtrl(account);
+                Biz_Employee employee = workFlowCtrl.GetEmployeeInfoById(param.employeeId);
+
+                if (param.fileInBase64.Length < 2000)
+                {
+                    throw new Exception("请拍照后再保存");
+                }
+                byte[] arrFileData = Convert.FromBase64String(param.fileInBase64);
+                ms = new MemoryStream(arrFileData);
+
+                string rootFolder = base.getFileRootDirectory();
+                string fileName = string.Format("{0}_{1}.png", employee.IDNumber, param.employeeId);//文件名
+
+                string relativePath = string.Format(@"\{0}\{1}\{2}", "实名认证照片", DateTime.Now.ToString("yyyy-MM-dd"), fileName);//数据库相对路径
+                string absolutePath = string.Format(@"{0}\{1}", rootFolder.TrimEnd('\\'), relativePath.TrimStart('\\'));//文件绝对路径
+                FileInfo file = new FileInfo(absolutePath);
+                if (!file.Directory.Exists)
+                {
+                    file.Directory.Create();
+                }
+                else if (file.Exists)
+                {
+                    file.Attributes = FileAttributes.Normal;
+                    file.Delete();
+                }
+                fs = new FileStream(absolutePath, FileMode.CreateNew);
+                ms.CopyToStream(fs);
+                fs.Flush();
+                employeeCtrl.SaveEmployeeFile(param.employeeId, "进场照片", fileName, relativePath);
+                ResultMessage result = new ResultMessage() { IsSuccess = true };
+                return Json(result);
+            }
+            catch (Exception ex)
+            {
+                ResultMessage result = new ResultMessage() { IsSuccess = false, ErrorMessage = ex.Message };
+                return Json(result);
+            }
+            finally
+            {
+                if (null != fs) fs.Close();
+                if (null != ms) ms.Close();
+            }
+        }
+        #endregion
+
+        #region 获取人员信息
+        public JsonResult GetEmployeeInfo(int employeeId)
+        {
+            try
+            {
+                Sys_Account account = base.LoginAccount as Sys_Account;
+                IEmployeeCtrl employeeCtrl = new EmployeeCtrl(account);
+                IWorkFlowCtrl workFlowCtrl = new WorkFlowCtrl(account);
+                IEnterpriseCtrl enterpriseCtrl = new EnterpriseCtrl(account);
+
+                Biz_Employee employee = workFlowCtrl.GetEmployeeInfoById(employeeId);
+                Biz_Enterprise enterprise = enterpriseCtrl.GetEnterpriseById(employee.EnterpriseId);
+
+                GetEmployeeInfoResult result = new GetEmployeeInfoResult();
+                {
+                    result.EmployeeName = employee.EmployeeName;
+                    result.Sex = employee.Sex;
+                    result.IDNumber = employee.IDNumber;
+                    result.ConstructorCertificateNo = employee.ConstructorCertificateNo;
+                    result.Job = employee.Job;
+                    result.Title4Technical = employee.Title4Technical;
+                    result.EnterpriseName = enterprise.EnterpriseName;
+                    result.Remark = employee.Remark;
+                }
+                Biz_EmployeeFile rpEmployeePhoto = employeeCtrl.GetEmployeePhoto(employeeId);
+                if (rpEmployeePhoto != null)
+                {
+                    string rootFolder = base.getFileRootDirectory();
+                    string absolutePath = string.Format(@"{0}\{1}", rootFolder.TrimEnd('\\'), rpEmployeePhoto.FilePath.TrimStart('\\'));//文件绝对路径
+                    if (!System.IO.File.Exists(absolutePath))
+                    {
+                        throw new Exception("照片文件丢失");
+                    }
+
+                    result.PhotoBase64 = AppFn.ImgToBase64String(absolutePath);
+                }
+                return Json(result);
+            }
+            catch (Exception ex)
+            {
+                ResultMessage result = new ResultMessage() { IsSuccess = false, ErrorMessage = ex.Message };
+                return Json(result);
+            }
+        }
+        public class GetEmployeeInfoResult
+        {
+            public string EmployeeName { get; set; }
+            public string Sex { get; set; }
+            public string IDNumber { get; set; }
+            public string ConstructorCertificateNo { get; set; }
+            public string Job { get; set; }
+            public string Title4Technical { get; set; }
+            public string EnterpriseName { get; set; }
+            public string Remark { get; set; }
+            public string PhotoBase64 { get; set; }
+        }
+        #endregion
+
+
+    }
+}

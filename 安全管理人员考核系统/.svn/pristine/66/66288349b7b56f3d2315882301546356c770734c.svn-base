@@ -1,0 +1,246 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+using System.Web.Mvc;
+using Model;
+using BLL;
+
+
+namespace SafetyProfessionalAssessmentSystem.Controllers
+{
+    [AuthorizeFilter]
+    public class CertificateManagementController : BaseController
+    {
+        //
+        // GET: /CertificateManagement/    
+
+        public ActionResult Index()
+        {
+            return View();
+        }
+
+        #region 获取证书信息
+        public class GetCertificateListForJqGridParam
+        {
+            //证书编号
+            public string certificateNo { get; set; }
+            //证书状态
+            public string certificateStatus { get; set; }
+            //持证人姓名
+            public string employeeName { get; set; }
+            public string  idNumber { get; set; }
+            //企业名称
+            public string enterpriseName { get; set; }
+            public int page { get; set; }
+            public int rows { get; set; }
+        }
+        public JsonResult GetCertificateListForJqGrid(GetCertificateListForJqGridParam param)
+        {
+            int totalCount = 0;
+            Sys_Account account = base.LoginAccount as Sys_Account;
+            ICertificateCtrl certificateManagementCtrl = new CertificateCtrl(account);
+            List<string> cityList = LoginDataPermissionDetailList.Select(p => p.DetailName).ToList();
+            List<Biz_Certificate> certificateList = certificateManagementCtrl.GetCertificateList(param.employeeName, param.idNumber,
+                param.certificateNo, param.certificateStatus, param.enterpriseName, param.page, param.rows, ref totalCount,cityList);
+            List<GetCertificateManagementListForJqGridResult> certificateManagementListJsonResult = certificateList.Select(e => new GetCertificateManagementListForJqGridResult()
+            {
+
+                certificateId = e.Id,
+                employeeName = e.EmployeeName,
+                sex = e.Sex,
+                birthday = e.Birthday,
+                iDNumber = e.IDNumber,
+                enterpriseName = e.EnterpriseName,
+                job = e.Job,
+                title4Technical = e.Title4Technical,
+                certificateNo = e.CertificateNo,
+                examType = e.ExamType,
+                certificateStatus = (e.Invalid || e.EndCertificateDate < DateTime.Now) ? "无效的" : "有效的",
+                endCertificateDate = e.EndCertificateDate.ToString("yyyy-MM-dd")
+            }).ToList();
+            JqGridData dataResult = ConvertIListToJqGridData(param.page, param.rows, totalCount, certificateManagementListJsonResult);
+            return Json(dataResult);
+        }
+       
+
+        public class GetCertificateManagementListForJqGridResult
+        {
+            public int certificateId { get; set; }
+            //持证人姓名
+            public string employeeName { get; set; }
+            //性别
+            public string sex { get; set; }
+            public string birthday { get; set; }
+            //身份证号
+            public string iDNumber { get; set; }
+            //企业名称
+            public string enterpriseName { get; set; }
+            public string job { get; set; }
+            public string title4Technical { get; set; }
+            //证书编号
+            public string certificateNo { get; set; }
+            //证书类别
+            public string examType { get; set; }
+            //证书状态
+            public string certificateStatus { get; set; }
+            //证书有效期
+            public string endCertificateDate { get; set; }
+        }
+
+        #endregion
+
+        #region 获取证书操作子表信息
+        public JsonResult GetCertificateListForSubJqGrid(int certificateId)
+        {
+            List<GetCertificateListForSubJqGridResult> GetCertificateListForSubJqGridResultList = new List<GetCertificateListForSubJqGridResult>();
+            int totalCount = 0;
+
+            Sys_Account account = base.LoginAccount as Sys_Account;
+            ICertificateCtrl certificateManagementCtrl = new CertificateCtrl(account);
+            IWorkFlowCtrl workFlowCtrl = new WorkFlowCtrl(account);
+            List<Biz_CertificateOperationRecord> certificateOperationRecordList = certificateManagementCtrl.GetCertificateOperationRecordList(certificateId);
+            totalCount = certificateOperationRecordList.Count();
+            GetCertificateListForSubJqGridResultList = certificateOperationRecordList.Select(p => new GetCertificateListForSubJqGridResult()
+            {
+                id = p.Id,
+                certificateId = p.CertificateId,
+                operateType = p.OperateType,
+                remark = p.Remark,
+                createUserName = workFlowCtrl.GetUserName(p.CreateById),
+                createDate = p.CreateDate.ToString("yyyy-MM-dd HH:mm:ss")
+            }).ToList();
+            JqGridData dataResult = ConvertIListToJqGridData(1, 100, totalCount, GetCertificateListForSubJqGridResultList);
+            return Json(dataResult);
+        }
+        public class GetCertificateListForSubJqGridResult
+        {
+            public int id { get; set; }
+            public int certificateId { get; set; }
+            public string changeBeforeStatus { get; set; }
+            public string changeToStatus { get; set; }
+            public string operateType { get; set; }
+            public string remark { get; set; }
+            public string createUserName { get; set; }
+            public string createDate { get; set; }
+        }
+        #endregion
+
+        //#region 证书暂扣
+        //public class CertificateSuspensionParam
+        //{
+        //    public int certificateId { get; set; }
+        //    public string remark { get; set; }
+        //}
+        //public JsonResult CertificateSuspension(CertificateSuspensionParam param)
+        //{
+        //    ResultMessage resultMessage = new ResultMessage();
+        //    try
+        //    {
+        //        Sys_Account account = base.LoginAccount as Sys_Account;
+        //        ICertificateCtrl certificateManagementCtrl = new CertificateCtrl(account);
+        //        Biz_Certificate certificate = certificateManagementCtrl.GetCertificateById(param.certificateId);
+        //        certificateManagementCtrl.ChangeCertificateStatus(certificate, param.remark, "暂扣");
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        resultMessage.IsSuccess = false;
+        //        resultMessage.ErrorMessage = ex.Message;
+        //    }
+        //    return Json(resultMessage);
+        //}
+        //#endregion
+
+        #region 证书吊销
+        public class CertificateDeactiveParam
+        {
+            public int certificateId { get; set; }
+            public string remark { get; set; }
+        }
+        public JsonResult CertificateDeactive(CertificateDeactiveParam param)
+        {
+            ResultMessage resultMessage = new ResultMessage();
+            try
+            {
+                Sys_Account account = base.LoginAccount as Sys_Account;
+                ICertificateCtrl certificateManagementCtrl = new CertificateCtrl(account);
+                certificateManagementCtrl.ChangeCertificateStatus(param.certificateId, param.remark, "吊销");
+            }
+            catch (Exception ex)
+            {
+                resultMessage.IsSuccess = false;
+                resultMessage.ErrorMessage = ex.Message;
+            }
+            return Json(resultMessage);
+        }
+        #endregion
+
+        #region 证书恢复
+        public class CertificateRecoverParam
+        {
+            public int certificateId { get; set; }
+            public string remark { get; set; }
+        }
+        public JsonResult CertificateRecover(CertificateRecoverParam param)
+        {
+            ResultMessage resultMessage = new ResultMessage();
+            try
+            {
+                Sys_Account account = base.LoginAccount as Sys_Account;
+                ICertificateCtrl certificateManagementCtrl = new CertificateCtrl(account);
+                certificateManagementCtrl.ChangeCertificateStatus(param.certificateId, param.remark, "恢复");
+            }
+            catch (Exception ex)
+            {
+                resultMessage.IsSuccess = false;
+                resultMessage.ErrorMessage = ex.Message;
+            }
+            return Json(resultMessage);
+        }
+        #endregion
+
+        #region 根据Id获取证书信息
+        public JsonResult GetCertificateManagementById(int certificateId)
+        {
+            Sys_Account account = LoginAccount as Sys_Account;
+            ICertificateCtrl certificateManagementCtrl = new CertificateCtrl(account);
+            Biz_Certificate certificate = certificateManagementCtrl.GetCertificateById(certificateId);
+            CertificateResult certificateResult = new CertificateResult()
+            {
+                Id = certificate.Id,
+                //CertificateType = certificate.CertificateType,
+                //CertificateNumber = certificate.CertificateNumber,
+                //CertificateStatus = certificate.CertificateStatus,
+                //HolderOfTheCertificate = certificate.HolderOfTheCertificate,
+                //IDNumber = certificate.IDNumber,
+                //ContactWay = certificate.ContactWay,
+                //EnterpriseName = certificate.EnterpriseName
+            };
+            return Json(certificateResult, JsonRequestBehavior.AllowGet);
+
+        }
+        public class CertificateResult
+        {
+            public int Id { get; set; }
+            //证书类别
+            public string CertificateType { get; set; }
+            //证书编号
+            public string CertificateNumber { get; set; }
+            //证书状态
+            public string CertificateStatus { get; set; }
+            //证书有效期
+            public string ValidityOfTheCertificate { get; set; }
+            //持证人姓名
+            public string employeeName { get; set; }
+            //身份证号
+            public string IDNumber { get; set; }
+            //联系方式
+            public string ContactWay { get; set; }
+            //企业名称
+            public string EnterpriseName { get; set; }
+        }
+        #endregion
+
+
+    }
+}

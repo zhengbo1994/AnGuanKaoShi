@@ -1,0 +1,76 @@
+﻿@{
+    Layout = null;
+}
+<link href="~/Public/content/enterpriseDetails/css/enterpriseDetails.css" rel="stylesheet" />
+<div class="row">
+    <div class="col-xs-12">
+        <div class="widget-box">
+            <div class="widget-header">
+                <h3 class="modal-title text-center">企业信息明细</h3>
+            </div>
+
+            <div class="widget-body">
+                <div class="widget-main">
+                    <div id="divEnterprise_DetailsInfo" class="form-horizontal">
+                        <input type="hidden" name="EnterpriseId" />
+                        <table class="table table-bordered text-center table">
+                            <tr>
+                                <td colspan="1">企业名称</td>
+                                <td colspan="1"><input type="text" name="EnterpriseName" /></td>
+
+                                <td colspan="1">社会信用代码</td>
+                                <td colspan="1">
+                                    <input type="text" name="SocialCreditCode" />
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td colspan="1">法定代表人</td>
+                                <td colspan="1"><input type="text" name="LegalRepresentative" /></td>
+
+                                <td colspan="1">法定代表人电话</td>
+                                <td colspan="1"><input type="text" name="LegalRepresentativeNumber" /></td>
+                            </tr>
+                            <tr>
+                                <td colspan="1">联系人</td>
+                                <td colspan="1"><input type="text" name="ContactPerson" /></td>
+
+                                <td colspan="1">联系人电话</td>
+                                <td colspan="1"><input type="text" name="ContactNumber" /></td>
+                            </tr>
+                            <tr>
+                                <td colspan="1">城市</td>
+                                <td colspan="1"><input type="text" name="City" /></td>
+
+                                <td colspan="1">区域</td>
+                                <td colspan="1"><input type="text" name="Area" /></td>
+                            </tr>
+                            <tr>
+                                <td colspan="1">企业地址</td>
+                                <td colspan="1"><input type="text" name="EnterpriseAddress" /></td>
+                                <td colspan="1">邮箱</td>
+                                <td colspan="1"><input type="text" name="Email" /></td>
+                            </tr>
+                            <tr>
+                                <td colspan="1">登录帐号</td>
+                                <td colspan="1">
+                                    <input type="text" name="SocialCreditCode" />
+                                </td>
+                                @*<td colspan="1">所在城市<span class="text-danger"> ❉ </span></td>
+                                    <td colspan="1"><select id="divEnterprise_DetailsInfoLocaltionCity" name="LocaltionCity" data-verify="notempty" data-verify-errormessage="所在城市为必填项，请检查"></select></td>*@
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+                <div class="widget-toolbox padding-8 clearfix">
+                    <button class="btn btn-sm btn-success pull-right" id="divEnterprise_DetailsInfoSave">
+                        <i class="ace-icon fa fa-save"></i>
+                        <span class="bigger-110">保&nbsp;&nbsp;存</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="~/Public/imageUpload/js/imageUpload.js"></script>
+<script src="~/Public/content/enterpriseDetails/js/enterpriseDetails.js?v=@DateTime.Now.ToString("yyyyMMddHHmmss")"></script>

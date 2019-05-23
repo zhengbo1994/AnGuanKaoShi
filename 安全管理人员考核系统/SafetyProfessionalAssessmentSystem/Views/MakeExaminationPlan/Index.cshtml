@@ -1,0 +1,282 @@
+﻿@{
+    Layout = null;
+}
+
+<link href="~/Public/datetimepicker/css/bootstrap-datetimepicker.css" rel="stylesheet" />
+<link href="~/Public/content/MakeExaminationPlan/css/makeexaminationplan.css" rel="stylesheet" />
+
+<div class="row">
+    <div class="col-xs-12">
+        <div class="widget-box">
+            <div class="widget-header">
+                <h4 class="widget-title">查询区域</h4>
+
+                <div class="widget-toolbar">
+                    <a href="#" data-action="collapse">
+                        <i class="ace-icon fa fa-chevron-up"></i>
+                    </a>
+                </div>
+                <div class="widget-toolbar">
+                    <a id="btnMakeExaminationPlan_Query" href="#">
+                        <i class="ace-icon fa fa-search">查询</i>
+                    </a>
+                </div>
+            </div>
+
+            <div class="widget-body" style="display: block;">
+                <div id="divExamPlan_QueryArea" class="widget-main form-horizontal ">
+                    <div class="row">
+                        <div class="col-xs-4 ">
+                            <label class="control-label col-xs-4 ">考试计划流水号</label>
+                            <input class="col-xs-8" type="text" name="ExamPlanNumber">
+                        </div>
+
+                        <div class="col-xs-4 ">
+                            <label class="control-label col-xs-3 ">考试时间</label>
+                            <input class="col-xs-4" type="text" name="ExamDatetimeBegin">
+                            <label class="control-label col-xs-1 ">~</label>
+                            <input class="col-xs-4" type="text" name="ExamDatetimeEnd">
+                        </div>
+                        <div class="col-xs-4 ">
+                            <label class="control-label col-xs-4 ">考核点名称</label>
+                            <input class="col-xs-8" type="text" name="TrainingInstutionName">
+                        </div>
+                    </div>
+                    <br/>
+                    <div class="row">
+                        <div class="col-xs-4 ">
+                            <label class="control-label col-xs-4 ">姓名</label>
+                            <input class="col-xs-8" type="text" name="EmployeeName">
+                        </div>
+
+                        <div class="col-xs-4 ">
+                            <label class="control-label col-xs-3 ">身份证号</label>
+                            <input class="col-xs-9" type="text" name="IDNumber">
+
+                        </div>
+                        <div class="col-xs-4 ">
+                            <label class="control-label col-xs-4 ">提交状态</label>
+                            <select class="col-xs-8" name="SubmitStatus">
+                                <option value="">全部</option>
+                                <option value="已提交">已提交</option>
+                                <option value="未提交">未提交</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<br />
+<div class="row">
+    <div class="col-xs-12">
+        <div class="widget-box">
+            <div class="widget-header">
+                <h4 class="widget-title">考试计划列表</h4>
+                <div class="widget-toolbar">
+                    <a href="#" id="btnExamPaln_AutoAssign">
+                        <i class="ace-icon fa fa-share">自动分配考生</i>
+                    </a>
+                </div>
+                <div class="widget-toolbar">
+                    <a href="#" id="btnExamPaln_ManualAssign">
+                        <i class="ace-icon fa fa-share">手动分配考生</i>
+                    </a>
+                </div>
+                <div class="widget-toolbar">
+                    <a href="#" id="btnExamPlan_FileUpload">
+                        <i class="ace-icon fa fa-print">打印</i>
+                    </a>
+                </div>
+            </div>
+            <table id="gridExamPlan_main"></table>
+            <div id="pagerExamPlan_main"></div>
+
+        </div>
+    </div>
+
+</div>
+<!--制定考试计划 自动分配-->
+<div class="modal fade" id="mdlMakeExamPlan_AutoAssign">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">
+                    <span>&times;</span>
+                </button>
+                <h3 class="modal-title">制定考试计划--自动分配</h3>
+            </div>
+            <div class="modal-body">
+                <div id="divMakeExamPlan_AutoAssign" class="form-horizontal">
+                    <input type="hidden" name="Id" />
+                    <table class="table table-bordered text-center table">
+                        <tr>
+                            <td colspan="1">考核点名称<span class="text-danger"> ❉ </span></td>
+                            <td colspan="1">
+                                <select name="TrainingInstitutionId" data-verify="notempty" data-verify-errormessage="考核点名称为必填项，请检查"></select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="1">考试开始时间<span class="text-danger"> ❉ </span></td>
+                            <td colspan="1">
+                                <input type="text" name="ExamDateTimeBegin" data-verify="notempty" data-verify-errormessage="考试开始时间为必填项，请检查" />
+                            </td>
+                        </tr>
+                        @*<tr>
+                                <td colspan="1">安全知识考试时间(止)<span class="text-danger"> ❉ </span></td>
+                                <td colspan="1"><input type="text" name="AExamDateTimeEnd" data-verify="notempty" data-verify-errormessage="安全知识考试时间(止)为必填项，请检查" /></td>
+                            </tr>
+                            <tr>
+                                <td colspan="1"> 安全知识考试时长</td>
+                                <td colspan="1" name="SafetyKnowledgeExamTimeSpan">----</td>
+                            </tr>
+                            <tr>
+                                <td colspan="1">管理能力考试时间(起)<span class="text-danger"> ❉ </span></td>
+                                <td colspan="1">
+                                    <input type="text" name="BExamDateTimeBegin" data-verify="notempty" data-verify-errormessage="管理能力考试时间(起)为必填项，请检查" />
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="1">管理能力考试时间(止)<span class="text-danger"> ❉ </span></td>
+                                <td colspan="1"><input type="text" name="ExamDateTimeEnd" data-verify="notempty" data-verify-errormessage="管理能力考试时间(止)为必填项，请检查" /></td>
+                            </tr>
+                            <tr>
+                                <td colspan="1"> 管理能力考试时长</td>
+                                <td colspan="1" name="ManagementAbilityExamTimeSpan">----</td>
+                            </tr>*@
+                        <tr>
+                            <td colspan="1">待安排考生数量</td>
+                            <td colspan="1" name="NotInExamPlanCount">----</td>
+                        </tr>
+                        <tr>
+                            <td colspan="1">安排考生数量<span class="text-danger"> ❉ </span></td>
+                            <td colspan="1">
+                                <input type="text" name="AutoAssignCount" />
+                            </td>
+                        </tr>
+                    </table>
+
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="divMakeExamPlan_AutoAssignSave" class="btn btn-info btn-sm">确定</button>
+                <button class="btn btn-sm" data-dismiss="modal">关闭</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--制定考试计划 手动分配-->
+<div class="modal fade" id="mdlMakeExamPlan_ManualAssign">
+    <div class="modal-dialog modal-xlg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">
+                    <span>&times;</span>
+                </button>
+                <h4 class="modal-title">制定考试计划--手动分配考生</h4>
+            </div>
+            <div class="modal-body">
+                <div id="divMakeExamPlan_ManualAssign" class="form-horizontal">
+                    <table class="table table-bordered text-center table">
+                        <tr>
+                            <td colspan="1" class="width-10">考试计划流水号<span class="text-danger"> ❉ </span></td>
+                            <td colspan="1" class="width-15">
+                                <input readonly type="text" name="ExamPlanNumber" />
+                            </td>
+                            <td colspan="1" class="width-10">考核点<span class="text-danger"> ❉ </span></td>
+                            <td colspan="1" class="width-15">
+                                <select name="TrainingInstitutionId" data-verify="notempty" data-verify-errormessage="考核点为必填项，请检查"></select>
+                            </td>
+
+                            <td colspan="1" class="width-10">待制定考试计划的人数</td>
+                            <td colspan="1" class="width-15" name="NotInExamPlanCount">
+                                0
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="1">考试开始时间<span class="text-danger"> ❉ </span></td>
+                            <td colspan="1">
+                                <input type="text" name="ExamDateTimeBegin" data-verify="notempty" data-verify-errormessage="考试开始时间 为必填项，请检查" />
+                            </td>
+                            <td colspan="1">考场<span class="text-danger"> ❉ </span></td>
+                            <td colspan="1">
+                                <select name="ExamRoomId" data-verify="notempty" data-verify-errormessage="考场为必填项，请检查">
+                                    <option value="">请选择考场</option>
+                                </select>
+                            </td>
+                            <td colspan="1">已分配人数</td>
+                            <td colspan="1" name="AssignedCount"></td>
+
+                        </tr>
+
+                    </table>
+                </div>
+                <div class="row">
+                    <div class="col-xs-8">
+                        <div class="widget-box">
+                            <div class="widget-header">
+                                <h4 class="widget-title">报名人员<small>显示已分配到当前考场和待分配的报名人员</small></h4>
+
+                                <div class="widget-toolbar">
+                                    <a href="#" id="btnEmployeeAssign2ExamPlan_Query">
+                                        <i class="ace-icon fa fa-search">查询</i>
+                                    </a>
+                                </div>
+                                <span class="widget-toolbar">
+                                    <input type="text" id="divmakeexamplan_manualassignconditionstr" placeholder="可以输入 姓名、身份证、考试科目、企业名称等查询条件" style="width:300px;height:30px;" />
+                                </span>
+                            </div>
+                            <table id="gridEmployeeAssign2ExamPlan"></table>
+                        </div>
+                    </div>
+                    <div class="col-xs-4 ">
+                        <div class="widget-box no-padding-left">
+                            <div class="widget-header">
+                                <h4 class="widget-title">已分配人员</h4>
+                            </div>
+                            <table id="gridEmployeeAssign2ExamPlanResult"></table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="btnExamPlan_ManualAssignComform" class="btn btn-info btn-sm">确定</button>
+                <button class="btn btn-sm" data-dismiss="modal">关闭</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--提交考试计划-->
+<div class="modal fade" id="mdlMakeExamPlan_Submit">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">提交考试计划</h4>
+            </div>
+            <div class="modal-body">
+                <div id="divMakeExamPlan_Submit" class="form-horizontal">
+                    <div class="form-group">
+                        <label class="col-sm-4 control-label">审核意见</label>
+                        <div class="col-sm-8">
+                            <textarea name="CheckedMark" rows="3"></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="btnDataAudit_Pass" class="btn btn-info btn-sm">审核通过</button>
+                <button id="btnDataAudit_NoPass" class="btn btn-danger btn-sm">审核不通过</button>
+                <button class="btn btn-sm" data-dismiss="modal">关闭</button>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+
+<script src="~/Public/datetimepicker/js/bootstrap-datetimepicker.js"></script>
+<script src="~/Public/datetimepicker/js/bootstrap-datetimepicker.zh-CN.js"></script>
+<script src="~/Public/content/MakeExaminationPlan/js/makeexaminationplan.js?v=@DateTime.Now.ToString("yyyyMMddHHmmss")"></script>

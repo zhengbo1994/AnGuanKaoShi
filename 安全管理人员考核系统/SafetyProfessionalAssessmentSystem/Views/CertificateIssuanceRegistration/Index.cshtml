@@ -1,0 +1,113 @@
+﻿@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<link href="~/Public/datetimepicker/css/bootstrap-datetimepicker.css" rel="stylesheet" />
+<link href="~/Public/content/CertificateIssuanceRegistration/css/CertificateIssuanceRegistration.css" rel="stylesheet" />
+
+
+<div class="row">
+    <div class="col-xs-12">
+        <div class="widget-box">
+            <div class="widget-header">
+                <h4 class="widget-title">查询区域</h4>
+
+                <div class="widget-toolbar">
+                    <a href="#" data-action="collapse">
+                        <i class="ace-icon fa fa-chevron-up"></i>
+                    </a>
+                </div>
+                <div class="widget-toolbar">
+                    <a id="btnCertificateIssuanceRegistration_Query" href="#">
+                        <i class="ace-icon fa fa-search">查询</i>
+                    </a>
+                </div>
+            </div>
+
+            <div class="widget-body" style="display: block;">
+                <div id="divCertificateIssuanceRegistration_QueryArea" class="widget-main form-horizontal ">
+                    <div class="row">
+                        <div class="col-xs-4 ">
+                            <label class="control-label col-xs-5 ">考试计划流水号</label>
+                            <input class="col-xs-7" type="text" name="examPlanNumber">
+                        </div>
+                        <div class="col-xs-4">
+                            <label class="control-label col-xs-4 ">考核点名称</label>
+                            <input class="col-xs-8" type="text" name="trainingInsititutionName">
+                        </div>
+                        <div class="col-xs-4 ">
+                            <label class="control-label col-xs-4 ">证书发放状态</label>
+                            <select class="col-xs-8" name="issuanceStatus">
+                                <option value="" selected>全部</option>
+                                <option value="未发放" selected>未发放</option>
+                                <option value="已发放">已发放</option>
+                            </select>
+                        </div>
+                    </div>
+                    <br />
+                    <div class="row">
+                        <div class="col-xs-4 ">
+                            <label class="control-label col-xs-5 ">证书发放时间</label>
+                            <input class="col-xs-3" type="text" name="issuanceDateTimeBegin">
+                            <label class="control-label col-xs-1 ">~</label>
+                            <input class="col-xs-3" type="text" name="issuanceDateTimeEnd">
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<br />
+
+<div class="row">
+    <div class="col-xs-12">
+        <div class="widget-box">
+            <div class="widget-header">
+                <h4 class="widget-title">考试计划列表</h4>
+            </div>
+            <table id="gridCertificateIssuanceRegistration_main"></table>
+            <div id="pagerCertificateIssuanceRegistration_main"></div>
+
+        </div>
+    </div>
+
+</div>
+
+<div class="modal fade" id="mdlCertificateIssuanceRegistration_Checked">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">发放证书确认</h4>
+            </div>
+            <div class="modal-body">
+                <div id="divCertificateIssuanceRegistration_Checked" class="form-horizontal">
+                    <div class="form-group">
+                        <input type="hidden" name="IssuanceType" />
+                        <input type="hidden" name="EmployeeId" />
+                        <input type="hidden" name="ExamPlanId" />
+                        <input type="hidden" name="TrainingInsititutionId" />
+                        <label class="col-sm-2 control-label">备注</label>
+                        <div class="col-sm-10">
+                            <textarea name="Remark" cols="3" rows="3"></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="btnCertificateIssuanceRegistration_OK" class="btn btn-info btn-sm">确认</button>
+                <button class="btn btn-sm" data-dismiss="modal">关闭</button>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+
+<script src="~/Public/datetimepicker/js/bootstrap-datetimepicker.js"></script>
+<script src="~/Public/datetimepicker/js/bootstrap-datetimepicker.zh-CN.js"></script>
+<script src="~/Public/content/CertificateIssuanceRegistration/js/CertificateIssuanceRegistration.js?v=@DateTime.Now.ToString("yyyyMMddHHmm")"></script>

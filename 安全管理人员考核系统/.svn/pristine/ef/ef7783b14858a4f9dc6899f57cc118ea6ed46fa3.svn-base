@@ -1,0 +1,89 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+using System.Web.Mvc;
+using BLL;
+using Model;
+using Library.baseFn;
+
+namespace SafetyProfessionalAssessmentSystem.Controllers
+{
+    public class CertificatePrintOnlineController : BaseController
+    {
+        //
+        // GET: /CertificatePrintOnline/
+
+        public ActionResult Index()
+        {
+            return View();
+        }
+
+
+        public class GetCertificateListForJqGridParam
+        {
+            //证书编号
+            public string certificateNo { get; set; }
+
+            //持证人姓名
+            public string employeeName { get; set; }
+            public string idNumber { get; set; }
+            //企业名称
+            public string enterpriseName { get; set; }
+            public int page { get; set; }
+            public int rows { get; set; }
+        }
+
+        public JsonResult GetCertificateListForJqGrid(GetCertificateListForJqGridParam param)
+        {
+            const string CERTIFICATESTATUS_ACTIVE = "有效的";
+
+            int totalCount = 0;
+            Sys_Account account = base.LoginAccount as Sys_Account;
+            ICertificateCtrl certificateManagementCtrl = new CertificateCtrl(account);
+            List<string> cityList = LoginDataPermissionDetailList.Select(p => p.DetailName).ToList();
+            List<Biz_Certificate> certificateList = certificateManagementCtrl.GetCertificateList(param.employeeName, param.idNumber,
+                param.certificateNo, CERTIFICATESTATUS_ACTIVE, param.enterpriseName, param.page, param.rows, ref totalCount, cityList);
+            List<GetCertificateManagementListForJqGridResult> certificateManagementListJsonResult = certificateList.Select(e => new GetCertificateManagementListForJqGridResult()
+            {
+
+                certificateId = e.Id,
+                employeeName = e.EmployeeName,
+                sex = e.Sex,
+                birthday = e.Birthday,
+                iDNumber = e.IDNumber,
+                enterpriseName = e.EnterpriseName,
+                job = e.Job,
+                title4Technical = e.Title4Technical,
+                certificateNo = e.CertificateNo,
+                examType = e.ExamType,
+                endCertificateDate = e.EndCertificateDate.ToString("yyyy-MM-dd")
+            }).ToList();
+            JqGridData dataResult = ConvertIListToJqGridData(param.page, param.rows, totalCount, certificateManagementListJsonResult);
+            return Json(dataResult);
+        }
+
+        public class GetCertificateManagementListForJqGridResult
+        {
+            public int certificateId { get; set; }
+            //持证人姓名
+            public string employeeName { get; set; }
+            //性别
+            public string sex { get; set; }
+            public string birthday { get; set; }
+            //身份证号
+            public string iDNumber { get; set; }
+            //企业名称
+            public string enterpriseName { get; set; }
+            public string job { get; set; }
+            public string title4Technical { get; set; }
+            //证书编号
+            public string certificateNo { get; set; }
+            //证书类别
+            public string examType { get; set; }
+
+            //证书有效期
+            public string endCertificateDate { get; set; }
+        }
+    }
+}

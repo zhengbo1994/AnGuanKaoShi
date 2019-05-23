@@ -1,0 +1,198 @@
+﻿@{
+    Layout = null;
+}
+<link href="~/Public/datetimepicker/css/bootstrap-datetimepicker.css" rel="stylesheet" />
+<link href="~/Public/content/TrainingInstitution/css/TrainingInstitution.css" rel="stylesheet" />
+
+<div class="row">
+    <div class="col-xs-12">
+        <div class="widget-box">
+            <div class="widget-header">
+                <h4 class="widget-title">查询区域</h4>
+
+                <div class="widget-toolbar">
+                    <a href="#" data-action="collapse">
+                        <i class="ace-icon fa fa-chevron-up"></i>
+                    </a>
+                </div>
+                <div class="widget-toolbar">
+                    <a id="btnTrainingInstitution_Query" href="#">
+                        <i class="ace-icon fa fa-search">查询</i>
+                    </a>
+                </div>
+            </div>
+
+            <div class="widget-body" style="display: block;">
+                <div id="divTrainingInstitution_QueryArea" class="widget-main form-horizontal ">
+                    <div class="row">
+                        <div class="col-xs-3 ">
+                            <label class="control-label col-xs-4 ">培训机构名称</label>
+                            <input class="col-xs-8" type="text" name="InstitutionName">
+                        </div>
+                        <div class="col-xs-3 ">
+                            <label class="control-label col-xs-5 ">社会信用代码</label>
+                            <input class="col-xs-7" type="text" name="SocialCreditCode">
+                        </div>
+
+                        <div class="col-xs-3 ">
+                            <label class="control-label col-xs-4 ">城市</label>
+                            <select id="divTrainingInstitution_QueryAreaCity" class="col-xs-8" name="City"></select>
+                        </div>
+                        <div class="col-xs-3 ">
+                            <label class="control-label col-xs-4 ">区域</label>
+                            <select id="divTrainingInstitution_QueryAreaInput" class="col-xs-8" name="Area"></select>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<br />
+<div class="row">
+    <div class="col-xs-12">
+        <div class="widget-box">
+            <div class="widget-header">
+                <h4 class="widget-title">培训机构基本信息</h4>
+                @*<div class="widget-toolbar">
+                        <a href="#" id="btnTrainingInstitution_Checked">
+                            <i class="ace-icon fa fa-edit">修改</i>
+                        </a>
+                    </div>*@
+                <div class="widget-toolbar">
+                    <a href="#" data-toggle="modal" id="btnTrainingInstitution_Insert">
+                        <i class="aace-icon fa fa-plus">新增</i>
+                    </a>
+                </div>
+            </div>
+            <table id="gridTrainingInstitution_main"></table>
+            <div id="pagerTrainingInstitution_main"></div>
+        </div>
+    </div>
+
+</div>
+
+<div class="modal fade" id="mdlTrainingInstitution_TrainingInstitutionInfo">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">
+                    <span>&times;</span>
+                </button>
+                <h4 class="modal-title text-center">培训机构基本信息</h4>
+            </div>
+            <div class="modal-body">
+                <div id="divTrainingInstitution_TrainingInstitutionInfo" class="form-horizontal">
+                    <input type="hidden" name="Id" />
+                    <form>
+                        <table class="table table-bordered text-center table">
+                            <tr>
+                                <td colspan="1">考核点名称<span class="text-danger"> ❉ </span></td>
+                                <td colspan="1"><input type="text" name="InstitutionName" data-verify="notempty" data-verify-errormessage="考核点名称为必填项，请检查" /></td>
+                            </tr>
+                            <tr>
+                                <td colspan="1">社会信用代码<span class="text-danger"> ❉ </span></td>
+                                <td colspan="1">
+                                    <input type="text" name="SocialCreditCode" data-verify="notempty" data-verify-errormessage="社会信用代码为必填项，请检查" />
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="1">城市<span class="text-danger"> ❉ </span></td>
+                                <td colspan="1"><select id="divTrainingInstitution_TrainingInstitutionInfoCity" name="City" data-verify="notempty" data-verify-errormessage="城市为必填项，请检查"></select></td>
+                            </tr>
+                            <tr>
+                                <td colspan="1">区域<span class="text-danger"> ❉ </span></td>
+                                <td colspan="1"><select id="divTrainingInstitution_TrainingInstitutionInfoArea" name="Area" data-verify="notempty" data-verify-errormessage="区域为必填项，请检查"></select></td>
+                            </tr>
+
+                            <tr>
+                                <td colspan="1">企业地址<span class="text-danger"> ❉ </span></td>
+                                <td colspan="1"><input type="text" name="Address" data-verify="notempty" data-verify-errormessage="企业地址为必填项，请检查" /></td>
+                            </tr>
+                            <tr>
+                                <td colspan="1">法定代表人<span class="text-danger"> ❉ </span></td>
+                                <td colspan="1"><input type="text" name="LegalRepresentative" data-verify="notempty" data-verify-errormessage="法定代表人为必填项，请检查" /></td>
+                            </tr>
+                            <tr>
+                                <td colspan="1">法定代表人电话<span class="text-danger"> ❉ </span></td>
+                                <td colspan="1"><input type="text" name="LegalRepresentativeNumber" data-verify="notempty" data-verify-errormessage="法定代表人电话为必填项，请检查" /></td>
+                            </tr>
+                            <tr>
+                                <td colspan="1">联系人<span class="text-danger"> ❉ </span></td>
+                                <td colspan="1"><input type="text" name="ContactPerson" data-verify="notempty" data-verify-errormessage="联系人为必填项，请检查" /></td>
+                            </tr>
+                            <tr>
+                                <td colspan="1">联系人电话<span class="text-danger"> ❉ </span></td>
+                                <td colspan="1"><input type="text" name="ContactNumber" data-verify="notempty" data-verify-errormessage="联系人电话为必填项，请检查" /></td>
+                            </tr>
+                            <tr>
+                                <td colspan="1">邮箱</td>
+                                <td colspan="1"><input type="text" name="Email" /></td>
+                            </tr>
+                        </table>
+                    </form>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="btnTrainingInstitution_TrainingInstitutionInfoConfirm" class="btn btn-info btn-sm">确定</button>
+                <button class="btn btn-sm" data-dismiss="modal">关闭</button>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<div class="modal fade" id="mdlTrainingInstitution_Checked">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">
+                    <span>&times;</span>
+                </button>
+                <h4 class="modal-title">建设工程质量检测机构情况一览表</h4>
+            </div>
+            <div class="modal-body">
+                <div id="divTrainingInstitution_Checked" class="form-horizontal">
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">审核意见</label>
+                        <div class="col-sm-10">
+                            <textarea id="txtTrainingInstitution_CheckedRemark"></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="btnTrainingInstitution_CheckedPassed" class="btn btn-info btn-sm">通过</button>
+                <button id="btnTrainingInstitution_CheckedRejected" class="btn btn-danger btn-sm">不通过</button>
+                <button class="btn btn-sm" data-dismiss="modal">关闭</button>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<div class="modal fade" id="mdlTrainingInstitution_FileUpload">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">
+                    <span>&times;</span>
+                </button>
+                <h4 class="modal-title">建设工程质量检测机构附件列表</h4>
+            </div>
+            <div class="modal-body">
+                <div id="divTrainingInstitution_FileUpload"></div>
+            </div>
+            <div class="modal-footer">
+                <input type="file" id="fileTrainingInstitution_FileUpload" class="hidden">
+                <button id="btnTrainingInstitution_FileSelect" class="btn btn-info btn-sm">上传</button>
+                <button class="btn btn-sm" data-dismiss="modal">关闭</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="~/Public/datetimepicker/js/bootstrap-datetimepicker.js"></script>
+<script src="~/Public/datetimepicker/js/bootstrap-datetimepicker.zh-CN.js"></script>
+<script src="~/Public/content/TrainingInstitution/js/TrainingInstitution.js?v=@DateTime.Now.ToString("yyyyMMddHHmmss")"></script>

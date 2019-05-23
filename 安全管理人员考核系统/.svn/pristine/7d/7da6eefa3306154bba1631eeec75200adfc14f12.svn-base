@@ -1,0 +1,336 @@
+﻿using DAL;
+using Model;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using Library.baseFn;
+using EntityFramework.Extensions;
+
+namespace BLL
+{
+    public class RP_WorkFlowCtrl : IRP_WorkFlowCtrl
+    {
+        private Uow uow;
+        private Sys_Account loginAccount;
+
+        public RP_WorkFlowCtrl(Sys_Account account)
+        {
+            if (uow == null)
+            {
+                uow = new Uow();
+            }
+            this.loginAccount = account;
+        }
+
+        #region 报名
+        public void RegisterRPEmployee(Biz_RP_EmployeeRegistration rp_employeeRegistration)
+        {
+            IRP_EmployeeCtrl rpEmployeeCtrl = new RP_EmployeeCtrl(this.loginAccount);
+            rpEmployeeCtrl.VerifyRPEmployeeRegistration(rp_employeeRegistration);
+            uow.Biz_RP_EmployeeRegistration.Add(rp_employeeRegistration);
+            uow.Commit();
+        }
+        #endregion
+
+        #region 报名提交
+        public void SubmitRPEmployeeRegistrationRecord(List<int> RPEmployeeIdList)
+        {
+            int employeeSummitCount = uow.Biz_RP_EmployeeRegistration.GetAll().Where(p => RPEmployeeIdList.Contains(p.Id) && p.SubmitStatus == true).Count();
+            if (employeeSummitCount > 0)
+            {
+                throw new Exception("不能重复提交！");
+            }
+            foreach (int employeeId in RPEmployeeIdList)
+            {
+                Biz_RP_EmployeeRegistration employee = uow.Biz_RP_EmployeeRegistration.GetById(employeeId);
+                CreateRPEmployeeAccount(employee);
+                employee.SubmitStatus = true;
+                employee.SummitDate = DateTime.Now;
+                employee.SummitById = this.loginAccount.Id;
+                uow.Biz_RP_EmployeeRegistration.Update(employee);
+            }
+            uow.Commit();
+        }
+        private void CreateRPEmployeeAccount(Biz_RP_EmployeeRegistration rp_employee)
+        {
+            IAccountCtrl accountCtrl = new AccountCtrl(this.loginAccount);
+
+            Sys_Account account = accountCtrl.GetAccountByAccountName(rp_employee.IDNumber.Trim());
+            if (account.IsNull())//如果没有账户 新增账户
+            {
+                string defaultPassword = AppFn.GetAppSettingsValue("DefaultPassword");
+                account = new Sys_Account()
+                {
+                    AccountName = rp_employee.IDNumber.Trim(),
+                    Password = defaultPassword,
+                    RP_UserId = rp_employee.Id
+                };
+                accountCtrl.AddAccount(account);
+            }
+            //检查是否分配到继续教育角色
+            Sys_Role rp_employeeRole = uow.Sys_Role.GetAll().Where(p => p.RoleType == AccountCtrl.RoleType.RP_Employee).FirstOrDefault();
+            if (rp_employeeRole.IsNull())
+            {
+                throw new Exception("继续教育角色未配置");
+            }
+            Sys_RelAccountRole relAccountRole = uow.Sys_RelAccountRole.GetAll().Where(p => p.AccountId == account.Id && p.RoleId == rp_employeeRole.Id).FirstOrDefault();
+            if (relAccountRole.IsNull())//没有分配到继续教育角色就分配到继续教育
+            {
+                Sys_RelAccountRole newRelAccountRole = new Sys_RelAccountRole()
+                {
+                    AccountId = account.Id,
+                    RoleId = rp_employeeRole.Id
+                };
+                uow.Sys_RelAccountRole.Add(newRelAccountRole);
+            }
+            uow.Commit();
+        }
+        #endregion
+
+        #region 审核人员资料
+        public void CheckEmployeeData(bool inValidityDate, bool annualSafetyTraining, bool notBadBehavior, bool trainingWith24Hours, bool delayConditions, bool passStatus, string checkedMark, List<int> rpEmployeeList)
+        {
+            //验证是否存在审核过的人
+            int existsCheckCnt = uow.Biz_RP_EmployeeDataCheckedRecord.GetAll().Where(p => rpEmployeeList.Contains(p.EmployeeId)).Count();
+            if (existsCheckCnt > 0)
+            {
+                throw new Exception("存在已经审核过的人员");
+            }
+            //审核
+            foreach (int rpEmployeeId in rpEmployeeList)
+            {
+                Biz_RP_EmployeeRegistration reEmployee = uow.Biz_RP_EmployeeRegistration.GetById(rpEmployeeId);
+                reEmployee.OperationStatus = true;
+                uow.Biz_RP_EmployeeRegistration.Update(reEmployee);
+                Biz_RP_EmployeeDataCheckedRecord newDataCheckedRecord = new Biz_RP_EmployeeDataCheckedRecord()
+                {
+                    EmployeeId=rpEmployeeId,
+                    InValidityDate=inValidityDate,
+                    AnnualSafetyTraining=annualSafetyTraining,
+                    NotBadBehavior=notBadBehavior,
+                    TrainingWith24Hours=trainingWith24Hours,
+                    DelayConditions=delayConditions,
+                    PassStatus=passStatus,
+                    OperationStatus=false,
+                    CreateDate=DateTime.Now,
+                    CreateById=loginAccount.Id,
+                    CheckedMark=checkedMark
+                };
+                uow.Biz_RP_EmployeeDataCheckedRecord.Add(newDataCheckedRecord);
+            }
+            uow.Commit();
+        }
+        #endregion
+
+        #region 换证审核
+        public void CheckRPEmployee(List<int> RPEmployeeIdList, bool checkPass, string checkedMark)
+        {
+            int existsCheckedCount = uow.Biz_RP_EmployeeCheckedRecord.GetAll().Where(p => RPEmployeeIdList.Contains(p.EmployeeId)).Count();
+            if (existsCheckedCount > 0)
+            {
+                throw new Exception("存在已经审核的人员");
+            }
+            List<Biz_RP_EmployeeRegistration> rpEmployeeList = uow.Biz_RP_EmployeeRegistration.GetAll().Where(p => RPEmployeeIdList.Contains(p.Id)).ToList();
+
+            foreach (Biz_RP_EmployeeRegistration rpEmployee in rpEmployeeList)
+            {
+                //流程推进
+                {
+                    //将报名记录的操作状态改为 已操作
+                    rpEmployee.OperationStatus = true;
+                    uow.Biz_RP_EmployeeRegistration.Update(rpEmployee);
+                    Biz_RP_EmployeeCheckedRecord rpEmployeeCheckedRecord = new Biz_RP_EmployeeCheckedRecord()
+                    {
+                        EmployeeId = rpEmployee.Id,
+                        PassStatus = checkPass,
+                        OperationStatus = false,
+                        CreateDate = DateTime.Now,
+                        CreateById = this.loginAccount.Id,
+                        CheckedMark = checkedMark
+                    };
+                    uow.Biz_RP_EmployeeCheckedRecord.Add(rpEmployeeCheckedRecord);
+                    uow.Commit();
+                    if (checkPass == false)
+                    {
+                        continue;
+                    }
+                }
+                //发证
+                {
+                    //查找证书表 有效证书
+                    int existsCertificateCnt = uow.Biz_Certificate.GetAll().Where(p => p.CertificateNo == rpEmployee.OldCertificateNo && p.Invalid == false).Count();
+                    if (existsCertificateCnt > 0)//若找到证书 将证书修改成无效
+                    {
+                        uow.Biz_Certificate.GetAll().Where(p => p.CertificateNo == rpEmployee.OldCertificateNo && p.Invalid == false).Update(p => new Biz_Certificate() { Invalid = true });
+                    }
+                    List<int> enterpriseIdList = rpEmployeeList.Select(p => p.EnterpriseId).ToList();
+                    List<Biz_Enterprise> enterpriseList = uow.Biz_Enterprise.GetAll().Where(p => enterpriseIdList.Contains(p.Id)).ToList();
+                    Biz_Certificate certificate = new Biz_Certificate()
+                    {
+                        EmployeeName = rpEmployee.EmployeeName,
+                        Sex = rpEmployee.Sex,
+                        Birthday = rpEmployee.Birthday.ConvertToDateString(),
+                        IDNumber = rpEmployee.IDNumber,
+                        EnterpriseName = enterpriseList.Where(p => p.Id == rpEmployee.EnterpriseId).Single().EnterpriseName,
+                        Job = rpEmployee.Job,
+                        Title4Technical = rpEmployee.Title4Technical,
+                        CertificateNo = rpEmployee.OldCertificateNo,
+                        ExamType = rpEmployee.ExamType,
+                        Industry = rpEmployee.Industry,
+                        StartCertificateDate = DateTime.Now,
+                        EndCertificateDate = DateTime.Now.AddMonths(3 * 12),
+                        Invalid = false
+                    };
+                    ICertificateCtrl certificateManagementCtrl = new CertificateCtrl(this.loginAccount);
+                    certificateManagementCtrl.AddCertificate(certificate);
+                    Biz_RelRPEmployeeCertificate relRPEmployeeCertificate = new Biz_RelRPEmployeeCertificate()
+                    {
+                        RPEmployeeId = rpEmployee.Id,
+                        CertificateId = certificate.Id
+                    };
+                    uow.Biz_RelRPEmployeeCertificate.Add(relRPEmployeeCertificate);
+                    uow.Commit();
+                }
+            }
+        }
+        #endregion
+
+
+        #region 获取人员对应的流程状态
+        //IQueryable<Biz_RP_EmployeeRegistration> GetRP_EmployeeRegistrationByWorkFlowStatusTag(string workFlowStatusTag)
+        //{
+        //    IQueryable<Biz_RP_EmployeeRegistration> rpEmployeeRegistrationQueryable = uow.Biz_RP_EmployeeRegistration.GetAll();
+        //}
+        public WorkFlowStatus GetCurrentWorkFlowStatus(int employeeId)
+        {
+            WorkFlowStatus workFlowStatus = new WorkFlowStatus();
+            //资料审核
+            Biz_RP_EmployeeCheckedRecord employeeCheckedRecord = uow.Biz_RP_EmployeeCheckedRecord.GetAll().Where(p => p.EmployeeId == employeeId).FirstOrDefault();
+            if (!employeeCheckedRecord.IsNull())
+            {
+                if (employeeCheckedRecord.PassStatus)
+                {
+                    workFlowStatus.WorkFlowStatusTag = WorkFlowStatusTag.CheckPassed;
+                }
+                else
+                {
+                    workFlowStatus.WorkFlowStatusTag = WorkFlowStatusTag.CheckUnpassed;
+                }
+                workFlowStatus.CreateDate = employeeCheckedRecord.CreateDate;
+                workFlowStatus.CreateById = employeeCheckedRecord.CreateById;
+                workFlowStatus.Sequence = 5;
+                return workFlowStatus;
+            }
+            //报名
+            Biz_RP_EmployeeRegistration employee = uow.Biz_RP_EmployeeRegistration.GetAll().Where(p => p.Id == employeeId).FirstOrDefault();
+            if (!employee.IsNull())
+            {
+                if (employee.SubmitStatus)
+                {
+                    workFlowStatus.WorkFlowStatusTag = WorkFlowStatusTag.RegisterSummit;
+                    workFlowStatus.CreateDate = employee.SummitDate.ConvertToDateTime();
+                    workFlowStatus.CreateById = employee.SummitById.ConvertToInt();
+                    workFlowStatus.Sequence = 2;
+                }
+                else
+                {
+                    workFlowStatus.WorkFlowStatusTag = WorkFlowStatusTag.RegisterDraft;
+                    workFlowStatus.CreateDate = employee.CreateDate;
+                    workFlowStatus.CreateById = employee.CreateById;
+                    workFlowStatus.Sequence = 1;
+                }
+
+                return workFlowStatus;
+            }
+            throw new Exception("异常的继续教育人员考核流程状态。");
+        }
+
+        public List<WorkFlowStatus> GetCurrentWorkFlowStatusByEmployeeIdList(List<int> employeeIdList)
+        {
+            List<WorkFlowStatus> WorkFlowStatusListResult = new List<WorkFlowStatus>();
+            //审核
+            {
+                List<Biz_RP_EmployeeCheckedRecord> rpEmployeeCheckedRecordList = uow.Biz_RP_EmployeeCheckedRecord.GetAll().Where(p => employeeIdList.Contains(p.EmployeeId)).ToList();
+                if (rpEmployeeCheckedRecordList.Count() > 0)
+                {
+
+                    List<WorkFlowStatus> WorkFlowStatusList = rpEmployeeCheckedRecordList.Select(p => new WorkFlowStatus()
+                    {
+                        RPEmployeeId = p.EmployeeId,
+                        WorkFlowStatusTag = p.PassStatus ? WorkFlowStatusTag.CheckPassed : WorkFlowStatusTag.CheckUnpassed,
+                        CreateDate = p.CreateDate,
+                        CreateById = p.CreateById,
+                        Sequence = 5
+                    }).ToList();
+                    WorkFlowStatusListResult.AddRange(WorkFlowStatusList);
+                    employeeIdList.RemoveAll(p => WorkFlowStatusList.Select(q => q.RPEmployeeId).Contains(p));
+                }
+            }
+            //资料审核
+            {
+                List<Biz_RP_EmployeeDataCheckedRecord> rpEmployeeDataCheckedRecordList = uow.Biz_RP_EmployeeDataCheckedRecord.GetAll().Where(p => employeeIdList.Contains(p.EmployeeId)).ToList();
+                if (rpEmployeeDataCheckedRecordList.Count() > 0)
+                {
+
+                    List<WorkFlowStatus> WorkFlowStatusList = rpEmployeeDataCheckedRecordList.Select(p => new WorkFlowStatus()
+                    {
+                        RPEmployeeId = p.EmployeeId,
+                        WorkFlowStatusTag = p.PassStatus ? WorkFlowStatusTag.DataCheckPassed : WorkFlowStatusTag.DataCheckUnpassed,
+                        CreateDate = p.CreateDate,
+                        CreateById = p.CreateById,
+                        Sequence = 5
+                    }).ToList();
+                    WorkFlowStatusListResult.AddRange(WorkFlowStatusList);
+                    employeeIdList.RemoveAll(p => WorkFlowStatusList.Select(q => q.RPEmployeeId).Contains(p));
+                }
+            }
+            //报名
+            {
+                List<Biz_RP_EmployeeRegistration> employeeList = uow.Biz_RP_EmployeeRegistration.GetAll().Where(p => employeeIdList.Contains(p.Id)).ToList();
+                if (employeeList.Count() > 0)
+                {
+
+                    List<WorkFlowStatus> WorkFlowStatusList = employeeList.Select(p => new WorkFlowStatus()
+                    {
+                        RPEmployeeId = p.Id,
+                        WorkFlowStatusTag = p.SubmitStatus ? WorkFlowStatusTag.RegisterSummit : WorkFlowStatusTag.RegisterDraft,
+                        CreateDate = p.SubmitStatus ? p.SummitDate.ConvertToDateTime() : p.CreateDate,
+                        CreateById = p.SubmitStatus ? p.SummitById.ConvertToInt() : p.CreateById,
+                        Sequence = p.SubmitStatus ? 2 : 1,
+                    }).ToList();
+                    WorkFlowStatusListResult.AddRange(WorkFlowStatusList);
+                    employeeIdList.RemoveAll(p => WorkFlowStatusList.Select(q => q.RPEmployeeId).Contains(p));
+
+                }
+            }
+            if (employeeIdList.Count() > 0)
+            {
+                throw new Exception("异常的继续教育人员考核流程状态");
+            }
+            return WorkFlowStatusListResult;
+
+        }
+        #endregion
+
+        public static class WorkFlowStatusTag
+        {
+            public static string RegisterDraft { get { return "报名未提交"; } }
+            public static string RegisterSummit { get { return "报名已提交"; } }
+            public static string DataCheckUnpassed { get { return "资料审核未通过"; } }
+            public static string DataCheckPassed { get { return "资料审核通过"; } }
+            public static string CheckUnpassed { get { return "审核未通过"; } }
+            public static string CheckPassed { get { return "审核通过"; } }
+        }
+
+        public class WorkFlowStatus
+        {
+            public int RPEmployeeId { get; set; }
+            public string WorkFlowStatusTag { get; set; }
+            public int Sequence { get; set; }
+            public DateTime CreateDate { get; set; }
+            public int CreateById { get; set; }
+
+        }
+    }
+}

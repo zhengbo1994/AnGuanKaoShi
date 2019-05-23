@@ -1,0 +1,188 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+using System.Web.Mvc;
+
+using Model;
+using BLL;
+using Library.baseFn;
+using System.IO;
+using System.Transactions;
+
+namespace SafetyProfessionalAssessmentSystem.Controllers
+{
+    [AuthorizeFilter]
+    public class CertificateDelayApproveController : BaseController
+    {
+        //
+        // GET: /证书延期批准/
+
+        public ActionResult Index()
+        {
+            return View();
+        }
+
+        #region 根据查询条件获取jqgrid人员信息
+        public class GetCertificateListForJqgridParam
+        {
+            public string employeeName { get; set; }
+            public string iDNumber { get; set; }
+            public string enterpriseName { get; set; }
+            public string certificateNo { get; set; }
+            public string dataCheckStatus { get; set; }
+            public string approveStatus { get; set; }
+            public int page { get; set; }
+            public int rows { get; set; }
+            public string sidx { get; set; }//排序字段名称
+            public string sord { get; set; }//排序方式asc desc
+        }
+        public JsonResult GetCertificateListForJqgrid(GetCertificateListForJqgridParam param)
+        {
+            int totalCount = 0;
+            Sys_Account account = LoginAccount as Sys_Account;
+            List<string> cityList = base.LoginDataPermissionDetailList.Select(p => p.DetailName).ToList();
+            ICertificateCtrl certificateCtrl = new CertificateCtrl(account);
+            IAccountCtrl accountCtrl = new AccountCtrl(account);
+            List<Biz_Certificate> certificateIdList = certificateCtrl.GetCertificateListForDelayApprove(param.employeeName, param.iDNumber, param.enterpriseName, param.certificateNo, param.dataCheckStatus, param.approveStatus, param.page, param.rows, ref totalCount, cityList);
+            List<Biz_CertificateDelayDataCheckedRecord> certificateDelayDataCheckedRecordList = certificateCtrl.GetCertificateDelayDataCheckedRecordList(certificateIdList.Select(p => p.Id).ToList());
+            List<Biz_CertificateDelayConfirmRecord> certificateDelayConfirmRecordList = certificateCtrl.GetCertificateDelayConfirmRecordListByCertificateIdList(certificateIdList.Select(p => p.Id).ToList());
+
+            List<GetCertificateListForJqgridResult> resultList = certificateIdList
+                .GroupJoin(certificateDelayDataCheckedRecordList, a => a.Id, b => b.CertificateId, (a, b) => new { a, b = b.FirstOrDefault() })
+                .GroupJoin(certificateDelayConfirmRecordList, o => o.a.Id, c => c.CertificateId, (o, c) => new { o.a, o.b, c = c.FirstOrDefault() })
+                .Select(o => new GetCertificateListForJqgridResult()
+                {
+                    certificateId = o.a.Id,
+                    employeeName = o.a.EmployeeName,
+                    sex = o.a.Sex,
+                    iDNumber = o.a.IDNumber,
+                    enterpriseName = o.a.EnterpriseName,
+                    certificateNo = o.a.CertificateNo,
+                    certificateEndDate = o.a.EndCertificateDate.ConvertToDateString(),
+                    examType = o.a.ExamType,
+                    certificateStartDate = o.a.StartCertificateDate.ConvertToDateString(),
+                    dataCheckStatus = o.b.IsNull() ? "未审核" : (o.b.PassStatus ? "通过" : "不通过"),
+                    approveStatus = o.c.IsNull() ? (o.b.IsNull() ? "" : "未确认") : (o.c.PassStatus ? "同意" : "不同意"),
+                    approveUserName = o.c.IsNull() ? "" : accountCtrl.GetUserName(o.c.CreateById),
+                    approveDate = o.c.IsNull() ? "" : o.c.CreateDate.ConvertToDateString()
+                }).ToList();
+
+            JqGridData dataResult = ConvertIListToJqGridData(param.page, param.rows, totalCount, resultList);
+            return Json(dataResult, JsonRequestBehavior.AllowGet);
+        }
+
+
+
+        public class GetCertificateListForJqgridResult
+        {
+            public int certificateId { get; set; }
+            public string employeeName { get; set; }
+            public string sex { get; set; }
+            public string iDNumber { get; set; }
+            public string enterpriseName { get; set; }
+            public string certificateNo { get; set; }
+            public string examType { get; set; }
+            public string certificateStartDate { get; set; }
+            public string certificateEndDate { get; set; }
+            public string dataCheckStatus { get; set; }
+            public string approveStatus { get; set; }
+            public string approveUserName { get; set; }
+            public string approveDate { get; set; }
+        }
+        #endregion
+
+        #region 审核人员
+        public class CheckListParam
+        {
+            public List<int> certificateIdList { get; set; }
+            public bool passFlag { get; set; }
+            public string checkedMark { get; set; }
+        }
+        public JsonResult CheckList(string strData)
+        {
+            ResultMessage resultMessage = new ResultMessage();
+            TransactionScope scope = base.CreateTransaction();
+            try
+            {
+                CheckListParam param = strData.JSONStringToObj<CheckListParam>();
+                Sys_Account account = base.LoginAccount as Sys_Account;
+                ICertificateDelay_WorkFlowCtrl certificateDelayWorkFlowCtrl = new CertificateDelay_WorkFlowCtrl(account);
+                certificateDelayWorkFlowCtrl.CertificateDelayConfirm(param.certificateIdList, param.passFlag, param.checkedMark);
+                resultMessage.IsSuccess = true;
+                base.TransactionCommit(scope);
+            }
+            catch (Exception ex)
+            {
+                base.TransactionRollback(scope);
+                resultMessage.IsSuccess = false;
+                resultMessage.ErrorMessage = ex.Message;
+            }
+            return Json(resultMessage);
+        }
+        #endregion
+
+        public JsonResult GetCertificateDelayData(int certificateId)
+        {
+            try
+            {
+                Sys_Account account = base.LoginAccount as Sys_Account;
+                ICertificateCtrl certificateCtrl = new CertificateCtrl(account);
+                Biz_Certificate certificate = certificateCtrl.GetCertificateById(certificateId);
+                Biz_CertificateDelayDataCheckedRecord certificateDelayDataCheckedRecord = certificateCtrl.GetCertificateDelayDataCheckedRecordList(new List<int>() { certificateId }).SingleOrDefault();
+                GetCertificateDelayDataResult result = new GetCertificateDelayDataResult()
+                {
+                    certificateNo = certificate.CertificateNo,
+                    employeeName = certificate.EmployeeName,
+                    sex = certificate.Sex,
+                    iDNumber = certificate.IDNumber,
+                    birthday = certificate.Birthday,
+                    enterpriseName = certificate.EnterpriseName,
+                    job = certificate.Job,
+                    title4Technical = certificate.Title4Technical,
+                    examType = certificate.ExamType,
+                    industry = certificate.Industry,
+                    certificateStartDate = certificate.StartCertificateDate.ConvertToDateString(),
+                    certificateEndDate = certificate.EndCertificateDate.ConvertToDateString()
+                };
+                if (!certificateDelayDataCheckedRecord.IsNull())
+                {
+                    result.inValidityDate = certificateDelayDataCheckedRecord.InValidityDate;
+                    result.annualSafetyTraining = certificateDelayDataCheckedRecord.AnnualSafetyTraining;
+                    result.notBadBehavior = certificateDelayDataCheckedRecord.NotBadBehavior;
+                    result.trainingWith24Hours = certificateDelayDataCheckedRecord.TrainingWith24Hours;
+                    result.delayConditions = certificateDelayDataCheckedRecord.DelayConditions;
+                    result.checkedMark = certificateDelayDataCheckedRecord.CheckedMark;
+                }
+                return Json(result);
+            }
+            catch (Exception ex)
+            {
+                ResultMessage resultMsg = new ResultMessage() { IsSuccess = false, ErrorMessage = ex.Message };
+                return Json(resultMsg);
+            }
+        }
+        public class GetCertificateDelayDataResult
+        {
+            public int employeeDataCheckedRecordId { get; set; }
+            public string certificateNo { get; set; }
+            public string employeeName { get; set; }
+            public string sex { get; set; }
+            public string iDNumber { get; set; }
+            public string birthday { get; set; }
+            public string enterpriseName { get; set; }
+            public string job { get; set; }
+            public string title4Technical { get; set; }
+            public string industry { get; set; }
+            public string examType { get; set; }
+            public string certificateStartDate { get; set; }
+            public string certificateEndDate { get; set; }
+            public bool? inValidityDate { get; set; }
+            public bool? annualSafetyTraining { get; set; }
+            public bool? notBadBehavior { get; set; }
+            public bool? trainingWith24Hours { get; set; }
+            public bool? delayConditions { get; set; }
+            public string checkedMark { get; set; }
+        }
+    }
+}

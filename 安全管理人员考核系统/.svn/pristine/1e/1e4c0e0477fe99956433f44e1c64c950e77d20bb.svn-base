@@ -1,0 +1,81 @@
+﻿
+$(function () {
+    var controllerName = "DelayReCord";
+    var $gridCertificate = $("#gridDelayReCord_main");
+
+    var enum_EditTypes = {
+        insert: 0,
+        update: 1,
+        view: 2
+    }
+
+    var currentEdittype = enum_EditTypes.insert;
+
+    var getSelectedRowDataOfGrid = function (rowid) {
+        var selRowId = "";
+        if (!rowid) {
+            $gridCertificate.jqGrid("getGridParam", "selrow");
+        }
+        selRowId = rowid;
+        var rowData = {};
+        if (selRowId && null != selRowId) {
+            rowData = $gridCertificate.jqGrid("getRowData", selRowId);
+        }
+        else {
+            abortThread("请选中行！");
+        }
+        return rowData;
+    }
+
+
+    var initCertificateGrid = function () {
+        var queryData = {};
+        queryData = getJson($divQueryArea);
+        $gridCertificate.jqGrid({
+            url: "/" + controllerName + "/GetCertificateListForJqgrid",
+            datatype: "json",
+            multiselect: true,
+            multiboxonly: true,
+            postData: queryData,
+            colNames: ["Id", "certificateId", "姓名", "性别", "年龄", "身份证号", "职务", "技术职称", "行业", "证书类型", "证书编号", "发证日期", "有效期", "当前状态", "状态修改日期"],
+            colModel: [
+                    { name: "employeeId", index: "employeeId", width: 30, hidden: true },
+                    { name: "certificateId", index: "certificateId", width: 30, hidden: true },
+                    { name: "employeeName", index: "employeeName", align: "center", width: 80 },
+                    { name: "sex", index: "sex", align: "center", width: 50 },
+                    { name: "age", index: "age", align: "center", width: 50 },
+                    { name: "iDNumber", index: "iDNumber", align: "center", width: 170 },
+                    { name: "job", index: "Job", align: "center", width: 80 },
+                    { name: "title4Technical", index: "title4Technical", align: "center", width: 80 },
+                    { name: "industry", index: "industry", align: "center", width: 80 },
+                    { name: "examType", index: "examType", align: "center", width: 80 },
+                    { name: "certificateNo", index: "certificateNo", align: "center", width: 150 },
+                    { name: "startCertificateDate", index: "startCertificateDate", align: "center", width: 80 },
+                    { name: "endCertificateDate", index: "endCertificateDate", align: "center", width: 80 },
+                    { name: "currentStatus", index: "submitStatus", align: "center", width: 120 },
+                    { name: "operationDate", index: "operationDate", align: "center", width: 120 }
+            ],
+            autowidth: true,
+            rowNum: 20,
+            altRows: true,
+            pgbuttons: true,
+            viewrecords: true,
+            shrinkToFit: true,
+            pginput: true,
+            rowList: [10, 20, 30, 50, 70, 100],
+            pager: $pagerCertificate,
+            loadComplete: function () {
+                var table = this;
+                updatePagerIcons(table);
+                jqGridAutoWidth();
+                setGridHeight($gridCertificate.selector);
+            }
+        });
+    }
+
+
+    $(document).ready(function () {
+    
+        initCertificateGrid();
+    })
+})

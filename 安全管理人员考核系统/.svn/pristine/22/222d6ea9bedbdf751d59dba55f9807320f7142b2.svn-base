@@ -1,0 +1,19 @@
+﻿<div class="main-container">
+    <div class=" col-xs-12 padding-top-2 ">
+        <div class="col-xs-11">
+            <div style=" background-color:#307ecc" class="alert pull-right width-10 margin-left-2">未开始</div>
+            <div style=" background-color:#ffc657" class="alert pull-right width-10 margin-left-2">正在考试</div>
+            <div style=" background-color:#82af6f" class="alert  pull-right width-10 margin-left-2">已交卷</div>
+        </div>
+
+    </div>
+    <div class="col-xs-12">
+        <div class="row" id="divExamInvigilate_container">
+        </div>
+    </div>
+
+</div>
+@section scripts
+{
+    <script src="~/Public/content/examinvigilate/js/examinvigilate.js?v=@DateTime.Now.ToString("yyyyMMddHHmmss")"></script>
+}

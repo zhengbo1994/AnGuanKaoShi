@@ -1,0 +1,78 @@
+﻿@{
+    Layout = "";
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+    <meta name="robots" content="noindex">
+    <title>安管考试考核培训系统</title>
+    <link href="~/Public/bootstrap/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="~/Public/content/login/css/style.css" rel="stylesheet" />
+    <link href="http://fonts.googleapis.com/css?family=Raleway:500" rel="stylesheet" type="text/css">
+    <script src="~/Public/jquery/js/jquery-1.10.2.min.js"></script>
+    <script src="~/Public/bootstrap/js/bootstrap.min.js"></script>
+    <script src="~/Public/base/jsApp.js"></script>
+    <script src="~/Public/base/jsFn.js"></script>
+    <script src="~/Public/md5/js/md5.js"></script>
+    <script src="~/Public/content/login/js/login.js?v=@DateTime.Now.ToString("ffff")"></script>
+
+</head>
+<body>
+
+
+    <div class="middlePage">
+        <div class="page-header">
+            <h1 class="logo">安管考试考核培训系统 <small>欢迎访问!</small></h1>
+        </div>
+        <div class="panel panel-primary">
+            <div class="panel-heading">
+                <h3 class="panel-title">延期结果公示</h3>
+            </div>
+            <div class="panel-body">
+
+                <div class="row">
+
+                    <div class="col-md-7">
+                    </div>
+                    <div class="col-md-5" style="border-left:1px solid #ccc;height:160px">
+                        <form class="form-horizontal" id="divLogin_AccountInfo">
+                            <fieldset>
+                                <input  name="loginname" type="text" placeholder="请输入账号" class="form-control input-md">
+                                <br />
+                                <input  name="password" type="password" placeholder="请输入密码" class="form-control input-md">
+                                <br />
+                                <a id="btnLogin" name="singlebutton" class="btn btn-primary btn-block">登 录</a>
+
+                            </fieldset>
+                        </form>
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+    </div>
+    <!-- ePass1000(旧加密锁)-->
+    <object id="ePass1"
+            name="ePass1"
+            classid="clsid:E740C5DF-3454-46A7-80EC-364D1ADB6CF0"
+            codebase="~/Public/usefulfile/eps1k_pri_SimpChinese.exe#Version=4,5,13,508"
+            style="left: 0px; top: 0px" height="0" width="0"
+            viewastext></object>
+    <!--HID Token M32(新加密锁)-->
+    <object id="ePass2"
+            name="ePass2"
+            classid="clsid:C7672410-309E-4318-8B34-016EE77D6B58"
+            codebase="~/Public/usefulfile/install.cab#Version=1,0,6,413"
+            border="0"
+            vspace="0"
+            hspace="0"
+            align="TOP"
+            height="0"
+            width="0"
+            style="left: 0px; top: 0px"
+            viewastext></object>
+</body>
+</html>

@@ -1,0 +1,121 @@
+﻿
+'use strict'
+$(function () {
+
+
+    $('#tabExamStatisticalChart_Chart1_Container').highcharts({
+        chart: {
+            type: 'column'
+        },
+        credits: {
+            enabled: false
+        },
+        title: {
+            text: ''
+        },
+        subtitle: {
+            text: ''
+        },
+        xAxis: {
+            categories: [
+                '武汉',
+                '黄石 ',
+                '十堰 ',
+                '荆州',
+                '宜昌',
+                '襄阳',
+                '鄂州',
+                '荆门',
+                '黄冈',
+                '孝感 ',
+                '咸宁',
+                '仙桃',
+                '潜江',
+                '神农架 ',
+                '恩施',
+                '天门',
+                '随州'
+            ],
+            crosshair: true
+        },
+        yAxis: {
+            min: 0,
+            title: {
+                text: 'Rainfall (mm)'
+            }
+        },
+        tooltip: {
+            headerFormat: '<span style="font-size:10px">{point.key}</span><table>',
+            pointFormat: '<tr><td style="color:{series.color};padding:0">{series.name}: </td>' +
+            '<td style="padding:0"><b>{point.y:.0f}</b></td></tr>',
+            footerFormat: '</table>',
+            shared: true,
+            useHTML: true
+        },
+        plotOptions: {
+            column: {
+                pointPadding: 0.2,
+                borderWidth: 0
+            }
+        },
+        series: [{
+            name: '报考人数',
+            data: [300, 200, 523, 623, 652, 32, 156, 256, 256, 145, 523, 152, 348, 384, 564, 186, 156]
+        }, {
+            name: '通过人数',
+            data: [200, 130, 323, 423, 552, 22, 136, 156, 156, 135, 323, 122, 318, 284, 364, 116, 136]
+        }]
+    });
+
+    $('#tabExamStatisticalChart_Chart2_Container').highcharts({
+        chart: {
+            plotBackgroundColor: null,
+            plotBorderWidth: null,
+            marginRight: 120,
+            plotShadow: false
+        },
+        credits: {
+            enabled: false
+        },
+        legend: {
+            align: 'right',
+            verticalAlign: 'top',
+            layout: "vertical",
+            x: 0,
+            y: 100
+        },
+        title: { text: '' },
+        tooltip: { pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>' },
+        plotOptions: {
+            pie: {
+                allowPointSelect: true,
+                cursor: 'pointer',
+                dataLabels: { enabled: false },
+                showInLegend: true
+            }
+        },
+        series: [{
+            type: 'pie', name: '百分比',
+            data: [['A类人员', 45.0], ['B类人员', 26.8], { name: 'C1类人员', y: 12.8, sliced: true, selected: true }, ['C2类人员', 8.5], ['C3类人员', 6.2]]
+        }]
+    });
+
+
+
+    $("#tabExamStatisticalChart_Chart2").on("click", function () {
+
+        setTimeout(function () {
+            $('#tabExamStatisticalChart_Chart2_Container').highcharts().reflow();
+        }, 10)
+
+
+
+    })
+
+
+    //页面加载时运行
+    $(document).ready(function () {
+
+    })
+
+})

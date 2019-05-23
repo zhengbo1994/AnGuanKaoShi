@@ -1,0 +1,78 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using Model;
+
+namespace BLL
+{
+    public interface ICertificateCtrl
+    {
+        #region 证书管理
+        void AddCertificate(Biz_Certificate certificate);
+        void UpdateCertificate(Biz_Certificate certificate);
+        List<Biz_RelEmployeeCertificate> GetRelEmployeeCertificateListByCertificateIdList(List<int> certificateIdList);
+        Biz_RelEmployeeCertificate GetRelEmployeeCertificateByCertificateId(int certificateId);
+        Biz_RelEmployeeCertificate GetRelEmployeeCertificateByEmployeeId(int employeeId);
+        List<Biz_Certificate> GetCertificateList(string employeeName, string idNumber, string certificateNo, string certificateStatus, string enterpriseName, int page, int rows, ref int totalCount,List<string> cityList);
+        Biz_Certificate GetCertificateById(int certificateId);
+        List<Biz_Certificate> GetCertificateByIdList(List<int> certificateIdList);
+        void ChangeCertificateStatus(int certificateId, string remark, string operateType);
+        List<Biz_CertificateOperationRecord> GetCertificateOperationRecordList(int certificateId);
+        #endregion
+        #region 证书信息变更
+        List<Biz_CertificateChangeRecord> GetCertificateChangList(string employeeName, string certificateNo, string certificateChangeStatus, string oldEnterpriseName, int page, int rows, ref int totalCount);
+        //根据证书编号 获取证书信息
+        Biz_Certificate GetCertificateByNo(string certificateNo);
+        //获取证书变更记录信息 
+        Biz_CertificateChangeRecord GetCertificateChangeInfoById(int certificateChangeInfoId);
+        //删除变更记录
+        void DeleteCertificateChangeRecord(int certificateChangeInfoId);
+        //新增证书变更记录
+        void AddCertificateChangeRecord(Biz_CertificateChangeRecord certificateChangeRecord);
+        //更新证书变更记录
+        void UpdateCertificateChangeRecord(Biz_CertificateChangeRecord certificateChangeRecord);
+        //提交变更记录
+        void SubmitCertificateChangeRecord(int certificateChangeInfoId);
+        #endregion
+
+        #region 证书信息变更审核
+        List<Biz_CertificateChangeRecord> GetCertificateChangCheckList(string employeeName, string certificateNo, string certificateChangeStatus, string EnterpriseName, int page, int rows, ref int totalCount, List<string> cityList);
+
+        void CheckedCertificateChangeRecord(int certificateChangeInfoId, string remark, bool passFlag);
+        #endregion
+
+        //证书查询
+        Biz_Certificate CertificateSearch(string examType, string employeeName, string iDNumber);
+
+        #region 获取可延期的证书
+        List<Biz_Certificate> GetCertificateListForDelayApply(string employeeName, string idNumber, string certificateNo, string trainingInstitutionName, string workFlowStatus, int page, int rows, ref int totalCount);
+        #endregion
+
+        #region 获取可延期资料审核的证书
+        List<Biz_Certificate> GetCertificateListForDelayDataCheck(string employeeName, string idNumber, string enterpriseName, bool? photograph, string checkStatus, int page, int rows, ref int totalCount);
+        #endregion
+
+        #region 获取证书延期登记照片
+        List<Biz_CertificateDelayFile> GetCertificateDelayPhotoList(List<int> certificateIdList);
+        #endregion
+
+        #region 获取证书延期资料审核记录
+        List<Biz_CertificateDelayDataCheckedRecord> GetCertificateDelayDataCheckedRecordList(List<int> certificateIdList);
+        #endregion
+
+        void SaveCertificateDelayFile(int certificateId, string fileType, string fileName, string filePath);
+
+        #region 获取证书延期照片
+        Biz_CertificateDelayFile GetCertificateDelayPhoto(int certificateId);
+        #endregion
+
+        #region 获取延期确认的证书
+         List<Biz_Certificate> GetCertificateListForDelayApprove(string employeeName, string idNumber, string enterpriseName, string certificateNo,string dataCheckStatus, string approveStatus, int page, int rows, ref int totalCount, List<string> cityList);
+        #endregion
+
+        List<Biz_CertificateDelayConfirmRecord> GetCertificateDelayConfirmRecordListByCertificateIdList(List<int> certificateIdList);
+    }
+
+
+}

@@ -1,0 +1,14 @@
+D:\项目\安全管理人员考核系统\Uow\bin\Debug\DAL.dll.config
+D:\项目\安全管理人员考核系统\Uow\bin\Debug\DAL.dll
+D:\项目\安全管理人员考核系统\Uow\bin\Debug\DAL.pdb
+D:\项目\安全管理人员考核系统\Uow\bin\Debug\EntityFramework.dll
+D:\项目\安全管理人员考核系统\Uow\bin\Debug\EntityFramework.SqlServer.dll
+D:\项目\安全管理人员考核系统\Uow\bin\Debug\Model.dll
+D:\项目\安全管理人员考核系统\Uow\bin\Debug\Model.pdb
+D:\项目\安全管理人员考核系统\Uow\bin\Debug\EntityFramework.xml
+D:\项目\安全管理人员考核系统\Uow\bin\Debug\EntityFramework.SqlServer.xml
+D:\项目\安全管理人员考核系统\Uow\bin\Debug\zh-Hans\EntityFramework.resources.dll
+D:\项目\安全管理人员考核系统\Uow\bin\Debug\zh-Hans\EntityFramework.SqlServer.resources.dll
+D:\项目\安全管理人员考核系统\Uow\obj\Debug\DAL.csprojResolveAssemblyReference.cache
+D:\项目\安全管理人员考核系统\Uow\obj\Debug\DAL.dll
+D:\项目\安全管理人员考核系统\Uow\obj\Debug\DAL.pdb

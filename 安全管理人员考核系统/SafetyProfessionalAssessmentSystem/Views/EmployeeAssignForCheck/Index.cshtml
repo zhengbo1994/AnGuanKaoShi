@@ -1,0 +1,187 @@
+﻿@{
+    Layout = null;
+}
+
+<link href="~/Public/datetimepicker/css/bootstrap-datetimepicker.css" rel="stylesheet" />
+<link href="~/Public/content/EmployeeAssignForCheck/css/AssignForCheck.css" rel="stylesheet" />
+
+<div class="row">
+    <div class="col-xs-12">
+        <div class="widget-box">
+            <div class="widget-header">
+                <h4 class="widget-title">查询区域</h4>
+
+                <div class="widget-toolbar">
+                    <a href="#" data-action="collapse">
+                        <i class="ace-icon fa fa-chevron-up"></i>
+                    </a>
+                </div>
+                <div class="widget-toolbar">
+                    <a id="btnEmployeeAssignForCheck_Query" href="#">
+                        <i class="ace-icon fa fa-search">查询</i>
+                    </a>
+                </div>
+            </div>
+
+            <div class="widget-body" style="display: block;">
+                <div id="divEmployeeAssignForCheck_QueryArea" class="widget-main form-horizontal ">
+                    <div class="row">
+                        <div class="col-xs-4 ">
+                            <label class="control-label col-xs-4 ">考核点名称</label>
+                            <input class="col-xs-8" type="text" name="InstitutionName">
+                        </div>
+                        <div class="col-xs-4 ">
+                            <label class="control-label col-xs-4 ">姓名</label>
+                            <input class="col-xs-8" type="text" name="EmployeeName">
+                        </div>
+                        <div class="col-xs-4 ">
+                            <label class="control-label col-xs-3 ">企业名称</label>
+                            <input class="col-xs-9" type="text" name="EnterpriseName">
+                        </div>
+                    </div>
+                    <br />
+                    <div class="row">
+                        <div class="col-xs-4 ">
+                            <label class="control-label col-xs-4 ">报考科目</label>
+                            <select id="divEmployeeAssignForCheck_QueryAreaExamType" class="col-xs-8" name="ExamType"></select>
+                        </div>
+                        <div class="col-xs-4 ">
+                            <label class="control-label col-xs-4 ">分配状态</label>
+                            <select class="col-xs-8" name="AssignStatus">
+                                <option value="">全部</option>
+                                <option value="已分配">已分配</option>
+                                <option value="未分配" selected>未分配</option>
+
+                            </select>
+                        </div>
+                        <div class="col-xs-4 ">
+                            <label class="control-label col-xs-3 ">分配日期</label>
+                            <input class="col-xs-4" type="text" name="AssignDateBegin">
+                            <label class="control-label col-xs-1 ">~</label>
+                            <input class="col-xs-4" type="text" name="AssignDateEnd">
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<br />
+
+<div class="row">
+    <div class="col-xs-12">
+        <div class="widget-box">
+            <div class="widget-header">
+                <h4 class="widget-title">报名人员信息</h4>
+                <div class="widget-toolbar">
+                    <a href="#" id="btnEmployeeAssignForCheck_ManualAssign">
+                        <i class="ace-icon fa fa-share">手动分配</i>
+                    </a>
+                </div>
+                <div class="widget-toolbar">
+                    <a href="#" id="btnEmployeeAssignForCheck_AutoAssign">
+                        <i class="ace-icon fa fa-share">自动分配</i>
+                    </a>
+                </div>
+            </div>
+            <table id="gridEmployeeAssignForCheck_main"></table>
+            <div id="pagerEmployeeAssignForCheck_main"></div>
+
+        </div>
+    </div>
+
+</div>
+<div class="modal fade" id="mdlEmployeeAssignForCheck_ManualAssign">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">
+                    <span>&times;</span>
+                </button>
+                <h3 class="modal-title">手动分配</h3>
+            </div>
+            <div class="modal-body">
+                <div id="divEmployeeAssignForCheck_ManualAssign" class="form-horizontal">
+                    <table class="table table-bordered text-center table">
+                        <tr>
+                            <td colspan="1">考核点<span class="text-danger"> ❉ </span></td>
+                            <td colspan="3"><select id="divEmployeeAssignForCheck_ManualAssignTrainingInstitution" name="TrainingInstitutionId" data-verify="notempty" data-verify-errormessage="考核点为必填项，请检查"></select></td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="btnEmployeeAssignForCheck_ManualAssignConfirm" class="btn btn-info btn-sm">确定</button>
+                <button class="btn btn-sm" data-dismiss="modal">关闭</button>
+            </div>
+        </div>
+    </div>
+
+</div>
+<div class="modal fade" id="mdlEmployeeAssignForCheck_AutoAssign">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">
+                    <span>&times;</span>
+                </button>
+                <h3 class="modal-title">自动分配</h3>
+            </div>
+            <div class="modal-body">
+                <div id="divEmployeeAssignForCheck_AutoAssign" class="form-horizontal">
+                    <table class="table table-bordered text-center table">
+                        <tr>
+                            <td colspan="1">考核点<span class="text-danger"> ❉ </span></td>
+                            <td colspan="3"><select id="divEmployeeAssignForCheck_AutoAssignTrainingInstitution" name="TrainingInstitutionId" data-verify="notempty" data-verify-errormessage="考核点为必填项，请检查"></select></td>
+                        </tr>
+                        <tr>
+                            <td colspan="1">分配人数</td>
+                            <td colspan="3"><input type="text" name="PersonCount" data-verify="notempty" data-verify-errormessage="分配人数为必填项，请检查" /></td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="btnEmployeeAssignForCheck_AutoAssignConfirm" class="btn btn-info btn-sm">确定</button>
+                <button class="btn btn-sm" data-dismiss="modal">关闭</button>
+            </div>
+        </div>
+    </div>
+
+</div>
+<div class="modal fade" id="mdlEmployee_Checked">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">
+                    <span>&times;</span>
+                </button>
+                <h4 class="modal-title">报名人员提交确认</h4>
+            </div>
+            <div class="modal-body">
+                <div id="divEmployee_Checked" class="form-horizontal">
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">备注</label>
+                        <div class="col-sm-10">
+                            <textarea id="txtEmployee_SubmitRemark"></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="btnEmployee_SubmitOk" class="btn btn-info btn-sm">提交</button>
+                <button id="btnEmployee_SubmitCancle" class="btn btn-danger btn-sm">取消</button>
+                <button class="btn btn-sm" data-dismiss="modal">关闭</button>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+
+
+<script src="~/Public/datetimepicker/js/bootstrap-datetimepicker.js"></script>
+<script src="~/Public/datetimepicker/js/bootstrap-datetimepicker.zh-CN.js"></script>
+<script src="~/Public/content/EmployeeAssignForCheck/js/AssignForCheck.js?v=@DateTime.Now.ToString("yyyyMMddHHmmss")"></script>

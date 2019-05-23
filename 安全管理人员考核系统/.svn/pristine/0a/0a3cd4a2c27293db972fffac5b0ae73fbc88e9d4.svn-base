@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<configuration>
+  <startup>
+    <supportedRuntime version="v4.0" sku=".NETFramework,Version=v4.0" />
+  </startup>
+  <connectionStrings>
+    <add name="DefaultConnection" providerName="System.Data.SqlClient" connectionString="Password=whfstKF*#!;Persist Security Info=True;User ID=sa;Initial Catalog=SafetyProfessionalAssessmentSystem;Data Source=139.224.1.9,5656" />
+    <!--<add name="DefaultConnection" providerName="System.Data.SqlClient" connectionString="Password=123;Persist Security Info=True;User ID=test;Initial Catalog=SafetyProfessionalAssessmentSystem;Data Source=192.168.1.201" />-->
+  </connectionStrings>
+  <appSettings>
+    <!--<add key="PhotoUploadUrl" value="http://localhost:27539/PersonalAttachments/SaveEmployeeExamPhoto"/>-->
+    <add key="PhotoUploadUrl" value="http://139.224.1.9:10001/PersonalAttachments/SaveEmployeeExamPhoto" />
+    <add key="ClientSettingsProvider.ServiceUri" value="" />
+  </appSettings>
+  <system.web>
+    <membership defaultProvider="ClientAuthenticationMembershipProvider">
+      <providers>
+        <add name="ClientAuthenticationMembershipProvider" type="System.Web.ClientServices.Providers.ClientFormsAuthenticationMembershipProvider, System.Web.Extensions, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35" serviceUri="" />
+      </providers>
+    </membership>
+    <roleManager defaultProvider="ClientRoleProvider" enabled="true">
+      <providers>
+        <add name="ClientRoleProvider" type="System.Web.ClientServices.Providers.ClientRoleProvider, System.Web.Extensions, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35" serviceUri="" cacheTimeout="86400" />
+      </providers>
+    </roleManager>
+  </system.web>
+</configuration>

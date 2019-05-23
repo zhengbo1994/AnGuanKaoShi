@@ -1,0 +1,69 @@
+﻿@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<link href="~/Public/datetimepicker/css/bootstrap-datetimepicker.css" rel="stylesheet" />
+<div class="row">
+    <div class="col-xs-12">
+        <div class="widget-box">
+            <div class="widget-header">
+                <h4 class="widget-title">查询区域</h4>
+                @*  *@
+                <div class="widget-toolbar">
+                    <a href="#" data-action="collapse">
+                        <i class="ace-icon fa fa-chevron-up"></i>
+                    </a>
+                </div>
+                <div class="widget-toolbar">
+                    <a id="btnPrintAdmissionticket_Query" href="#">
+                        <i class="ace-icon fa fa-search">查询</i>
+                    </a>
+                </div>
+            </div>
+
+            <div class="widget-body" style="display:block;">
+                <div id="divPrintAdmissionticket_QueryArea" class="widget-main form-horizontal">
+                    <div class="row">
+                        <div class="col-xs-4">
+                            <label class="control-label col-xs-5">考试计划流水号：</label>
+                            <select id="divPrintAdmissionticket_QueryAreaSerialNumber" class="col-xs-7" name="TheExaminationProgramSerialNumber"></select>
+                        </div>
+                        <div class="col-xs-4">
+                            <label class="control-label col-xs-5">考核点名称：</label>
+                            <input name="InstitutionName" class="col-xs-7" type="text" />
+                        </div>
+                        <div class="col-xs-4">
+                            <label class="control-label col-xs-5">考试时间：</label>
+                            <input name="ExaminationTime" class="col-xs-7" type="text" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<br />
+
+<div class="row">
+    <div class="col-xs-12">
+        <div class="widget-box">
+            <div class="widget-header">
+                <h4 class="widget-title">考试计划列表</h4>
+                <div class="widget-toolbar">
+                    <a href="#" id="btnPrintAdmissionticket_Print">
+                        <i class="ace-icon fa fa-print">打印准考证</i>
+                    </a>
+                </div>
+            </div>
+
+            <table id="gridPrintAdmissionticket_main"></table>
+            <div id="pagerPrintAdmissionticket_main"></div>
+        </div>
+    </div>
+</div>
+
+<script src="~/Public/datetimepicker/js/bootstrap-datetimepicker.js"></script>
+<script src="~/Public/datetimepicker/js/bootstrap-datetimepicker.zh-CN.js"></script>
+<script src="~/Public/content/PrintAdmissionticket/js/PrintAdmissionticket.js?v=@DateTime.Now.ToString("yyyyMMddHHmmss")"></script>

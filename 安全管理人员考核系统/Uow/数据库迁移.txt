@@ -1,0 +1,4 @@
+Install-Package EntityFramework -ProjectName 'DAL'
+Enable-Migrations -ContextTypeName 'DatabaseContext' -ProjectName 'DAL' -StartUpProjectName 'SafetyProfessionalAssessmentSystem'  -ConnectionStringName 'DefaultConnection' -Force
+Add-Migration -Name "Update"  -ProjectName "DAL" -StartUpProjectName "SafetyProfessionalAssessmentSystem"  -ConnectionStringName 'DefaultConnection'
+Update-Database -ProjectName "DAL" -StartUpProjectName "SafetyProfessionalAssessmentSystem"  -ConnectionStringName 'DefaultConnection'

@@ -1,0 +1,77 @@
+﻿@{
+    Layout = null;
+}
+
+<link href="~/Public/datetimepicker/css/bootstrap-datetimepicker.css" rel="stylesheet" />
+<link href="~/Public/chosen/css/chosen.css" rel="stylesheet" />
+<link href="~/Public/content/certificateprintonline/css/certificateprintonline.css" rel="stylesheet" />
+
+
+<div class="row">
+    <div class="col-xs-12">
+        <div class="widget-box">
+            <div class="widget-header">
+                <h4 class="widget-title">查询区域</h4>
+
+                <div class="widget-toolbar">
+                    <a href="#" data-action="collapse">
+                        <i class="ace-icon fa fa-chevron-up"></i>
+                    </a>
+                </div>
+                <div class="widget-toolbar">
+                    <a id="btnCertificatePrintOnline_Query" href="#">
+                        <i class="ace-icon fa fa-search">查询</i>
+                    </a>
+                </div>
+            </div>
+
+            <div class="widget-body">
+                <div id="divCertificatePrintOnline_QueryArea" class="widget-main form-horizontal ">
+                    <div class="row">
+                        <div class="col-xs-3 ">
+                            <label class="control-label col-xs-4 ">企业名称</label>
+                            <input class="col-xs-8" type="text" name="enterpriseName">
+                        </div>
+                        <div class="col-xs-3 ">
+                            <label class="control-label col-xs-4 ">姓名</label>
+                            <input class="col-xs-8" type="text" name="employeeName">
+                        </div>
+                        <div class="col-xs-3 ">
+                            <label class="control-label col-xs-4 ">身份证号</label>
+                            <input class="col-xs-8" type="text" name="idNumber">
+                        </div>
+                        <div class="col-xs-3 ">
+                            <label class="control-label col-xs-4 ">证书编号</label>
+                            <input class="col-xs-8" type="text" name="certificateNo">
+                        </div>
+                    </div>
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<br />
+
+<div class="row">
+    <div class="col-xs-12">
+        <div class="widget-box">
+            <div class="widget-header">
+                <h4 class="widget-title">证书打印</h4>
+            </div>
+            <table id="gridCertificatePrintOnline_main"></table>
+            <div id="pagerCertificatePrintOnline_main"></div>
+
+        </div>
+    </div>
+
+</div>
+
+
+<script src="~/Public/chosen/js/chosen.jquery.js"></script>
+<script src="~/Public/datetimepicker/js/bootstrap-datetimepicker.js"></script>
+<script src="~/Public/datetimepicker/js/bootstrap-datetimepicker.zh-CN.js"></script>
+<script src="~/Public/jquery-webcam/jquery.webcam.min.js"></script>
+<script src="~/Public/content/certificateprintonline/js/certificateprintonline.js?v=@DateTime.Now.ToString("yyyyMMddHHmmss")"></script>

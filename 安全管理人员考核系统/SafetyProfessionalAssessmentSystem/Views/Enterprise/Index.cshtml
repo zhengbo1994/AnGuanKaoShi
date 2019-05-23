@@ -1,0 +1,147 @@
+﻿@{
+    Layout = null;
+}
+
+<link href="~/Public/datetimepicker/css/bootstrap-datetimepicker.css" rel="stylesheet" />
+<link href="~/Public/content/enterprise/css/enterprise.css" rel="stylesheet" />
+
+<div class="row">
+    <div class="col-xs-12">
+        <div class="widget-box">
+            <div class="widget-header">
+                <h4 class="widget-title">企业基本信息</h4>
+
+                <div class="widget-toolbar">
+                    <a href="#" data-action="collapse">
+                        <i class="ace-icon fa fa-chevron-up"></i>
+                    </a>
+                </div>
+                <div class="widget-toolbar">
+                    <a id="btnEnterprise_Query" href="#">
+                        <i class="ace-icon fa fa-search">查询</i>
+                    </a>
+                </div>
+            </div>
+
+            <div class="widget-body" style="display: block;">
+                <div id="divEnterprise_QueryArea" class="widget-main form-horizontal ">
+                    <div class="row">
+                        <div class="col-xs-3 ">
+                            <label class="control-label col-xs-4 ">企业名称</label>
+                            <input class="col-xs-8" type="text" name="EnterpriseName">
+                        </div>
+                        <div class="col-xs-3 ">
+                            <label class="control-label col-xs-5 ">社会信用代码</label>
+                            <input class="col-xs-7" type="text" name="SocialCreditCode">
+                        </div>
+
+                        <div class="col-xs-3 ">
+                            <label class="control-label col-xs-4 ">城市</label>
+                            <select id="divEnterprise_QueryAreaCity" class="col-xs-8" name="City"></select>
+                        </div>
+                        <div class="col-xs-3 ">
+                            <label class="control-label col-xs-4 ">区域</label>
+                            <select id="divEnterprise_QueryAreaArea" class="col-xs-8" name="Area"></select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<br />
+<!--建筑企业基本信息列表-->
+<div class="row">
+    <div class="col-xs-12">
+        <div class="widget-box">
+            <div class="widget-header">
+                <h4 class="widget-title">建筑企业基本信息</h4>
+                <div class="widget-toolbar hidden">
+                        <a href="#" data-toggle="modal" id="btnEnterprise_Insert">
+                            <i class="ace-icon fa fa-plus">新增</i>
+                        </a>
+                    </div>
+            </div>
+            <table id="gridEnterprise_main"></table>
+            <div id="pagerEnterprise_main"></div>
+        </div>
+    </div>
+
+</div>
+
+<div class="modal fade" id="mdlEnterprise_EnterpriseInfo">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">
+                    <span>&times;</span>
+                </button>
+                <h4 class="modal-title text-center">企业基本信息</h4>
+            </div>
+            <div class="modal-body">
+                <div id="divEnterprise_EnterpriseInfo" class="form-horizontal">
+                    <input type="hidden" name="Id" />
+                    <form>
+                        <table class="table table-bordered text-center table">
+                            <tr>
+                                <td colspan="1">企业名称<span class="text-danger"> ❉ </span></td>
+                                <td colspan="1"><input type="text" name="EnterpriseName" data-verify="notempty" data-verify-errormessage="企业名称为必填项，请检查" /></td>
+                            </tr>
+                            <tr>
+                                <td colspan="1">社会信用代码<span class="text-danger"> ❉ </span></td>
+                                <td colspan="1">
+                                    <input type="text" name="SocialCreditCode" data-verify="notempty" data-verify-errormessage="社会信用代码为必填项，请检查" />
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td colspan="1">法定代表人<span class="text-danger"> ❉ </span></td>
+                                <td colspan="1"><input type="text" name="LegalRepresentative" data-verify="notempty" data-verify-errormessage="法定代表人为必填项，请检查" /></td>
+                            </tr>
+                            <tr>
+                                <td colspan="1">法定代表人电话<span class="text-danger"> ❉ </span></td>
+                                <td colspan="1"><input type="text" name="LegalRepresentativeNumber" data-verify="notempty" data-verify-errormessage="法定代表人电话为必填项，请检查" /></td>
+                            </tr>
+                            <tr>
+                                <td colspan="1">联系人<span class="text-danger"> ❉ </span></td>
+                                <td colspan="1"><input type="text" name="ContactPerson" data-verify="notempty" data-verify-errormessage="联系人为必填项，请检查" /></td>
+                            </tr>
+                            <tr>
+                                <td colspan="1">联系人电话<span class="text-danger"> ❉ </span></td>
+                                <td colspan="1"><input type="text" name="ContactNumber" data-verify="notempty" data-verify-errormessage="联系人电话必填项，请检查" /></td>
+                            </tr>
+                            <tr>
+                                <td colspan="1">城市<span class="text-danger"> ❉ </span></td>
+                                <td colspan="1"><select id="divEnterprise_enterpriseInfoCity"  name="City" data-verify="notempty" data-verify-errormessage="报考城市为必填项，请检查"></select></td>
+                            </tr>
+                            <tr>
+                                <td colspan="1">区域<span class="text-danger"> ❉ </span></td>
+                                <td colspan="1"><select id="divEnterprise_enterpriseArea" name="Area" data-verify="notempty" data-verify-errormessage="区域为必填项，请检查"></select></td>
+                            </tr>
+                            <tr>
+                                <td colspan="1">企业地址<span class="text-danger"> ❉ </span></td>
+                                <td colspan="1"><textarea rows="2" cols="4" name="EnterpriseAddress" data-verify="notempty" data-verify-errormessage="企业地址为必填项，请检查"></textarea>
+                                @*<input type="text" name="EnterpriseAddress"  />*@
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="1">邮箱</td>
+                                <td colspan="1"><input type="text" name="Email" /></td>
+                            </tr>
+                        </table>
+                    </form>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="btnEnterprise_EnterpriseInfoConfirm" class="btn btn-info btn-sm">保存</button>
+                <button class="btn btn-sm" data-dismiss="modal">关闭</button>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<script src="~/Public/datetimepicker/js/bootstrap-datetimepicker.js"></script>
+<script src="~/Public/datetimepicker/js/bootstrap-datetimepicker.zh-CN.js"></script>
+<script src="~/Public/content/enterprise/js/enterprise.js?v=@DateTime.Now.ToString("yyyyMMddHHmmss")"></script>

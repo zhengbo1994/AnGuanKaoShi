@@ -1,0 +1,9 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<root>
+  <CertificateFolderPath>
+    <![CDATA[D:\安全管理人员考核系统\证书]]>
+  </CertificateFolderPath>
+  <CertificatePhotoFolderPath>
+    <![CDATA[D:\安全管理人员考核系统\证书照片]]>
+  </CertificatePhotoFolderPath>
+</root>

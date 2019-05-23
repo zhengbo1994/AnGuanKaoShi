@@ -1,0 +1,120 @@
+﻿@{
+    Layout = null;
+}
+
+<link href="~/Public/datetimepicker/css/bootstrap-datetimepicker.css" rel="stylesheet" />
+<link href="~/Public/content/newsmanage/css/newsmanage.css" rel="stylesheet" />
+<div class="row">
+    <div class="col-xs-12">
+        <div class="widget-box">
+            <div class="widget-header">
+                <h4 class="widget-title">查询区域</h4>
+                <div class="widget-toolbar">
+                    <a href="#" data-action="collapse">
+                        <i class="ace-icon fa fa-chevron-up"></i>
+                    </a>
+                </div>
+                <div class="widget-toolbar">
+                    <a id="btnNewsManage_Query" href="#">
+                        <i class="ace-icon fa fa-search">查询</i>
+                    </a>
+                </div>
+            </div>
+
+            <div class="widget-body" style="display:block;">
+                <div id="divNewsManage_QueryArea" class="widget-main form-horizontal">
+                    <div class="row">
+                        <div class="col-xs-4">
+                            <label class="control-label col-xs-5">新闻标题</label>
+                            <input name="NewsTitle" class="col-xs-7" type="text" />
+                        </div>
+                        <div class="col-xs-4">
+                            <label class="control-label col-xs-5">发布时间（起）</label>
+                            <input name="PublishDate_From" class="col-xs-7 dtpicker" type="text" />
+                        </div>
+                        <div class="col-xs-4">
+                            <label class="control-label col-xs-5">发布时间（止）</label>
+                            <input name="PublishDate_To" class="col-xs-7 dtpicker" type="text" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<br />
+<div class="row">
+    <div class="col-xs-12">
+        <div class="widget-box">
+            <div class="widget-header">
+                <h4 class="widget-title">考试结果列表</h4>
+                <div class="widget-toolbar">
+                    <a href="#" id="btnNewsManage_Delete">
+                        <i class="ace-icon fa fa-remove">删除</i>
+                    </a>
+                </div>
+                <div class="widget-toolbar">
+                    <a href="#" id="btnNewsManage_Update">
+                        <i class="ace-icon fa fa-edit">修改</i>
+                    </a>
+                </div>
+                <div class="widget-toolbar">
+                    <a href="#" id="btnNewsManage_Insert">
+                        <i class="ace-icon fa fa-plus">新增</i>
+                    </a>
+                </div>
+            </div>
+
+            <table id="gridNewsManage_main"></table>
+            <div id="pagerNewsManage_main"></div>
+        </div>
+    </div>
+</div>
+
+<!--新闻录入-->
+<div class="modal" id="mdlNewsManage_DetailInfo">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">
+                    <span>&times;</span>
+                </button>
+                <h3 class="modal-title">新闻录入</h3>
+            </div>
+            <div class="modal-body">
+                <div name="content" class="form-horizontal">
+                    <input type="hidden" name="Id" />
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label no-padding-right" for="NewsTitle">
+                            标题
+                        </label>
+                        <div class="col-sm-9">
+                            <input type="text" id="NewsTitle" name="NewsTitle" placeholder="" class="width-100">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label no-padding-right dtpicker" for="PublishDate">
+                            发布时间
+                        </label>
+                        <div class="col-sm-9">
+                            <input type="text" id="PublishDate" name="PublishDate" placeholder="" class="width-100 dtpicker">
+                        </div>
+                    </div>
+                </div>
+                <div class="wysiwyg-editor" id="divNewsManage_Editor" contenteditable="true"></div>
+            </div>
+            <div class="modal-footer">
+                <button name="save" class="btn btn-info btn-sm">保存</button>
+                <button class="btn btn-sm" data-dismiss="modal">关闭</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="~/Public/datetimepicker/js/bootstrap-datetimepicker.js"></script>
+<script src="~/Public/datetimepicker/js/bootstrap-datetimepicker.zh-CN.js"></script>
+<script src="~/Public/jquery/js/jquery.hotkeys.js"></script>
+<script src="~/Public/bootstrap/js/bootstrap-wysiwyg.js"></script>
+<script src="~/Public/ace/js/ace-elements.js"></script>
+<script src="~/Public/content/newsmanage/js/newsmanage.js?v=@DateTime.Now.ToString("yyyyMMddHHmm")"></script>
+

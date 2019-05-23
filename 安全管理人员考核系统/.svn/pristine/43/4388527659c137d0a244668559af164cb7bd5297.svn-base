@@ -1,0 +1,115 @@
+﻿@{
+    Layout = null;
+}
+<link href="~/Public/content/rp_printCertificate/css/rp_printCertificate.css" rel="stylesheet" />
+
+
+<div class="row">
+    <div class="col-xs-12">
+        <div class="widget-box">
+            <div class="widget-header">
+                <h4 class="widget-title">查询区</h4>
+
+                <div class="widget-toolbar">
+                    <a href="#" data-action="collapse">
+                        <i class="ace-icon fa fa-chevron-up"></i>
+                    </a>
+                </div>
+                <div class="widget-toolbar">
+                    <a id="btnRP_PrintCertificate_Query" href="#">
+                        <i class="ace-icon fa fa-search">查询</i>
+                    </a>
+                </div>
+            </div>
+
+            <div class="widget-body" style="display: block;">
+                <div id="divRP_PrintCertificate_QueryArea" class="widget-main form-horizontal ">
+                    <div class="row">
+                        <div class="col-xs-3 ">
+                            <label class="control-label col-xs-4 ">姓名</label>
+                            <input class="col-xs-8" type="text" name="EmployeeName">
+                        </div>
+                        <div class="col-xs-3 ">
+                            <label class="control-label col-xs-4 ">身份证号</label>
+                            <input class="col-xs-8" type="text" name="IDNumber">
+                        </div>
+                        <div class="col-xs-3 ">
+                            <label class="control-label col-xs-4 ">企业名称</label>
+                            <input class="col-xs-8" type="text" name="EnterpriseName">
+                        </div>
+                        <div class="col-xs-3 ">
+                            <label class="control-label col-xs-4 ">证书类别</label>
+                            <select class="col-xs-8" name="ExamType">
+                                <option value="">全部</option>
+                                <option value="A">A</option>
+                                <option value="B">B</option>
+                                <option value="C1">C1</option>
+                                <option value="C2">C2</option>
+                                <option value="C3">C3</option>
+                            </select>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<br />
+
+<div class="row">
+    <div class="col-xs-12">
+        <div class="widget-box">
+            <div class="widget-header">
+                <div class="widget-toolbar">
+                    <a href="#" id="btnRP_PrintCertificate_Print">
+                        <i class="ace-icon fa fa-print">证书打印</i>
+                    </a>
+                </div>
+            </div>
+            <table id="gridRP_PrintCertificate_main"></table>
+            <div id="pagerRP_PrintCertificate_main"></div>
+
+        </div>
+    </div>
+
+</div>
+
+
+<div class="modal fade" id="mdlRP_PrintCertificate_CertificateInfo">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">证书明细</h4>
+            </div>
+            <div class="modal-body">
+                <div name="divCertificatePrint" style="background-image:url(../../Public/content/PrintCertificate/img/证书打印背景图片.png); background-repeat:no-repeat; width:680px;height:460px; background-color:blue;padding:0px;font-family:'Microsoft YaHei';">
+                    <div name="EmployeeName" style="width:200px;height:25px;margin-top:235px;margin-left:60px; position:absolute;padding:0px;color:black;text-align:center; vertical-align:bottom;"></div>
+                    <div name="Sex" style="width:200px;height:25px;margin-top:275px;margin-left:60px; position:absolute;padding:0px;color:black;text-align:center; vertical-align:bottom;"></div>
+                    <div name="Birthday" style="width:200px;height:25px;margin-top:310px;margin-left:60px; position:absolute;padding:0px;color:black;text-align:center; vertical-align:bottom;"></div>
+                    <div name="IDNumber" style="width:200px;height:25px;margin-top:345px;margin-left:75px; position:absolute;padding:0px;color:black;text-align:center; vertical-align:bottom;"></div>
+                    <div name="EnterpriseName" style="width:180px;height:65px;margin-top:80px;margin-left:410px; position:absolute;padding:0px;color:black;text-align:center; vertical-align:bottom;"></div>
+                    <div name="Job" style="width:180px;height:25px;margin-top:150px;margin-left:410px; position:absolute;padding:0px;color:black;text-align:center; vertical-align:bottom;"></div>
+                    <div name="Title4Technical" style="width:180px;height:25px;margin-top:185px;margin-left:410px; position:absolute;padding:0px;color:black;text-align:center; vertical-align:bottom;"></div>
+                    <div name="CertificateNo" style="width:190px;height:25px;margin-top:220px;margin-left:415px; position:absolute;padding:0px;color:black;text-align:center; vertical-align:bottom;"></div>
+                    <div name="StartCertificateDate_Year" style="width:40px;height:25px;margin-top:350px;margin-left:460px; position:absolute;padding:0px;color:black;text-align:center; vertical-align:bottom;"></div>
+                    <div name="StartCertificateDate_Month" style="width:20px;height:25px;margin-top:350px;margin-left:520px; position:absolute;padding:0px;color:black;text-align:center; vertical-align:bottom;"></div>
+                    <div name="StartCertificateDate_Day" style="width:20px;height:25px;margin-top:350px;margin-left:560px; position:absolute;padding:0px;color:black;text-align:center; vertical-align:bottom;"></div>
+                    @*<img name="img_photo" style="width:120px;height:150px;position:absolute;top:80px;left:100px;" src="">
+                        <img name="img_QrCode" style="width:100px;height:100px;position:absolute;top:250px;left:340px;" src="">
+                    *@
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button name="btnPrintCertificate" class="btn btn-sm btn-info">打印</button>
+                <button class="btn btn-sm" data-dismiss="modal">关闭</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script src="~/Public/jquery.jqprint/js/jquery-browser.js"></script>
+<script src="~/Public/jquery.jqprint/js/jquery.jqprint-0.3.js"></script>
+<script src="~/Public/content/rp_printCertificate/js/rp_printCertificate.js?v=@DateTime.Now.ToString("ffff")"></script>

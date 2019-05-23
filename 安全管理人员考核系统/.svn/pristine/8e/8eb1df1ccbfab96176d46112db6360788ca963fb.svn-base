@@ -1,0 +1,90 @@
+﻿@{
+    Layout = null;
+}
+
+<link href="~/Public/datetimepicker/css/bootstrap-datetimepicker.css" rel="stylesheet" />
+<link href="~/Public/content/examplaninformation/css/examplaninformation.css" rel="stylesheet" />
+
+<div class="row">
+    <div class="col-xs-12">
+        <div class="widget-box">
+            <div class="widget-header">
+                <h4 class="widget-title">查询区域</h4>
+
+                <div class="widget-toolbar">
+                    <a href="#" data-action="collapse">
+                        <i class="ace-icon fa fa-chevron-up"></i>
+                    </a>
+                </div>
+                <div class="widget-toolbar">
+                    <a id="btnExamPlanInformation_Query" href="#">
+                        <i class="ace-icon fa fa-search">查询</i>
+                    </a>
+                </div>
+            </div>
+
+            <div class="widget-body" style="display: block;">
+                <div id="divExamPlanInformation_QueryArea" class="widget-main form-horizontal ">
+                    <div class="row">
+                        <div class="col-xs-4 ">
+                            <label class="control-label col-xs-4 ">考试计划流水号</label>
+                            <input class="col-xs-8" type="text" name="ExamPlanNumber">
+                        </div>
+
+                        <div class="col-xs-4 ">
+                            <label class="control-label col-xs-3 ">考试时间</label>
+                            <input class="col-xs-4" type="text" name="ExamDatetimeBegin">
+                            <label class="control-label col-xs-1 ">~</label>
+                            <input class="col-xs-4" type="text" name="ExamDatetimeEnd">
+                        </div>
+                        <div class="col-xs-4 ">
+                            <label class="control-label col-xs-4 ">考核点名称</label>
+                            <input class="col-xs-8" type="text" name="TrainingInstutionName">
+                        </div>
+                    </div>
+                    <br />
+                    <div class="row">
+                        <div class="col-xs-4 ">
+                            <label class="control-label col-xs-4 ">姓名</label>
+                            <input class="col-xs-8" type="text" name="EmployeeName">
+                        </div>
+
+                        <div class="col-xs-4 ">
+                            <label class="control-label col-xs-3 ">身份证号</label>
+                            <input class="col-xs-9" type="text" name="IDNumber">
+
+                        </div>
+                        <div class="col-xs-4 ">
+                            <label class="control-label col-xs-4 ">状态</label>
+                            <select class="col-xs-8" name="ExamStatus">
+                                <option value="">全部</option>
+                                <option value="未提交">未提交</option>
+                                <option value="待考试">待考试</option>
+                                <option value="正在考试">正在考试</option>
+                                <option value="已结束">已结束</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<br />
+<div class="row">
+    <div class="col-xs-12">
+        <div class="widget-box">
+            <div class="widget-header">
+                <h4 class="widget-title">考试计划列表</h4>
+            </div>
+            <table id="gridExamPlanInformation_main"></table>
+            <div id="pagerExamPlanInformation_main"></div>
+
+        </div>
+    </div>
+
+</div>
+
+<script src="~/Public/datetimepicker/js/bootstrap-datetimepicker.js"></script>
+<script src="~/Public/datetimepicker/js/bootstrap-datetimepicker.zh-CN.js"></script>
+<script src="~/Public/content/examplaninformation/js/examplaninformation.js?v=@DateTime.Now.ToString("yyyyMMddHHmmss")"></script>

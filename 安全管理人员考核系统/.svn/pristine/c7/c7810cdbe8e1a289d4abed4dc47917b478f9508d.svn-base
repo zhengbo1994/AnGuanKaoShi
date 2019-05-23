@@ -1,0 +1,680 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using Library.baseFn;
+using Model;
+using BLL;
+using DAL;
+using EntityFramework.Extensions;
+
+namespace BLL
+{
+    public class CertificateCtrl : ICertificateCtrl
+    {
+        private Sys_Account account;
+        Uow uow = null;
+        public CertificateCtrl(Sys_Account account)
+        {
+            if (uow == null)
+            {
+                uow = new Uow();
+            }
+            this.account = account;
+        }
+        //初次发证
+        public void AddCertificate(Biz_Certificate certificate)
+        {
+            //添加证书表
+            {
+                uow.Biz_Certificate.Add(certificate);
+                uow.Commit();
+            }
+            //添加证书操作记录
+            {
+                Biz_CertificateOperationRecord certificateOperationRecord = new Biz_CertificateOperationRecord()
+                {
+                    CertificateId = certificate.Id,
+                    CertificateNo = certificate.CertificateNo,
+                    OperateType = "初次取证",
+                    Remark = "",
+                    CreateById = account.Id,
+                    CreateDate = DateTime.Now
+                };
+                uow.Biz_CertificateOperationRecord.Add(certificateOperationRecord);
+            }
+            uow.Commit();
+        }
+        //改变证书状态 注销或恢复
+        public void ChangeCertificateStatus(int certificateId, string remark, string operateType)
+        {
+            const string OPERATIONTYPE_DISABLE = "吊销";
+            const string OPERATIONTYPE_ENABLE = "恢复";
+
+            Biz_Certificate certificate = uow.Biz_Certificate.GetById(certificateId);
+
+            if (certificate.EndCertificateDate < DateTime.Now)
+            {
+                throw new Exception("证书已过期，无法进行操作");
+            }
+
+
+            if (operateType == OPERATIONTYPE_DISABLE)
+            {
+                if (certificate.Invalid == true)
+                {
+                    throw new Exception("无效的证书无法吊销");
+                }
+                certificate.Invalid = true;
+            }
+            else if (operateType == OPERATIONTYPE_ENABLE)
+            {
+                if (certificate.Invalid == false)
+                {
+                    throw new Exception("有效的证书无法恢复");
+                }
+                certificate.Invalid = false;
+            }
+            uow.Biz_Certificate.Update(certificate);
+
+
+            Biz_CertificateOperationRecord certificateOperationRecord = new Biz_CertificateOperationRecord()
+            {
+                CertificateId = certificateId,
+                CertificateNo = certificate.CertificateNo,
+                OperateType = operateType,
+                Remark = remark,
+                CreateById = account.Id,
+                CreateDate = DateTime.Now
+            };
+            uow.Biz_CertificateOperationRecord.Add(certificateOperationRecord);
+            ISmrzServiceCtrl smrzServiceCtrl = new SmrzServiceCtrl(this.account);
+
+            string status = "";
+            if (operateType == OPERATIONTYPE_DISABLE)
+            {
+                status = "注销";
+            }
+            if (operateType == OPERATIONTYPE_ENABLE)
+            {
+                status = "正常";
+            }
+            smrzServiceCtrl.ChangeCertificateStatus(certificateId, status);
+            uow.Commit();
+
+        }
+
+        public void CertificateDelay(int certificateId, string photoPath)
+        {
+            //加入新证书
+            Biz_Certificate certificate = uow.Biz_Certificate.GetAll().Where(p => p.Id == certificateId).Single();
+            Biz_Certificate newCertificate = new Biz_Certificate()
+            {
+                EmployeeName = certificate.EmployeeName,
+                Sex = certificate.Sex,
+                Birthday = certificate.Birthday,
+                IDNumber = certificate.IDNumber,
+                EnterpriseName = certificate.EnterpriseName,
+                Job = certificate.Job,
+                Title4Technical = certificate.Title4Technical,
+                CertificateNo = certificate.CertificateNo,
+                ExamType = certificate.ExamType,
+                Industry = certificate.Industry,
+                StartCertificateDate = DateTime.Now,
+                EndCertificateDate = DateTime.Now.AddMonths(3 * 12),
+                PhotoPath = photoPath,
+                Invalid = false
+            };
+            uow.Biz_Certificate.Add(newCertificate);
+            //将原有证书注销
+            certificate.Invalid = false;
+            uow.Biz_Certificate.Update(certificate);
+            uow.Commit();
+            //将证书实名认证表和新的证书建立关系
+            Biz_CertificateAuthentication certificateDelayAuthentication = uow.Biz_CertificateAuthentication.GetAll().Where(p => p.CertificateId == certificate.Id).Single();
+            Biz_RelCertificateAuthentication relCertificateDelayAuthentication = new Biz_RelCertificateAuthentication()
+            {
+                CertificateId = newCertificate.Id,
+                CertificateAuthenticationId = certificateDelayAuthentication.Id,
+                CreateById = this.account.Id,
+                CreateDate = DateTime.Now
+            };
+            uow.Biz_RelCertificateAuthentication.Add(relCertificateDelayAuthentication);
+
+            //添加证书操作记录
+            {
+                Biz_CertificateOperationRecord certificateOperationRecord = new Biz_CertificateOperationRecord()
+                {
+                    CertificateId = newCertificate.Id,
+                    CertificateNo = newCertificate.CertificateNo,
+                    OperateType = "证书延期",
+                    Remark = "",
+                    CreateById = this.account.Id,
+                    CreateDate = DateTime.Now
+                };
+                uow.Biz_CertificateOperationRecord.Add(certificateOperationRecord);
+            }
+            //将新的证书 传到信息中心
+            ISmrzServiceCtrl smrzServiceCtrl = new SmrzServiceCtrl(this.account);
+            smrzServiceCtrl.DelayCertificateAuthentication(newCertificate.Id);
+        }
+
+        public Biz_Certificate GetCertificateById(int certificateId)
+        {
+            return uow.Biz_Certificate.GetById(certificateId);
+        }
+        public List<Biz_Certificate> GetCertificateByIdList(List<int> certificateIdList)
+        {
+            return uow.Biz_Certificate.GetAll().Where(p => certificateIdList.Contains(p.Id)).ToList();
+        }
+
+        public Biz_Certificate GetCertificateByNo(string certificateNo)
+        {
+            return uow.Biz_Certificate.GetAll().Where(p => !p.Invalid).Where(p => p.CertificateNo == certificateNo).OrderByDescending(p => p.Id).FirstOrDefault();
+        }
+
+        public Biz_CertificateChangeRecord GetCertificateChangeInfoById(int certificateChangeInfoId)
+        {
+            return uow.Biz_CertificateChangeRecord.GetById(certificateChangeInfoId);
+        }
+
+        public void UpdateCertificate(Biz_Certificate certificate)
+        {
+            throw new NotImplementedException();
+        }
+
+        public List<Biz_Certificate> GetCertificateList(string employeeName, string idNumber, string certificateNo, string certificateStatus, string enterpriseName, int page, int rows, ref int totalCount, List<string> cityList)
+        {
+            const string CERTIFICATESTATUS_VALID = "有效的";
+            const string CERTIFICATESTATUS_INVALID = "无效的";
+
+            IQueryable<Biz_Certificate> certificateQueryable = uow.Biz_Certificate.GetAll();
+
+            #region 数据权限
+            if (this.account.RoleList.Where(p => p.RoleType == RoleCtrl.RoleType.Admin).Count() > 0)
+            {
+
+            }
+            else if (this.account.RoleList.Where(p => p.RoleType == RoleCtrl.RoleType.Master).Count() > 0)//不看测试市的证书
+            {
+                IQueryable<Biz_Enterprise> enterpriseQueryable = uow.Biz_Enterprise.GetAll().Where(p => p.City == "测试市");
+                certificateQueryable = certificateQueryable.Where(p => !enterpriseQueryable.Select(q => q.EnterpriseName).Contains(p.EnterpriseName));
+            }
+            else if (this.account.RoleList.Where(p => p.RoleType == RoleCtrl.RoleType.Manager).Count() > 0)
+            {
+                IQueryable<Biz_Enterprise> enterpriseQueryable = uow.Biz_Enterprise.GetAll().Where(p => cityList.Contains(p.City));
+                certificateQueryable = certificateQueryable.Where(p => enterpriseQueryable.Select(q => q.EnterpriseName).Contains(p.EnterpriseName));
+            }
+            else
+            {
+                certificateQueryable = certificateQueryable.Where(p => 1 == 2);
+            }
+            #endregion
+
+            if (!employeeName.IsNull())
+            {
+                certificateQueryable = certificateQueryable.Where(p => p.EmployeeName.Contains(employeeName));
+            }
+            if (!idNumber.IsNull())
+            {
+                certificateQueryable = certificateQueryable.Where(p => p.IDNumber.Contains(idNumber));
+            }
+            if (!certificateNo.IsNull())
+            {
+                certificateQueryable = certificateQueryable.Where(p => p.CertificateNo.Contains(certificateNo));
+            }
+            if (!enterpriseName.IsNull())
+            {
+                certificateQueryable = certificateQueryable.Where(p => p.EnterpriseName.Contains(enterpriseName));
+            }
+            if (!certificateStatus.IsNull())
+            {
+                if (certificateStatus == CERTIFICATESTATUS_VALID)
+                {
+                    certificateQueryable = certificateQueryable.Where(p => p.Invalid == false);
+                }
+                else if (certificateStatus == CERTIFICATESTATUS_INVALID)
+                {
+                    certificateQueryable = certificateQueryable.Where(p => p.Invalid == true || p.EndCertificateDate < DateTime.Now);
+                }
+            }
+
+            certificateQueryable = certificateQueryable
+                .GroupJoin(certificateQueryable, p => p.CertificateNo, q => q.CertificateNo, (p, q) => new { p, q })
+                .Where(o => o.q.Max(x => x.Id) == o.p.Id).Select(o => o.p);
+
+            totalCount = certificateQueryable.Count();
+            int indexBegin = (page - 1) * rows;
+            certificateQueryable = certificateQueryable.OrderByDescending(P => P.Id).Skip(indexBegin).Take(rows);
+            return certificateQueryable.ToList();
+        }
+
+        public List<Biz_RelEmployeeCertificate> GetRelEmployeeCertificateListByCertificateIdList(List<int> certificateIdList)
+        {
+            IQueryable<Biz_RelEmployeeCertificate> relEmployeeCertificateQueryable = uow.Biz_RelEmployeeCertificate.GetAll().Where(p => certificateIdList.Contains(p.CertificateId));
+            return relEmployeeCertificateQueryable.ToList();
+        }
+        public Biz_RelEmployeeCertificate GetRelEmployeeCertificateByCertificateId(int certificateId)
+        {
+            return uow.Biz_RelEmployeeCertificate.GetAll().Where(p => p.CertificateId == certificateId).Single();
+        }
+        public Biz_RelEmployeeCertificate GetRelEmployeeCertificateByEmployeeId(int employeeId)
+        {
+            return uow.Biz_RelEmployeeCertificate.GetAll().Where(p => p.EmployeeId == employeeId).Single();
+        }
+
+
+        public List<Biz_CertificateOperationRecord> GetCertificateOperationRecordList(int certificateId)
+        {
+            IQueryable<Biz_CertificateOperationRecord> certificateOperationRecordQueryable = uow.Biz_CertificateOperationRecord.GetAll();
+            certificateOperationRecordQueryable = certificateOperationRecordQueryable.Where(p => p.CertificateId == certificateId);
+            return certificateOperationRecordQueryable.ToList();
+        }
+        public List<Biz_CertificateOperationRecord> GetCertificateOperationRecordList(string certificateNo)
+        {
+            IQueryable<Biz_CertificateOperationRecord> certificateOperationRecordQueryable = uow.Biz_CertificateOperationRecord.GetAll();
+            certificateOperationRecordQueryable = certificateOperationRecordQueryable.Where(p => p.CertificateNo == certificateNo);
+            return certificateOperationRecordQueryable.ToList();
+        }
+        public List<Biz_CertificateChangeRecord> GetCertificateChangList(string employeeName, string certificateNo, string certificateChangeStatus, string oldEnterpriseName, int page, int rows, ref int totalCount)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void DeleteCertificateChangeRecord(int certificateChangeInfoId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void AddCertificateChangeRecord(Biz_CertificateChangeRecord certificateChangeRecord)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void UpdateCertificateChangeRecord(Biz_CertificateChangeRecord certificateChangeRecord)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void SubmitCertificateChangeRecord(int certificateChangeInfoId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public List<Biz_CertificateChangeRecord> GetCertificateChangCheckList(string employeeName, string certificateNo, string certificateChangeStatus, string EnterpriseName, int page, int rows, ref int totalCount, List<string> cityList)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void CheckedCertificateChangeRecord(int certificateChangeInfoId, string remark, bool passFlag)
+        {
+            throw new NotImplementedException();
+        }
+        //证书查询
+        public Biz_Certificate CertificateSearch(string examType, string employeeName, string iDNumber)
+        {
+            Biz_Certificate cert = uow.Biz_Certificate.GetAll().Where(p => p.Invalid == false).Where(p => p.ExamType == examType && p.EmployeeName == employeeName && p.IDNumber == iDNumber).FirstOrDefault();
+            return cert;
+        }
+
+        public List<Biz_Certificate> GetCertificateListForDelayApply(string employeeName, string idNumber, string certificateNo, string trainingInstitutionName, string workFlowStatus, int page, int rows, ref int totalCount)
+        {
+            IQueryable<Biz_Certificate> certificateQueryable = uow.Biz_Certificate.GetAll();
+            #region 数据权限
+            string enterpriseName = uow.Biz_Enterprise.GetById(account.UserId).EnterpriseName;
+            certificateQueryable = certificateQueryable.Where(p => p.EnterpriseName == enterpriseName);
+            #endregion
+
+            if (!employeeName.IsNull())
+            {
+                certificateQueryable = certificateQueryable.Where(p => p.EmployeeName.Contains(employeeName));
+            }
+            if (!idNumber.IsNull())
+            {
+                certificateQueryable = certificateQueryable.Where(p => p.IDNumber.Contains(idNumber));
+            }
+            if (!certificateNo.IsNull())
+            {
+                certificateQueryable = certificateQueryable.Where(p => p.CertificateNo.Contains(certificateNo));
+            }
+            if (!trainingInstitutionName.IsNull())
+            {
+                IQueryable<Biz_TrainingInstitution> trainingInstitutionQueryable = uow.Biz_TrainingInstitution.GetAll().Where(p => p.InstitutionName.Contains(trainingInstitutionName));
+                IQueryable<Biz_CertificateDelayApplyRecord> certificateDelayApplyRecordQueryable = uow.Biz_CertificateDelayApplyRecord.GetAll().Join(trainingInstitutionQueryable, a => a.TrainingInstitutionId, b => b.Id, (a, b) => new { a, b }).Select(o => o.a);
+                certificateQueryable = certificateQueryable.Where(p => certificateDelayApplyRecordQueryable.Select(q => q.CertificateId).Contains(p.Id));
+            }
+            if (!workFlowStatus.IsNull())
+            {
+                ICertificateDelay_WorkFlowCtrl certificateDelay_WorkFlowCtrl = new CertificateDelay_WorkFlowCtrl(this.account);
+                IQueryable<Biz_Certificate> certificateWorkFlowStatusQueryable = certificateDelay_WorkFlowCtrl.GetCertificateWorkFlowStatusQueryable(workFlowStatus, this.uow);
+                certificateQueryable = certificateQueryable.Join(certificateWorkFlowStatusQueryable, a => a.Id, b => b.Id, (a, b) => a);
+            }
+            else
+            {
+                certificateQueryable = certificateQueryable.Where(p => p.Invalid == false && p.EndCertificateDate >= DateTime.Now);
+            }
+            certificateQueryable = certificateQueryable
+                .GroupJoin(certificateQueryable, p => p.CertificateNo, q => q.CertificateNo, (p, q) => new { p, q })
+                .Where(o => o.q.Max(x => x.Id) == o.p.Id).Select(o => o.p);
+
+            totalCount = certificateQueryable.Count();
+            int indexBegin = (page - 1) * rows;
+            certificateQueryable = certificateQueryable.OrderByDescending(P => P.Id).Skip(indexBegin).Take(rows);
+            return certificateQueryable.ToList();
+        }
+
+        #region 获取延期资料审核的证书
+        public List<Biz_Certificate> GetCertificateListForDelayDataCheck(string employeeName, string idNumber, string enterpriseName, bool? photograph, string checkStatus, int page, int rows, ref int totalCount)
+        {
+            IQueryable<Biz_Certificate> certificateQueryable = uow.Biz_Certificate.GetAll();
+
+            #region 数据权限
+            //查看提交到本培训机构的证书
+            IQueryable<Biz_CertificateDelayApplyRecord> certificateDelayApplyRecordQueryable = uow.Biz_CertificateDelayApplyRecord.GetAll().Where(p => p.TrainingInstitutionId == this.account.UserId && p.SubmitStatus == true);
+            certificateQueryable = certificateQueryable.Join(certificateDelayApplyRecordQueryable, a => a.Id, b => b.CertificateId, (a, b) => new { a, b }).Select(o => o.a);
+            #endregion
+
+            if (!employeeName.IsNull())
+            {
+                certificateQueryable = certificateQueryable.Where(p => p.EmployeeName.Contains(employeeName));
+            }
+            if (!idNumber.IsNull())
+            {
+                certificateQueryable = certificateQueryable.Where(p => p.IDNumber.Contains(idNumber));
+            }
+            if (!enterpriseName.IsNull())
+            {
+                certificateQueryable = certificateQueryable.Where(p => p.EnterpriseName.Contains(enterpriseName));
+            }
+            if (!photograph.IsNull())
+            {
+                IQueryable<Biz_CertificateDelayFile> certificateDelayFileQueryable = uow.Biz_CertificateDelayFile.GetAll().Where(p => p.FileType == "登记照");
+                if (photograph == true)
+                {
+
+                    certificateQueryable = certificateQueryable.Where(p => certificateDelayFileQueryable.Select(q => q.CertificateId).Contains(p.Id));
+                }
+                else if (photograph == false)
+                {
+                    certificateQueryable = certificateQueryable.Where(p => !certificateDelayFileQueryable.Select(q => q.CertificateId).Contains(p.Id));
+                }
+            }
+            if (!checkStatus.IsNull())
+            {
+                IQueryable<Biz_CertificateDelayDataCheckedRecord> certificateDelayDataCheckedRecordQueryable = uow.Biz_CertificateDelayDataCheckedRecord.GetAll();
+                if (checkStatus == "未审核")
+                {
+
+                    certificateQueryable = certificateQueryable.Where(p => !certificateDelayDataCheckedRecordQueryable.Select(q => q.CertificateId).Contains(p.Id));
+                }
+                else if (checkStatus == "审核通过")
+                {
+                    certificateDelayDataCheckedRecordQueryable = certificateDelayDataCheckedRecordQueryable.Where(p => p.PassStatus == true);
+                    certificateQueryable = certificateQueryable.Where(p => certificateDelayDataCheckedRecordQueryable.Select(q => q.CertificateId).Contains(p.Id));
+                }
+                else if (checkStatus == "审核不通过")
+                {
+                    certificateDelayDataCheckedRecordQueryable = certificateDelayDataCheckedRecordQueryable.Where(p => p.PassStatus == false);
+                    certificateQueryable = certificateQueryable.Where(p => certificateDelayDataCheckedRecordQueryable.Select(q => q.CertificateId).Contains(p.Id));
+                }
+            }
+
+            totalCount = certificateQueryable.Count();
+            int indexBegin = (page - 1) * rows;
+            certificateQueryable = certificateQueryable.OrderByDescending(P => P.Id).Skip(indexBegin).Take(rows);
+            return certificateQueryable.ToList();
+        }
+        #endregion
+
+        #region 获取证书延期登记照片
+        public List<Biz_CertificateDelayFile> GetCertificateDelayPhotoList(List<int> certificateIdList)
+        {
+            IQueryable<Biz_CertificateDelayFile> certificateDelayFileQueryable = uow.Biz_CertificateDelayFile.GetAll().Where(p => certificateIdList.Contains(p.CertificateId));
+            return certificateDelayFileQueryable.ToList();
+        }
+        #endregion
+
+        #region 获取证书延期资料审核记录
+        public List<Biz_CertificateDelayDataCheckedRecord> GetCertificateDelayDataCheckedRecordList(List<int> certificateIdList)
+        {
+            IQueryable<Biz_CertificateDelayDataCheckedRecord> certificateDelayDataCheckedRecordQueryable = uow.Biz_CertificateDelayDataCheckedRecord.GetAll().Where(p => certificateIdList.Contains(p.CertificateId));
+            return certificateDelayDataCheckedRecordQueryable.ToList();
+        }
+        #endregion
+
+        #region 保存证书延期照片
+        public void SaveCertificateDelayFile(int certificateId, string fileType, string fileName, string filePath)
+        {
+            Biz_CertificateDelayFile certificateDelayFile = uow.Biz_CertificateDelayFile.GetAll().Where(p => p.FileType == fileType && p.CertificateId == certificateId).SingleOrDefault();
+            if (certificateDelayFile == null)
+            {
+                Biz_CertificateDelayFile newCertificateDelayFile = new Biz_CertificateDelayFile()
+                {
+                    CertificateId = certificateId,
+                    FileType = fileType,
+                    FileName = fileName,
+                    FilePath = filePath
+                };
+                uow.Biz_CertificateDelayFile.Add(newCertificateDelayFile);
+            }
+            else
+            {
+                certificateDelayFile.FileName = fileName;
+                certificateDelayFile.FilePath = filePath;
+                uow.Biz_CertificateDelayFile.Update(certificateDelayFile);
+            }
+            uow.Commit();
+        }
+        #endregion
+
+        #region 获取证书延期照片
+        public Biz_CertificateDelayFile GetCertificateDelayPhoto(int certificateId)
+        {
+            IQueryable<Biz_CertificateDelayFile> certificateDelayFileQueryable = uow.Biz_CertificateDelayFile.GetAll().Where(p => p.CertificateId == certificateId && p.FileType == "登记照");
+            return certificateDelayFileQueryable.OrderByDescending(p => p.Id).FirstOrDefault();
+        }
+        #endregion
+
+        #region 获取延期确认的证书
+        public List<Biz_Certificate> GetCertificateListForDelayApprove(string employeeName, string idNumber, string enterpriseName, string certificateNo, string dataCheckStatus, string approveStatus, int page, int rows, ref int totalCount, List<string> cityList)
+        {
+            IQueryable<Biz_Certificate> certificateQueryable = uow.Biz_Certificate.GetAll();
+            #region 数据权限
+            //查看本市的企业的证书
+            IQueryable<Biz_Enterprise> enterpriseQueryable = uow.Biz_Enterprise.GetAll().Where(p => cityList.Contains(p.City));
+            certificateQueryable = certificateQueryable.Where(p => enterpriseQueryable.Select(q => q.EnterpriseName).Contains(p.EnterpriseName));
+            #endregion
+
+            //资料审核状态
+            if (!dataCheckStatus.IsNull())
+            {
+                if (dataCheckStatus == "未审核")
+                {
+                    IQueryable<Biz_CertificateDelayApplyRecord> certificateDelayApplyRecordQueryable = uow.Biz_CertificateDelayApplyRecord.GetAll().Where(p => p.OperationStatus == false);
+                    certificateQueryable = certificateQueryable.Where(p => certificateDelayApplyRecordQueryable.Select(q => q.CertificateId).Contains(p.Id));
+                }
+                else if (dataCheckStatus == "审核通过")
+                {
+                    IQueryable<Biz_CertificateDelayDataCheckedRecord> certificateDelayDataCheckedRecordQueryable = uow.Biz_CertificateDelayDataCheckedRecord.GetAll().Where(p => p.PassStatus == true);
+                    certificateQueryable = certificateQueryable.Where(p => certificateDelayDataCheckedRecordQueryable.Select(q => q.CertificateId).Contains(p.Id));
+                }
+                else if (dataCheckStatus == "审核不通过")
+                {
+                    IQueryable<Biz_CertificateDelayDataCheckedRecord> certificateDelayDataCheckedRecordQueryable = uow.Biz_CertificateDelayDataCheckedRecord.GetAll().Where(p => p.PassStatus == false);
+                    certificateQueryable = certificateQueryable.Where(p => certificateDelayDataCheckedRecordQueryable.Select(q => q.CertificateId).Contains(p.Id));
+                }
+            }
+            if (!employeeName.IsNull())
+            {
+                certificateQueryable = certificateQueryable.Where(p => p.EmployeeName.Contains(employeeName));
+            }
+            if (!idNumber.IsNull())
+            {
+                certificateQueryable = certificateQueryable.Where(p => p.IDNumber.Contains(idNumber));
+            }
+            if (!certificateNo.IsNull())
+            {
+                certificateQueryable = certificateQueryable.Where(p => p.CertificateNo.Contains(certificateNo));
+            }
+            if (!enterpriseName.IsNull())
+            {
+                certificateQueryable = certificateQueryable.Where(p => p.EnterpriseName.Contains(enterpriseName));
+            }
+            if (!approveStatus.IsNull())
+            {
+                if (approveStatus == "未确认")
+                {
+                    IQueryable<Biz_CertificateDelayDataCheckedRecord> certificateDelayDataCheckedRecordQueryable = uow.Biz_CertificateDelayDataCheckedRecord.GetAll().Where(p => p.OperationStatus == false);
+                    certificateQueryable = certificateQueryable.Where(p => certificateDelayDataCheckedRecordQueryable.Select(q => q.CertificateId).Contains(p.Id));
+                }
+                else if (approveStatus == "确认延期")
+                {
+                    IQueryable<Biz_CertificateDelayConfirmRecord> certificateDelayConfirmRecordQueryable = uow.Biz_CertificateDelayConfirmRecord.GetAll().Where(p => p.PassStatus == true);
+
+                    certificateQueryable = certificateQueryable.Where(p => certificateDelayConfirmRecordQueryable.Select(q => q.CertificateId).Contains(p.Id));
+                }
+                else if (approveStatus == "确认不延期")
+                {
+                    IQueryable<Biz_CertificateDelayConfirmRecord> certificateDelayConfirmRecordQueryable = uow.Biz_CertificateDelayConfirmRecord.GetAll().Where(p => p.PassStatus == false);
+                    certificateQueryable = certificateQueryable.Where(p => certificateDelayConfirmRecordQueryable.Select(q => q.CertificateId).Contains(p.Id));
+                }
+            }
+            totalCount = certificateQueryable.Count();
+            int indexBegin = (page - 1) * rows;
+            certificateQueryable = certificateQueryable.OrderByDescending(P => P.Id).Skip(indexBegin).Take(rows);
+            return certificateQueryable.ToList();
+        }
+        #endregion
+        public List<Biz_CertificateDelayConfirmRecord> GetCertificateDelayConfirmRecordListByCertificateIdList(List<int> certificateIdList)
+        {
+            IQueryable<Biz_CertificateDelayConfirmRecord> certificateDelayConfirmRecordQueryable = uow.Biz_CertificateDelayConfirmRecord.GetAll().Where(p => certificateIdList.Contains(p.CertificateId));
+            return certificateDelayConfirmRecordQueryable.ToList();
+        }
+        public void AddCertificateDelayAuthentication(Biz_CertificateAuthentication certificateDelayAuthentication)
+        {
+            certificateDelayAuthentication.CreateById = this.account.Id;
+            certificateDelayAuthentication.CreateDate = DateTime.Now;
+            IQueryable<Biz_CertificateAuthentication> certificateDelayAuthenticationQueryable = uow.Biz_CertificateAuthentication.GetAll().Where(p => p.CertificateId == certificateDelayAuthentication.CertificateId);
+            if (certificateDelayAuthenticationQueryable.Count() > 0)
+            {
+                return;
+            }
+            uow.Biz_CertificateAuthentication.Add(certificateDelayAuthentication);
+            uow.Commit();
+        }
+
+        public Biz_Certificate GetCertificateForAuthentication(string iDNumber)
+        {
+            //已经提交且未实名的延期申请
+            IQueryable<Biz_CertificateAuthentication> certificateDelayAuthenticationQueryable = uow.Biz_CertificateAuthentication.GetAll();
+            IQueryable<Biz_CertificateDelayApplyRecord> certificateDelayApplyRecordQueryable = uow.Biz_CertificateDelayApplyRecord.GetAll().Where(p => p.SubmitStatus == true).Where(p => !certificateDelayAuthenticationQueryable.Select(q => q.CertificateId).Contains(p.CertificateId));
+            IQueryable<Biz_Certificate> certificateQueryable = uow.Biz_Certificate.GetAll().Where(p => p.IDNumber == iDNumber);
+            certificateQueryable = certificateQueryable.Join(certificateDelayApplyRecordQueryable, a => a.Id, b => b.CertificateId, (a, b) => new { a, b }).OrderBy(o => o.b.SummitDate).Select(o => o.a);
+            return certificateQueryable.FirstOrDefault();
+        }
+
+        #region 获取证书延期实名认证记录
+        public List<Biz_CertificateAuthentication> GetCertificateDelayAuthenticationList(List<int> certificateIdList)
+        {
+            IQueryable<Biz_CertificateAuthentication> certificateDelayAuthenticationQueryable = uow.Biz_CertificateAuthentication.GetAll().Where(p => certificateIdList.Contains(p.CertificateId));
+            return certificateDelayAuthenticationQueryable.ToList();
+        }
+        #endregion
+
+        public void VerifyChangeEnterprise(int certificateId, string idNumber)
+        {
+            Biz_Certificate certificte = uow.Biz_Certificate.GetById(certificateId);
+            if (certificte.IDNumber != idNumber)
+            {
+                throw new Exception("证书和身份证不匹配");
+            }
+            if (certificte.EndCertificateDate < DateTime.Now.AddDays(1))
+            {
+                throw new Exception("证书已过期");
+            }
+            if (certificte.Invalid)
+            {
+                throw new Exception("无效证书");
+            }
+
+            //int inDelayApplyCount = uow.Biz_CertificateDelayApplyRecord.GetAll().Where(p => p.CertificateId == certificateId).Count();
+            //int inXXDelayApplyCount = uow.Biz_XX_CertificateDelayApplyRecord.GetAll().Where(p => p.CertificateId == certificateId).Count();
+
+            //int inDelayConfirmCount = uow.Biz_CertificateDelayConfirmRecord.GetAll().Where(p => p.CertificateId == certificateId).Count();
+            //if (inDelayApplyCount + inXXDelayApplyCount != inDelayConfirmCount)
+            //{
+            //    throw new Exception("正在延期换证流程中");
+            //}
+
+
+        }
+
+        public void ChangeEnterprise(int certificateId, string examType, string newEnterpriseName)
+        {
+            Biz_Certificate certificate = uow.Biz_Certificate.GetById(certificateId);
+            if (certificate.EnterpriseName == newEnterpriseName)
+            {
+                throw new Exception("变更后的企业不能和原企业相同");
+            }
+
+            //添加新的证书
+            Biz_Certificate newCertificte = new Biz_Certificate()
+            {
+                EmployeeId = certificate.EmployeeId,
+                EmployeeName = certificate.EmployeeName,
+                Sex = certificate.Sex,
+                Birthday = certificate.Birthday,
+                IDNumber = certificate.IDNumber,
+                EnterpriseName = newEnterpriseName,
+                Job = certificate.Job,
+                Title4Technical = certificate.Title4Technical,
+                CertificateNo = certificate.CertificateNo,
+                ExamType = certificate.ExamType,
+                Industry = certificate.Industry,
+                StartCertificateDate = certificate.StartCertificateDate,
+                EndCertificateDate = certificate.EndCertificateDate,
+                PhotoPath = certificate.PhotoPath,
+                Invalid = certificate.Invalid,
+            };
+            //将证书类型C  修改为本系统的C1/C2/C3
+            if (newCertificte.ExamType.ToLower() == "C".ToLower())
+            {
+                newCertificte.ExamType = examType;
+            }
+            uow.Biz_Certificate.Add(newCertificte);
+            //将原证书 标记为注销
+            certificate.Invalid = true;
+            uow.Biz_Certificate.Update(certificate);
+            uow.Commit();
+            //添加实名认证和证书关联表
+            {
+                Biz_CertificateAuthentication certificateDelayAuthentication = uow.Biz_CertificateAuthentication.GetAll().Where(p => p.CertificateId == certificate.Id).Single();
+                Biz_RelCertificateAuthentication relCertificateDelayAuthentication = new Biz_RelCertificateAuthentication()
+                {
+                    CertificateId = newCertificte.Id,
+                    CertificateAuthenticationId = certificateDelayAuthentication.Id,
+                    CreateById = this.account.Id,
+                    CreateDate = DateTime.Now
+                };
+                uow.Biz_RelCertificateAuthentication.Add(relCertificateDelayAuthentication);
+            }
+            //添加证书操作记录
+            {
+                Biz_CertificateOperationRecord certificateOperationRecord = new Biz_CertificateOperationRecord()
+                {
+                    CertificateId = certificate.Id,
+                    CertificateNo = newCertificte.CertificateNo,
+                    OperateType = "企业变更",
+                    Remark = "",
+                    CreateById = account.Id,
+                    CreateDate = DateTime.Now
+                };
+                uow.Biz_CertificateOperationRecord.Add(certificateOperationRecord);
+            }
+            uow.Commit();
+            //将变更后的信息传到信息中心
+            ISmrzServiceCtrl smrzServiceCtrl = new SmrzServiceCtrl(this.account);
+            smrzServiceCtrl.ChangeCertificateStatus(newCertificte.Id, "正常");
+        }
+    }
+}

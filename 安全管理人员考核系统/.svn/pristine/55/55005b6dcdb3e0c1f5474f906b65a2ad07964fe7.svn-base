@@ -1,0 +1,295 @@
+﻿
+'use strict'
+$(function () {
+
+    var controllerName = "CertificateManagement";
+    var $certificateManagement_QueryArea = $('#divCertificateManagement_QueryArea');
+    var $gridCertificateManagement = $("#gridCertificateManagement_main");
+    var $pagerCertificateManagement = $("#pagerCertificateManagement_main");
+    var $divCertificateManagementInfo = $("#divCertificateManagement_CertificateManagementInfo");
+    var $mdlCertificateManagementInfo = $("#mdlCertificateManagement_CertificateManagementInfo");
+
+    var $mdlStatusChange = $("#mdlCertificateManagement_StatusChange");
+    var $divStatusChange = $("#divCertificateManagement_StatusChange");
+
+
+
+
+
+    var getSelectedRowDataOfGrid = function (rowid) {
+        var selRowId = "";
+        if (!rowid) {
+            $gridCertificateManagement.jqGrid("getGridParam", "selrow");
+        }
+        selRowId = rowid;
+        var rowData = {};
+        if (selRowId && null != selRowId) {
+            rowData = $gridCertificateManagement.jqGrid("getRowData", selRowId);
+        }
+        else {
+            abortThread("请选中行！");
+        }
+        return rowData;
+    }
+
+    var initQueryArea = function () {
+        var initQueryButton = function () {
+            $("#btnCertificateManagement_Query").on("click", function () {
+                var queryData = {};
+                var divQueryArea = $("#divCertificateManagement_QueryArea")
+                queryData = getJson(divQueryArea)
+                $gridCertificateManagement.jqGrid("setGridParam", { postData: queryData }).trigger("reloadGrid");
+            })
+        }
+        var initQueryCertificateStatus = function () {
+            var $txtQueryCertificateStatus = $("#divCertificateManagement_QueryAreaCertificateStatus");
+            var getCertificateStatusList = function () {
+                var dataResult = {};
+                ajaxRequest({
+                    url: "/" + controllerName + "/GetCertificateStatusList",
+                    type: "post",
+                    datatype: "json",
+                    async: false,
+                    success: function (jdata) {
+                        dataResult = jdata;
+                    },
+                    error: function () {
+                        dataResult = null;
+                    }
+                });
+                return dataResult;
+            }
+            var listCertificateStatus = getCertificateStatusList();
+
+            var $optionCertificateStatusAll = $("<option>");
+
+            $optionCertificateStatusAll.val("");
+
+            $optionCertificateStatusAll.text("正常");
+            $txtQueryCertificateStatus.append($optionCertificateStatusAll);
+
+            //for (var i = 0; i < listCertificateStatus.length ; i++) {
+            //    var certificateStatus = listCertificateStatus[i];
+            //    var $option = $("<option>");
+            //    $option.val(certificateStatus);
+            //    $option.text(certificateStatus);
+            //    $txtQueryCertificateStatus.append($option);
+            //}
+        }
+
+        initQueryCertificateStatus();
+        initQueryButton();
+    }
+
+
+
+    var initCertificateManagementGrid = function () {
+        var queryData = {};
+        var divQueryArea = $("#divCertificateManagement_QueryArea")
+        queryData = getJson(divQueryArea)
+        $gridCertificateManagement.jqGrid({
+            url: "/" + controllerName + "/GetCertificateListForJqGrid",
+            datatype: "json",
+            mtype: "post",
+            // multiselect: true,
+            // multiboxonly: true,
+            postData: queryData,
+            colNames: ["证书表ID", "持证人姓名", "性别", "出生年月", "身份证号", "企业名称", "职务", "技术职称", "证书编号", "证书类别", "证书状态", "证书有效期", "操作"],
+            colModel: [
+                    { name: "certificateId", index: "certificateId", width: 30, hidden: true },
+                    { name: "employeeName", index: "employeeName", align: "center", width: 50 },
+                    { name: "sex", index: "sex", align: "center", width: 30 },
+                    { name: "birthday", index: "birthday", align: "center", width: 50 },
+                    { name: "iDNumber", index: "iDNumber", align: "center", width: 100 },
+                    { name: "enterpriseName", index: "enterpriseName", align: "center", width: 100 },
+                    { name: "job", index: "job", align: "center", width: 80 },
+                    { name: "title4Technical", index: "title4Technical", align: "center", width: 80 },
+                    { name: "certificateNo", index: "certificateNo", align: "center", width: 120 },
+                    { name: "examType", index: "examType", align: "center", width: 50 },
+                    { name: "certificateStatus", index: "certificateStatus", align: "center", width: 50 },
+                    { name: "endCertificateDate", index: "endCertificateDate", align: "center", width: 60 },
+                    {
+                        name: "操作", index: "操作", key: true, width: 150, align: "center", formatter: function (cellvalue, options, rowobj) {
+                            var buttons = ''
+                              + '<a href="#" title="吊销" onclick="CertificateManagement_deactive(' + rowobj.certificateId + ',\'' + rowobj.certificateNo + '\')" style="padding: 7px;line-height: 1em;">'
+                              + '<i class="ace-icon fa fa-remove"></i> 吊销</a>'
+                            + '<a href="#" title="恢复" onclick="CertificateManagement_recover(' + rowobj.certificateId + ',\'' + rowobj.certificateNo + '\')" style="padding: 7px;line-height: 1em;">'
+                              + '<i class="ace-icon fa fa-refresh"></i> 恢复</a>'
+                            return buttons;
+                        }
+                    },
+
+            ],
+            autowidth: true,
+            rowNum: 20,
+            altRows: true,
+            pgbuttons: true,
+            viewrecords: true,
+            shrinkToFit: true,
+            pginput: true,
+            rowList: [10, 20, 30, 50, 70, 100],
+            pager: $pagerCertificateManagement,
+            ondblClickRow: function (rowid, iRow, iCol, e) {
+                $gridCertificateManagement.jqGrid("toggleSubGridRow", rowid);
+            },
+            subGrid: true,
+            subGridOptions: {
+                "plusicon": "ace-icon fa fa-plus",
+                "minusicon": "ace-icon fa fa-minus",
+                "openicon": "ace-icon fa fa-share",
+            },
+            subGridRowExpanded: function (subgrid_id, row_id) {
+                var subgrid_table_id, pager_id;
+                var rowData = $gridCertificateManagement.jqGrid("getRowData", row_id);
+                subgrid_table_id = subgrid_id + "_t";
+                pager_id = "p_" + subgrid_table_id;
+                $("#" + subgrid_id).html("<div style='width:100%;overflow:auto'><table id='" + subgrid_table_id + "' class='scroll' ></table></div>");
+                var subGridQueryData = {};
+                subGridQueryData.certificateId = rowData.certificateId;
+                $("#" + subgrid_table_id).jqGrid({
+                    url: "/" + controllerName + "/GetCertificateListForSubJqGrid",
+                    datatype: "json",
+                    mtype: "post",
+                    postData: subGridQueryData,
+                    rownumbers: true,
+                    colNames: ["操作", "备注", "操作人", "操作时间"],
+                    colModel: [
+                        { name: "operateType", index: "operateType", width: "50", align: "center" },
+                        { name: "remark", index: "remark", width: "100", align: "center" },
+                        { name: "createUserName", index: "createUserName", width: "100", align: "center" },
+                        { name: "createDate", index: "createDate", width: "80", align: "center" }
+                    ],
+                    autoWidth: true,
+                    //rowNum: 9999,
+                    //pager: "#p_" + subgrid_table_id,                
+                    //rowList: [10, 20, 30], 
+                    //sortname: "CheckTime",
+                    //sortorder: "desc",
+                    //height: "100%",
+                    //viewrecords: true,
+                    ondblClickRow: function (rowid, iRow, iCol, e) {
+                        return false;
+                    },
+                    loadComplete: function () {
+                        jqGridAutoWidth();
+                    }
+                });
+            },
+            loadComplete: function () {
+                var table = this;
+                updatePagerIcons(table);
+                jqGridAutoWidth();
+                setGridHeight($gridCertificateManagement.selector);
+            }
+        });
+    }
+
+    var enum_operateType = {
+        deactive: "吊销",
+        recover: "恢复"
+    };
+
+    var initButtonArea = function () {
+        //暂扣
+        window.CertificateManagement_suspension = function (certificateId, certificateNo) {
+            Open$mdlStatusChange(certificateId, certificateNo, enum_operateType.suspension);
+        }
+        //吊销
+        window.CertificateManagement_deactive = function (certificateId, certificateNo) {
+            Open$mdlStatusChange(certificateId, certificateNo, enum_operateType.deactive);
+        }
+        //恢复
+        window.CertificateManagement_recover = function (certificateId, certificateNo) {
+            Open$mdlStatusChange(certificateId, certificateNo, enum_operateType.recover);
+        }
+        var Open$mdlStatusChange = function (certificateId, certificateNo, operateType) {
+            $mdlStatusChange.find("[name='title']").text(operateType + "确认");
+            $divStatusChange.find("[name='operateType']").val(operateType);
+            $divStatusChange.find("[name='certificateId']").val(certificateId);
+            $divStatusChange.find("[name='certificateNo']").val(certificateNo);
+            $divStatusChange.find("[name='remark']").val('');
+            $mdlStatusChange.modal("toggle");
+        }
+    }
+
+    var initStatusChangeModal = function () {
+        //初始化保存按钮
+        var initCertificateManagementSavaButton = function () {
+
+            //吊销
+            var deactiveOk = function (jsonData) {
+                var postData = jsonData;
+                var ajaxOpt = {
+                    url: "/" + controllerName + "/CertificateDeactive",
+                    data: postData,
+                    type: "post",
+                    dataType: "json",
+                    async: false,
+                    cache: false,
+                    success: function (jdata) {
+                        if (jdata.IsSuccess) {
+                            alert("吊销成功！");
+                            $gridCertificateManagement.jqGrid().trigger("reloadGrid");
+                        }
+                        else {
+                            alert(jdata.ErrorMessage);
+                        }
+                    }
+                };
+                ajaxRequest(ajaxOpt);
+            }
+            //恢复
+            var recoverOk = function (jsonData) {
+                var postData = jsonData;
+                var ajaxOpt = {
+                    url: "/" + controllerName + "/CertificateRecover",
+                    data: postData,
+                    type: "post",
+                    dataType: "json",
+                    async: false,
+                    cache: false,
+                    success: function (jdata) {
+                        if (jdata.IsSuccess) {
+                            alert("恢复成功！");
+                            $gridCertificateManagement.jqGrid().trigger("reloadGrid");
+                        }
+                        else {
+                            alert(jdata.ErrorMessage);
+                        }
+                    }
+                };
+                ajaxRequest(ajaxOpt);
+            }
+
+            $mdlStatusChange.find("button[name='Ok']").on("click", function () {
+
+                var jsonData = getJson($divStatusChange);
+                debugger;
+
+                if (enum_operateType.deactive == jsonData.operateType) {
+                    deactiveOk(jsonData);
+                }
+                else if (enum_operateType.recover == jsonData.operateType) {
+                    recoverOk(jsonData);
+                }
+                else {
+                    alert("【" + jsonData.operateType + "】操作无效");
+                }
+                $mdlStatusChange.modal("toggle");
+            });
+        }
+
+        initCertificateManagementSavaButton();
+    }
+
+
+    //页面加载时运行
+    $(document).ready(function () {
+
+        initQueryArea();
+        initCertificateManagementGrid();
+        initButtonArea();
+        initStatusChangeModal();
+    })
+
+})

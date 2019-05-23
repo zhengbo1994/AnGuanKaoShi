@@ -1,0 +1,15 @@
+D:\项目\安全管理人员考核系统\clsLibrary\Fakes\ThoughtWorks.QRCode.fakes : warning : 无法为 <PrivateImplementationDetails>{2CFC48F2-5A3C-423F-9022-029D4BB7C8B6} 生成存根: 类型不受支持，因为存在内部限制。
+D:\项目\安全管理人员考核系统\clsLibrary\Fakes\ThoughtWorks.QRCode.fakes : warning : 无法为 ThoughtWorks.QRCode.Properties.Resources 生成存根: 类型对 exported or assembly(ThoughtWorks.QRCode.Fakes) 不可见。
+D:\项目\安全管理人员考核系统\clsLibrary\Fakes\ThoughtWorks.QRCode.fakes : warning : 无法为 ThoughtWorks.QRCode.Codec.Reader.Pattern.AlignmentPattern 生成存根: 类型没有系列可见的构造函数。
+D:\项目\安全管理人员考核系统\clsLibrary\Fakes\ThoughtWorks.QRCode.fakes : warning : 无法为 ThoughtWorks.QRCode.Codec.Reader.Pattern.FinderPattern 生成存根: 类型没有系列可见的构造函数。
+D:\项目\安全管理人员考核系统\clsLibrary\Fakes\ThoughtWorks.QRCode.fakes : warning : 无法为 ThoughtWorks.QRCode.Codec.Util.Color_Fields 生成存根: 类型是一个值类型。
+D:\项目\安全管理人员考核系统\clsLibrary\Fakes\ThoughtWorks.QRCode.fakes : warning : 无法为 ThoughtWorks.QRCode.Codec.QRCodeEncoder+ENCODE_MODE 生成填充码: 类型是一个枚举。
+D:\项目\安全管理人员考核系统\clsLibrary\Fakes\ThoughtWorks.QRCode.fakes : warning : 无法为 ThoughtWorks.QRCode.Codec.QRCodeEncoder+ERROR_CORRECTION 生成填充码: 类型是一个枚举。
+D:\项目\安全管理人员考核系统\clsLibrary\Fakes\ThoughtWorks.QRCode.fakes : warning : 无法为 <PrivateImplementationDetails>{2CFC48F2-5A3C-423F-9022-029D4BB7C8B6} 生成填充码: 类型不受支持，因为存在内部限制。
+D:\项目\安全管理人员考核系统\clsLibrary\Fakes\ThoughtWorks.QRCode.fakes : warning : 无法为 ThoughtWorks.QRCode.Properties.Resources 生成填充码: 类型对 exported or assembly(ThoughtWorks.QRCode.Fakes) 不可见。
+D:\项目\安全管理人员考核系统\clsLibrary\Fakes\ThoughtWorks.QRCode.fakes : warning : 无法为 ThoughtWorks.QRCode.Codec.Data.QRCodeImage 生成填充码: 类型是一个接口。
+D:\项目\安全管理人员考核系统\clsLibrary\Fakes\ThoughtWorks.QRCode.fakes : warning : 无法为 ThoughtWorks.QRCode.Codec.Util.DebugCanvas 生成填充码: 类型是一个接口。
+D:\项目\安全管理人员考核系统\clsLibrary\Fakes\ThoughtWorks.QRCode.fakes : warning : 无法为 ThoughtWorks.QRCode.Codec.QRCodeDecoder+DecodeResult 生成填充码: 类型对 exported or assembly(ThoughtWorks.QRCode.Fakes) 不可见。
+D:\项目\安全管理人员考核系统\clsLibrary\Fakes\ThoughtWorks.QRCode.fakes : warning : 无法为 ThoughtWorks.QRCode.Codec.Reader.QRCodeImageReader+ModulePitch 生成填充码: 类型对 exported or assembly(ThoughtWorks.QRCode.Fakes) 不可见。
+D:\项目\安全管理人员考核系统\clsLibrary\Fakes\ThoughtWorks.QRCode.fakes : warning : 无法为 ThoughtWorks.QRCode.Geom.SamplingGrid+AreaGrid 生成填充码: 类型对 exported or assembly(ThoughtWorks.QRCode.Fakes) 不可见。
+D:\项目\安全管理人员考核系统\clsLibrary\Fakes\ThoughtWorks.QRCode.fakes : warning : 无法为 ThoughtWorks.QRCode.Codec.Util.Color 生成填充码: 类型是一个接口。

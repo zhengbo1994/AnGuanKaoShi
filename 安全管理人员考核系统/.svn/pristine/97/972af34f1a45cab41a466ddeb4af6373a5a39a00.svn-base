@@ -1,0 +1,58 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2013
+VisualStudioVersion = 12.0.40629.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DAL", "Uow\DAL.csproj", "{DAF3CCF2-CA0B-4EED-96A7-89F7466BE651}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Model", "Models\Model.csproj", "{E12FBC5B-ACA2-4F2F-9BC4-5C1C23E2C9C7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Library", "clsLibrary\Library.csproj", "{DE01D724-B1D5-4692-BFF2-A491CE1C12B7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BLL", "BLL\BLL.csproj", "{CB51DD90-BA38-4576-9EFA-508E00DC323E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SafetyProfessionalAssessmentSystem", "SafetyProfessionalAssessmentSystem\SafetyProfessionalAssessmentSystem.csproj", "{3EBA78BA-B4F3-4F00-9FC2-AA19D1D7F4A2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PrintApp", "PrintApp\PrintApp.csproj", "{EA9CD467-DDD2-4AF1-9C76-601C3DFE3FA8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IDCardInformationReader", "IDCardInformationReader\IDCardInformationReader.csproj", "{E47B807A-7B1A-4113-8D51-B08F8D04C245}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{DAF3CCF2-CA0B-4EED-96A7-89F7466BE651}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DAF3CCF2-CA0B-4EED-96A7-89F7466BE651}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DAF3CCF2-CA0B-4EED-96A7-89F7466BE651}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DAF3CCF2-CA0B-4EED-96A7-89F7466BE651}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E12FBC5B-ACA2-4F2F-9BC4-5C1C23E2C9C7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E12FBC5B-ACA2-4F2F-9BC4-5C1C23E2C9C7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E12FBC5B-ACA2-4F2F-9BC4-5C1C23E2C9C7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E12FBC5B-ACA2-4F2F-9BC4-5C1C23E2C9C7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DE01D724-B1D5-4692-BFF2-A491CE1C12B7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DE01D724-B1D5-4692-BFF2-A491CE1C12B7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DE01D724-B1D5-4692-BFF2-A491CE1C12B7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DE01D724-B1D5-4692-BFF2-A491CE1C12B7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CB51DD90-BA38-4576-9EFA-508E00DC323E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CB51DD90-BA38-4576-9EFA-508E00DC323E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CB51DD90-BA38-4576-9EFA-508E00DC323E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CB51DD90-BA38-4576-9EFA-508E00DC323E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3EBA78BA-B4F3-4F00-9FC2-AA19D1D7F4A2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3EBA78BA-B4F3-4F00-9FC2-AA19D1D7F4A2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3EBA78BA-B4F3-4F00-9FC2-AA19D1D7F4A2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3EBA78BA-B4F3-4F00-9FC2-AA19D1D7F4A2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EA9CD467-DDD2-4AF1-9C76-601C3DFE3FA8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EA9CD467-DDD2-4AF1-9C76-601C3DFE3FA8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EA9CD467-DDD2-4AF1-9C76-601C3DFE3FA8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EA9CD467-DDD2-4AF1-9C76-601C3DFE3FA8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E47B807A-7B1A-4113-8D51-B08F8D04C245}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E47B807A-7B1A-4113-8D51-B08F8D04C245}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E47B807A-7B1A-4113-8D51-B08F8D04C245}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E47B807A-7B1A-4113-8D51-B08F8D04C245}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

@@ -1,0 +1,346 @@
+﻿@{
+    Layout = null;
+}
+
+<link href="~/Public/datetimepicker/css/bootstrap-datetimepicker.css" rel="stylesheet" />
+<link href="~/Public/chosen/css/chosen.css" rel="stylesheet" />
+<link href="~/Public/content/CertificateManagement/css/CertificateManagement.css" rel="stylesheet" />
+
+<div class="row">
+    <div class="col-xs-12">
+        <div class="widget-box">
+            <div class="widget-header">
+                <h4 class="widget-title">查询区域</h4>
+
+                <div class="widget-toolbar">
+                    <a href="#" data-action="collapse">
+                        <i class="ace-icon fa fa-chevron-up"></i>
+                    </a>
+                </div>
+                <div class="widget-toolbar">
+                    <a id="btnCertificateManagement_Query" href="#">
+                        <i class="ace-icon fa fa-search">查询</i>
+                    </a>
+                </div>
+            </div>
+
+            <div class="widget-body">
+                <div id="divCertificateManagement_QueryArea" class="widget-main form-horizontal ">
+                    <div class="row">
+                        <div class="col-xs-3 ">
+                            <label class="control-label col-xs-4 ">持证人姓名</label>
+                            <input class="col-xs-8" type="text" name="employeeName">
+                        </div>
+                        <div class="col-xs-3 ">
+                            <label class="control-label col-xs-4 ">身份证号</label>
+                            <input class="col-xs-8" type="text" name="idNumber">
+                        </div>
+                        <div class="col-xs-3 ">
+                            <label class="control-label col-xs-4 ">证书编号</label>
+                            <input class="col-xs-8" type="text" name="certificateNo">
+                        </div>
+                        <div class="col-xs-3 ">
+                            <label class="control-label col-xs-4 ">证书状态</label>
+                            <select class="col-xs-8" name="certificateStatus">
+                                <option value="">全部</option>
+                                <option selected value="有效的">有效的</option>
+                                <option value="无效的">无效的</option>
+                            </select>
+                        </div>
+                    </div>
+                    <br />
+                    <div class="row">
+                        <div class="col-xs-3 ">
+                            <label class="control-label col-xs-4 ">企业名称</label>
+                            <input class="col-xs-8" type="text" name="enterpriseName">
+                        </div>
+                        <div class="col-xs-3 ">
+                            <label class="control-label col-xs-4 ">城市</label>
+                            <select class="col-xs-8" name="city"></select>
+
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<br />
+
+<div class="row">
+    <div class="col-xs-12">
+        <div class="widget-box">
+            <div class="widget-header">
+                <h4 class="widget-title">证书管理</h4>
+            </div>
+            <table id="gridCertificateManagement_main"></table>
+            <div id="pagerCertificateManagement_main"></div>
+
+        </div>
+    </div>
+
+</div>
+<div class="modal fade" id="mdlCertificateManagement_CertificateManagementInfo">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">
+                    <span>&times;</span>
+                </button>
+                <h3 class="modal-title">证书变更申请</h3>
+            </div>
+            <div class="modal-body">
+                <div id="divCertificateManagement_CertificateManagementInfo" class="form-horizontal">
+
+
+                    <input type="hidden" name="Id" />
+                    <table class="table table-bordered text-center table">
+                        <tr>
+                            <td colspan="1">证书编号<span class="text-danger"> ❉ </span></td>
+                            <td colspan="1"><input type="text" name="CertificateNumber" data-verify="notempty" data-verify-errormessage="姓名为必填项，请检查" @*data-placement="right"*@ /></td>
+                            <td colspan="1">证书状态</td>
+                            <td colspan="1"><input type="text" name="CertificateStatus" data-verify="notempty" data-verify-errormessage="姓名为必填项，请检查" @*data-placement="right"*@ /></td>
+                        </tr>
+                        <tr>
+                            <td colspan="1">证书有效期<span class="text-danger"> ❉ </span></td>
+                            <td colspan="1"><input type="text" name="ValidityOfTheCertificate" data-verify="notempty" data-verify-errormessage="身份证号为必填项，请检查" /></td>
+                            <td colspan="1">姓名</td>
+                            <td colspan="1"><input type="text" name="HolderOfTheCertificate" data-verify="notempty" data-verify-errormessage="身份证号为必填项，请检查" /></td>
+                        </tr>
+
+                        <tr>
+                            <td colspan="1">身份证号<span class="text-danger"> ❉ </span></td>
+                            <td colspan="1"><input type="text" name="IDNumber" data-verify="notempty" data-verify-errormessage="职务为必填项，请检查" /></td>
+                            <td colspan="1">联系方式<span class="text-danger"> ❉ </span></td>
+                            <td colspan="1"><input type="text" name="Title4Technical" data-verify="notempty" data-verify-errormessage="技术职称为必填项，请检查" /></td>
+                        </tr>
+                        <tr>
+                            <td colspan="1">证书类别<span class="text-danger"> ❉ </span></td>
+                            <td colspan="1"><input type="text" name="City" data-verify="notempty" data-verify-errormessage="报考城市为必填项，请检查"></td>
+                            <td colspan="1">所属公司<span class="text-danger"> ❉ </span></td>
+                            <td colspan="1"><input type="text" name="EnterpriseName" data-verify="notempty" data-verify-errormessage="报考科目为必填项，请检查"></td>
+                        </tr>
+                        <tr>
+                            <td colspan="1">备注</td>
+                            <td colspan="3"><input type="text" name="Remark" /></td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="btnCertificateManagement_CertificateManagementInfoConfirm" class="btn btn-info btn-sm">确定</button>
+                <button class="btn btn-sm" data-dismiss="modal">关闭</button>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+
+
+<div class="modal fade" id="mdlCertificateManagement_StatusChange">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">
+                    <span>&times;</span>
+                </button>
+                <h4 class="modal-title" name="title">确认</h4>
+            </div>
+            <div class="modal-body">
+                <div id="divCertificateManagement_StatusChange" class="form-horizontal">
+                    <input type="hidden" name="operateType" />
+                    <input type="hidden" name="certificateId" />
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">证书编号</label>
+                        <div class="col-sm-8">
+                            <input type="text" name="certificateNo" class="width-100" disabled />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">备注</label>
+                        <div class="col-sm-8">
+                            <textarea name="remark" class="width-100" rows="3"></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button name="Ok" class="btn btn-info btn-sm">确定</button>
+                <button class="btn btn-sm" data-dismiss="modal">关闭</button>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<div class="modal fade" id="mdlCertificateManagement_camera">
+    <div class="modal-dialog modal-lg">
+        <div class=" modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">
+                    <span>&times;</span>
+                </button>
+                <h4 class="modal-title">拍照</h4>
+            </div>
+            <div class="modal-body">
+
+                <div class="widget-box">
+                    <div class="widget-header">
+                        <h4 class="widget-title">证书信息</h4>
+                        <div class="widget-toolbar">
+                            <a href="#" data-action="collapse">
+                                <i class="ace-icon fa fa-chevron-up"></i>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="widget-body" style="display: block;">
+                        <div name="divEmployeeInfo" class="form-horizontal widget-main ">
+                            <table class="table table-bordered text-center table  table-condensed">
+                                <tr>
+                                    <td colspan="1" class="col-xs-2">姓名</td>
+                                    <td colspan="1" name="employeeName" class="col-xs-4"></td>
+                                    <td colspan="1" class="col-xs-2">性别</td>
+                                    <td colspan="1" name="sex" class="col-xs-4"></td>
+                                </tr>
+                                <tr>
+                                    <td colspan="1">身份证号</td>
+                                    <td colspan="1" name="iDNumber"></td>
+                                    <td colspan="1">出生日期</td>
+                                    <td colspan="1" name="birthday"></td>
+                                </tr>
+                                <tr>
+                                    <td colspan="1">职务</td>
+                                    <td colspan="1" name="job"></td>
+                                    <td colspan="1">职称</td>
+                                    <td colspan="1" name="title4Technical"></td>
+                                </tr>
+                                <tr>
+                                    <td colspan="1">行业</td>
+                                    <td colspan="1" name="industry"></td>
+                                    <td colspan="1">类型</td>
+                                    <td colspan="1" name="examType"> </td>
+                                    <td colspan="1" name="examTypeSelect" class="hidden">
+                                        <select name="examType" class=" width-100">
+                                            <option value="">请选择证书类型</option>
+                                            <option value="C1">C1</option>
+                                            <option value="C2">C2</option>
+                                            <option value="C3">C3</option>
+                                        </select>
+                                    </td>
+
+                                </tr>
+                                <tr>
+                                    <td colspan="1">证书编号</td>
+                                    <td colspan="1" name="certificateNo"></td>
+                                    <td colspan="1">有效期</td>
+                                    <td colspan="1" name="endCertificateDate"></td>
+                                </tr>
+                                <tr>
+                                    <td colspan="1">所属企业</td>
+                                    <td colspan="3">
+                                        <select name="enterpriseName" class="width-100"></select>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <input type="hidden" name="certificateId" />
+                    <div class="col-xs-6">
+                        <div class="widget-box">
+                            <div class="widget-header">
+                                <h4 class="widget-title">视频画面</h4>
+                            </div>
+                            <div class="widget-body" style="display: block;">
+                                <div class=" widget-main center ">
+                                    <div id="divCertificateManagement_camera"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-xs-5 hidden">
+                        <div class="widget-box">
+                            <div class="widget-header">
+                                <h4 class="widget-title">视频原图</h4>
+                            </div>
+                            <div class="widget-body" style="display: block;">
+                                <div class="widget-main ">
+                                    <canvas name="canvasPhoto"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-xs-6 ">
+                        <div class="widget-box">
+                            <div class="widget-header">
+                                <h4 class="widget-title">登记照</h4>
+                            </div>
+                            <div class="widget-body" style="display: block;">
+                                <div class=" widget-main center ">
+                                    <canvas name="canvasPhotoResult"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+            <div class="modal-footer">
+                <button name="btnPhotograph" class="btn btn-success btn-sm ">拍照</button>
+                <button name="btnSave" class="btn btn-danger btn-sm ">保存</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="mdlCertificateManagement_CertificateInfo">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">证书明细</h4>
+            </div>
+            <div class="modal-body">
+                <div name="divCertificatePrint" style="background-image:url(../../Public/content/PrintCertificate/img/证书打印背景图片.png); background-repeat:no-repeat; width:680px;height:460px; background-color:blue;padding:0px;font-family:'Microsoft YaHei';">
+                    <div name="EmployeeName" style="width:200px;height:25px;margin-top:235px;margin-left:60px; position:absolute;padding:0px;color:black;text-align:center; vertical-align:bottom;"></div>
+                    <div name="Sex" style="width:200px;height:25px;margin-top:275px;margin-left:60px; position:absolute;padding:0px;color:black;text-align:center; vertical-align:bottom;"></div>
+                    <div name="Birthday" style="width:200px;height:25px;margin-top:310px;margin-left:60px; position:absolute;padding:0px;color:black;text-align:center; vertical-align:bottom;"></div>
+                    <div name="IDNumber" style="width:200px;height:25px;margin-top:345px;margin-left:75px; position:absolute;padding:0px;color:black;text-align:center; vertical-align:bottom;"></div>
+                    <div name="EnterpriseName" style="width:180px;height:65px;margin-top:80px;margin-left:410px; position:absolute;padding:0px;color:black;text-align:center; vertical-align:bottom;"></div>
+                    <div name="Job" style="width:180px;height:25px;margin-top:150px;margin-left:410px; position:absolute;padding:0px;color:black;text-align:center; vertical-align:bottom;"></div>
+                    <div name="Title4Technical" style="width:180px;height:25px;margin-top:185px;margin-left:410px; position:absolute;padding:0px;color:black;text-align:center; vertical-align:bottom;"></div>
+                    <div name="CertificateNo" style="width:190px;height:25px;margin-top:220px;margin-left:415px; position:absolute;padding:0px;color:black;text-align:center; vertical-align:bottom;"></div>
+                    <div name="StartCertificateDate_Year" style="width:40px;height:25px;margin-top:350px;margin-left:460px; position:absolute;padding:0px;color:black;text-align:center; vertical-align:bottom;"></div>
+                    <div name="StartCertificateDate_Month" style="width:20px;height:25px;margin-top:350px;margin-left:520px; position:absolute;padding:0px;color:black;text-align:center; vertical-align:bottom;"></div>
+                    <div name="StartCertificateDate_Day" style="width:20px;height:25px;margin-top:350px;margin-left:560px; position:absolute;padding:0px;color:black;text-align:center; vertical-align:bottom;"></div>
+                    @*<img name="img_photo" style="width:120px;height:150px;position:absolute;top:80px;left:100px;" src="">
+                        <img name="img_QrCode" style="width:100px;height:100px;position:absolute;top:250px;left:340px;" src="">
+                    *@
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button name="btnPrintCertificate" class="btn btn-sm btn-info">打印</button>
+                <button class="btn btn-sm" data-dismiss="modal">关闭</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<object classid="clsid:10946843-7507-44FE-ACE8-2B3483D179B7" id="objCertificateManagement_CertCtl" name="objCertificateManagement_CertCtl" width="0" height="0"></object>
+
+
+<script src="~/Public/chosen/js/chosen.jquery.js"></script>
+<script src="~/Public/datetimepicker/js/bootstrap-datetimepicker.js"></script>
+<script src="~/Public/datetimepicker/js/bootstrap-datetimepicker.zh-CN.js"></script>
+<script src="~/Public/jquery-webcam/jquery.webcam.min.js"></script>
+<script src="~/Public/jquery.jqprint/js/jquery-browser.js"></script>
+<script src="~/Public/jquery.jqprint/js/jquery.jqprint-0.3.js"></script>
+<script src="~/Public/content/CertificateManagement/js/CertificateManagement.js?v=@DateTime.Now.ToString("yyyyMMddHHmmss")"></script>

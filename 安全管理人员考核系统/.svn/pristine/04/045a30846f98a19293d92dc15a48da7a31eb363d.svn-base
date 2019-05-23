@@ -1,0 +1,107 @@
+﻿@{
+    Layout = null;
+}
+
+<link href="~/Public/datetimepicker/css/bootstrap-datetimepicker.css" rel="stylesheet" />
+
+<div class="row">
+    <div class="col-xs-12">
+        <div class="widget-box">
+            <div class="widget-header">
+                <h4 class="widget-title">考场选择</h4>
+
+                <div class="widget-toolbar">
+                    <a href="#" data-action="collapse">
+                        <i class="ace-icon fa fa-chevron-up"></i>
+                    </a>
+                </div>
+                <div class="widget-toolbar">
+                    <a id="btnAuthentication_Query" href="#">
+                        <i class="ace-icon fa fa-search">查询</i>
+                    </a>
+                </div>
+            </div>
+
+            <div class="widget-body" style="display: block;">
+                <div id="divAuthentication_QueryArea" class="widget-main form-horizontal ">
+                    <div class="row">
+                        <div class="col-xs-3 ">
+                            <label class="control-label col-xs-4 ">考试流水号(*)</label>
+                            <select class="col-xs-8" name="ExamPlanNumber"></select>
+                        </div>
+                        <div class="col-xs-3 ">
+                            <label class="control-label col-xs-5 ">考场名称(*)</label>
+                            <select class="col-xs-7" name="ExamRoomId"></select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<br />
+<!--建筑企业基本信息列表-->
+<div class="row">
+    <div class="col-xs-12">
+        <div class="widget-box">
+            <div class="widget-header">
+                <h4 class="widget-title">考生列表</h4>
+
+                <div class="widget-toolbar">
+                    <a href="#" data-toggle="modal" id="btnAuthentication_CertReader">
+                        <i class="ace-icon fa fa-credit-card">实名认证</i>
+                    </a>
+                </div>
+            </div>
+            <table id="gridAuthentication_Main"></table>
+            <div id="pagerAuthentication_Main"></div>
+        </div>
+    </div>
+
+</div>
+
+<div class="modal fade" id="mdlAuthentication_camera">
+    <div class="modal-dialog modal-lg">
+        <div class=" modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">
+                    <span>&times;</span>
+                </button>
+                <h4 class="modal-title">拍照</h4>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <input type="hidden" name="EmployeeId" />
+                    <div class="panel panel-default col-xs-5 col-xs-offset-1  ">
+                        <div class="panel-heading">视频图像</div>
+                        <div class="panel-body">
+                            <div id="divAuthentication_camera"></div>
+                        </div>
+                    </div>
+                    <div class="panel panel-default col-xs-4 col-xs-offset-1 hidden ">
+                        <div class="panel-heading">视频原图</div>
+                        <div class="panel-body center">
+                            <canvas id="canvasAuthentication_Photo"></canvas>
+                        </div>
+                    </div>
+                    <div class="panel panel-default col-xs-4 col-xs-offset-1">
+                        <div class="panel-heading">登记照</div>
+                        <div class="panel-body center">
+                            <canvas id="canvasAuthentication_PhotoResult"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button name="btnPhotograph" class="btn btn-success btn-sm">拍照</button>
+                <button name="btnSave" class="btn btn-danger btn-sm">保存</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<object classid="clsid:10946843-7507-44FE-ACE8-2B3483D179B7"
+        id="objAuthentication_CertCtl" name="objAuthentication_CertCtl" width="0" height="0"></object>
+<script src="~/Public/jquery-webcam/jquery.webcam.min.js"></script>
+<script src="~/Public/content/authentication/js/authentication.js?v=@DateTime.Now.ToString("ffff")"></script>

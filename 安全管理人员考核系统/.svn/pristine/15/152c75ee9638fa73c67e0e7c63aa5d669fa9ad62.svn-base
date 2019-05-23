@@ -1,0 +1,159 @@
+﻿@{
+    Layout = null;
+}
+<link href="~/Public/datetimepicker/css/bootstrap-datetimepicker.css" rel="stylesheet" />
+
+<div class="tabbable">
+    <ul class="nav nav-tabs padding-12 tab-color-blue background-blue">
+        <li class="active">
+            <a data-toggle="tab" href="#tabpanebtnExamStatisticalChart_PassRateForCity" aria-expanded="false">各地市考试通过率统计图</a>
+        </li>
+
+        <li class="">
+            <a data-toggle="tab" href="#tabpanebtnExamStatisticalChart_PassRateForEnterprise" aria-expanded="false">各企业考试通过率统计表</a>
+        </li>
+
+        <li class="hide">
+            <a data-toggle="tab" href="#tabpaneExamStatisticalChart_Chart3" aria-expanded="true">考核点考试通过率统计图</a>
+        </li>
+        <li class="hide">
+            <a data-toggle="tab" href="#tabpaneExamStatisticalChart_Chart4" aria-expanded="true">历年考试通过率统计图</a>
+        </li>
+    </ul>
+
+    <div class="tab-content">
+
+        <div id="tabpanebtnExamStatisticalChart_PassRateForCity" class="tab-pane active">
+
+            <div class="widget-box">
+                <div class="widget-header">
+                    <h4 class="widget-title">过滤条件</h4>
+
+                    <div class="widget-toolbar">
+                        <a href="#" data-action="collapse">
+                            <i class="ace-icon fa fa-chevron-up"></i>
+                        </a>
+                    </div>
+                    <div class="widget-toolbar">
+                        <a id="btnExamStatisticalChart_PassRateForCityQuery" href="#">
+                            <i class="ace-icon fa fa-search">查询</i>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="widget-body" style="display: block;">
+                    <div class="widget-main form-horizontal ">
+                        <div id="formExamStatisticalChart_PassRateForCityQueryArea" class="row">
+                            <div class="col-md-6 ">
+                                <label class="control-label col-xs-4 ">考试时间（起）</label>
+                                <input name="ExamDateTimeBegin" class="col-xs-8" type="text">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="control-label col-xs-4 ">考试时间（止）</label>
+                                <input name="ExamDateTimeEnd" class="col-xs-8" type="text">
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <br>
+            <div class="widget-box">
+                <div class="widget-header">
+                    <h4 class="widget-title">各地市考试通过率统计图</h4>
+
+                    <div class="widget-toolbar">
+                        <a href="#" data-action="collapse">
+                            <i class="ace-icon fa fa-chevron-up"></i>
+                        </a>
+                    </div>
+
+                </div>
+
+                <div class="widget-body" style="display: block;">
+
+                    <div id="divExamStatisticalChart_PassRateForCityChartContainer" class="padding-top-1"></div>
+                </div>
+            </div>
+
+
+        </div>
+
+        <div id="tabpanebtnExamStatisticalChart_PassRateForEnterprise" class="tab-pane">
+            <div class="widget-box">
+                <div class="widget-header">
+                    <h4 class="widget-title">过滤条件</h4>
+
+                    <div class="widget-toolbar">
+                        <a href="#" data-action="collapse">
+                            <i class="ace-icon fa fa-chevron-up"></i>
+                        </a>
+                    </div>
+                    <div class="widget-toolbar">
+                        <a id="btnExamStatisticalChart_PassRateForEnterpriseQuery" href="#">
+                            <i class="ace-icon fa fa-search">查询</i>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="widget-body" style="display: block;">
+                    <div class="widget-main form-horizontal ">
+                        <div class="row" id="divExamStatisticalChart_PassRateForEnterpriseQueryArea">
+
+                            <div class="col-md-4 ">
+                                <label class="control-label col-xs-4 ">企业名称</label>
+                                <input name="EnterpriseName" class="col-xs-8" type="text">
+                            </div>
+
+                            <div class="col-md-4 ">
+                                <label class="control-label col-xs-4 ">考试时间（起）</label>
+                                <input name="ExamDateTimeBegin" class="col-xs-8" type="text">
+                            </div>
+
+                            <div class="col-md-4">
+                                <label class="control-label col-xs-4 ">考试时间（止）</label>
+                                <input name="ExamDateTimeEnd" class="col-xs-8" type="text">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <br>
+            <div class="widget-box">
+                <div class="widget-header">
+                    <h4 class="widget-title">各企业考试通过率统计表</h4>
+
+                    <div class="widget-toolbar">
+                        <a href="#" data-action="collapse">
+                            <i class="ace-icon fa fa-chevron-up"></i>
+                        </a>
+                    </div>
+
+                </div>
+
+                <div class="widget-body" style="display: block;">
+
+                    <table id="gridExamStatisticalChart_PassRateForEnterpriseGrid"></table>
+                    <div id="pagerExamStatisticalChart_PassRateForEnterpriseGrid"></div>
+                </div>
+            </div>
+        </div>
+
+        <div id="tabpaneExamStatisticalChart_Chart3" class="tab-pane">
+            <p>Etsy mixtape wayfarers, ethical wes anderson tofu before they sold out mcsweeney's organic lomo retro fanny pack lo-fi farm-to-table readymade.</p>
+        </div>
+
+        <div id="tabpaneExamStatisticalChart_Chart4" class="tab-pane">
+            <p>Etsy mixtape wayfarers, ethical wes anderson tofu before they sold out mcsweeney's organic lomo retro fanny pack lo-fi farm-to-table readymade.</p>
+        </div>
+
+    </div>
+</div>
+
+<script src="~/Public/highchart/js/highcharts.js"></script>
+<script src="~/Public/highchart/js/modules/exporting.js"></script>
+<script src="~/Public/datetimepicker/js/bootstrap-datetimepicker.js"></script>
+<script src="~/Public/datetimepicker/js/bootstrap-datetimepicker.zh-CN.js"></script>
+<script src="~/Public/content/examstatisticalchart/js/examstatisticalchart.js?v=@DateTime.Now.ToString("yyyyMMddHHmmss")"></script>

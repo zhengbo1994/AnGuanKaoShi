@@ -1,0 +1,151 @@
+﻿@{
+    Layout = null;
+}
+<link href="~/Public/content/certificateprintonline/css/certificateprintonline.css" rel="stylesheet" />
+
+<link href="~/Public/datetimepicker/css/bootstrap-datetimepicker.css" rel="stylesheet" />
+<link href="~/Public/chosen/css/chosen.css" rel="stylesheet" />
+
+
+
+
+<div class="row">
+    <div class="col-xs-12">
+        <div class="widget-box">
+            <div class="widget-header">
+                <h4 class="widget-title">查询区域</h4>
+
+                <div class="widget-toolbar">
+                    <a href="#" data-action="collapse">
+                        <i class="ace-icon fa fa-chevron-up"></i>
+                    </a>
+                </div>
+                <div class="widget-toolbar">
+                    <a id="btnCertificatePrintOnline_Query" href="#">
+                        <i class="ace-icon fa fa-search">查询</i>
+                    </a>
+                </div>
+            </div>
+
+            <div class="widget-body">
+                <div id="divCertificatePrintOnline_QueryArea" class="widget-main form-horizontal ">
+                    <div class="row">
+                        <div class="col-xs-3 ">
+                            <label class="control-label col-xs-4 ">企业名称</label>
+                            <input class="col-xs-8" type="text" name="enterpriseName">
+                        </div>
+                        <div class="col-xs-3 ">
+                            <label class="control-label col-xs-4 ">姓名</label>
+                            <input class="col-xs-8" type="text" name="employeeName">
+                        </div>
+                        <div class="col-xs-3 ">
+                            <label class="control-label col-xs-4 ">身份证号</label>
+                            <input class="col-xs-8" type="text" name="idNumber">
+                        </div>
+                        <div class="col-xs-3 ">
+                            <label class="control-label col-xs-4 ">证书编号</label>
+                            <input class="col-xs-8" type="text" name="certificateNo">
+                        </div>
+                    </div>
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<br />
+
+<div class="row">
+    <div class="col-xs-12">
+        <div class="widget-box">
+            <div class="widget-header">
+                <h4 class="widget-title">证书打印</h4>
+                <div class="widget-toolbar">
+                    <a id="btnCertificatePrintOnline_Print" href="#">
+                        <i class="ace-icon glyphicon glyphicon-print">打印</i>
+                    </a>
+                </div>
+            </div>
+            <table id="gridCertificatePrintOnline_main"></table>
+            <div id="pagerCertificatePrintOnline_main"></div>
+
+        </div>
+    </div>
+
+</div>
+
+<div id="divCertificatePrintOnline_Print" class="print-box visible-print-block">
+    <div class="print-main">
+        <img src="~/Public/content/certificateprintonline/image/安全生产考核合格证书.png">
+        <div class="print-content">
+            <table width="100%">
+                <tr>
+                    <td><span style="font-size:18px;font-weight:700;font-family:'Microsoft YaHei'">姓&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;名：</span></td>
+                    <td><span style="font-size:18px;font-family:'Microsoft YaHei'" name="EmployeeName"></span></td>
+                    <td name="tdPhoto" rowspan="6"></td>
+                </tr>
+                <tr>
+                    <td><span style="font-size:18px;font-weight:700;font-family:'Microsoft YaHei'">性&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;别：</span></td>
+                    <td><span style="font-size:18px;font-family:'Microsoft YaHei'" name="Sex"></span></td>
+                </tr>
+                <tr>
+                    <td><span style="font-size:18px;font-weight:700;font-family:'Microsoft YaHei'">出生年月：</span></td>
+                    <td><span style="font-size:18px;font-family:'Microsoft YaHei'" name="Birthday"></span></td>
+                </tr>
+                <tr>
+                    <td><span style="font-size:18px;font-weight:700;font-family:'Microsoft YaHei'">身份证号：</span></td>
+                    <td><span style="font-size:18px;font-family:'Microsoft YaHei'" name="IDNumber"></span></td>
+                </tr>
+                <tr>
+                    <td><span style="font-size:18px;font-weight:700;font-family:'Microsoft YaHei'">职&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;务：</span></td>
+                    <td colspan="2"><span style="font-size:18px;font-family:'Microsoft YaHei'" name="Job"></span></td>
+                </tr>
+                <tr>
+                    <td><span style="font-size:18px;font-weight:700;font-family:'Microsoft YaHei'">技术职称：</span></td>
+                    <td colspan="2"><span style="font-size:18px;font-family:'Microsoft YaHei'" name="Title4Technical"></span></td>
+                </tr>
+                <tr>
+                    <td><span style="font-size:18px;font-weight:700;font-family:'Microsoft YaHei'">企业名称：</span></td>
+                    <td colspan="2"><span style="font-size:18px;font-family:'Microsoft YaHei'" name="EnterpriseName"></span></td>
+                </tr>
+
+                <tr>
+                    <td><span style="font-size:18px;font-weight:700;font-family:'Microsoft YaHei'">证书编号：</span></td>
+                    <td colspan="2"><span style="font-size:18px;font-family:'Microsoft YaHei'" name="CertificateNo"></span></td>
+                </tr>
+                <tr>
+                    <td><span style="font-size:18px;font-weight:700;font-family:'Microsoft YaHei'">发证时间：</span></td>
+                    <td colspan="2"><span style="font-size:18px;font-family:'Microsoft YaHei'" name="StartCertificateDate"></span></td>
+                </tr>
+                <tr>
+                    <td><span style="font-size:18px;font-weight:700;font-family:'Microsoft YaHei'">有效日期：</span></td>
+                    <td colspan="2"><span style="font-size:18px;font-family:'Microsoft YaHei'" name="EndCertificateDate"></span></td>
+                </tr>
+            </table>
+        </div>
+
+        <div class="print-foot">
+            <table style="">
+                <tr>
+                    <td name="tdQRCode" rowspan="2" width="50%"></td>
+                    <td><span style="font-size:18px;font-weight:700;font-family:'Microsoft YaHei'">发证机关：</span></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td><span style="font-size:18px;font-weight:700;font-family:'Microsoft YaHei'">批准日期：</span></td>
+                    <td><span style="font-size:18px;font-family:'Microsoft YaHei'" name="StartCertificateDate"></span></td>
+                </tr>
+            </table>
+
+        </div>
+
+    </div>
+</div>
+
+
+<script src="~/Public/chosen/js/chosen.jquery.js"></script>
+<script src="~/Public/jquery.jqprint/js/jquery-browser.js"></script>
+<script src="~/Public/jquery.jqprint/js/jquery.jqprint-0.3.js"></script>
+<script src="~/Public/content/certificateprintonline/js/certificateprintonline.js?v=@DateTime.Now.ToString("yyyyMMddHHmmss")"></script>

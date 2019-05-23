@@ -1,0 +1,172 @@
+﻿@{
+    Layout = null;
+}
+
+<link href="~/Public/datetimepicker/css/bootstrap-datetimepicker.css" rel="stylesheet" />
+<link href="~/Public/content/trainingrecord/css/trainingrecord.css" rel="stylesheet" />
+
+<div class="row">
+    <div class="col-xs-12">
+        <div class="widget-box">
+            <div class="widget-header">
+                <h4 class="widget-title">查询区域</h4>
+
+                <div class="widget-toolbar">
+                    <a href="#" data-action="collapse">
+                        <i class="ace-icon fa fa-chevron-up"></i>
+                    </a>
+                </div>
+                <div class="widget-toolbar">
+                    <a id="btnTrainingRecord_Query" href="#">
+                        <i class="ace-icon fa fa-search">查询</i>
+                    </a>
+                </div>
+            </div>
+
+            <div class="widget-body" style="display: block;">
+                <div id="divTrainingRecord_QueryArea" class="widget-main form-horizontal ">
+                    <div class="row">
+                        <div class="col-xs-4 ">
+                            <label class="control-label col-xs-4 ">姓名</label>
+                            <input class="col-xs-8" type="text" name="EmployeeName">
+                        </div>
+                        <div class="col-xs-4 ">
+                            <label class="control-label col-xs-4 ">身份证号</label>
+                            <input class="col-xs-8" type="text" name="IDNumber">
+                        </div>
+                        <div class="col-xs-4 ">
+                            <label class="control-label col-xs-4 ">报考科目</label>
+                            <select id="divEmployee_QueryAreaExamType" class="col-xs-8" name="ExamType"></select>
+                        </div>
+                    </div>
+                    <br />
+                    <div class="row">
+                        <div class="col-xs-4 ">
+                            <label class="control-label col-xs-4 ">企业名称</label>
+                            <input class="col-xs-8" type="text" name="EnterpriseName">
+                        </div>
+                        <div class="col-xs-4 ">
+                            <label class="control-label col-xs-4 ">培训类型</label>
+                            <select class="col-xs-8" name="TrainingType">
+                                <option value="">全部</option>
+                                <option value="线上培训">线上培训</option>
+                                <option value="线下培训">线下培训</option>
+                            </select>
+                        </div>
+                        <div class="col-xs-4 ">
+                            <label class="control-label col-xs-4 ">培训状态</label>
+                            <select class="col-xs-8" name="TrainingStatus">
+                                <option value="">全部</option>
+                                <option value="未审核">未审核</option>
+                                <option value="审核通过">审核通过</option>
+                                <option value="审核不通过">审核不通过</option>
+                            </select>
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<br />
+
+<div class="row">
+    <div class="col-xs-12">
+        <div class="widget-box">
+            <div class="widget-header">
+                <h4 class="widget-title">培训记录</h4>
+                @*<div class="widget-toolbar">
+                        <a href="#" id="btnTrainingRecord_Submit"><i class="ace-icon fa fa-check">提交</i></a>
+                    </div>*@
+                <div class="widget-toolbar">
+                    <a href="#" id="btnTrainingRecord_Check"><i class="ace-icon fa fa-check">审核</i></a>
+                </div>
+            </div>
+            <table id="gridTrainingRecord_main"></table>
+            <div id="pagerTrainingRecord_main"></div>
+
+        </div>
+    </div>
+
+</div>
+
+
+<div class="modal fade" id="mdlTrainingRecord_Info">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">
+                    <span>&times;</span>
+                </button>
+                <h4 class="modal-title">培训结果</h4>
+            </div>
+            <div class="modal-body">
+
+                <div id="divTrainingRecord_Info" class="form-horizontal">
+                    <input type="hidden" name="Id" />
+                    <input type="hidden" name="EmployeeId" />
+                    <div name="outlineInfo">
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label">累计学习时长</label>
+                            <div class="col-sm-8">
+                                <input type="text" name="StudyTime" class="width-100" />
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label">累计练习时长</label>
+                            <div class="col-sm-8">
+                                <input type="text" name="PracticeTime" class="width-100" />
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label">能力测试成绩</label>
+                            <div class="col-sm-8">
+                                <input type="text" name="AbilityTestResult" class="width-100" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label">备注</label>
+                        <div class="col-sm-8">
+                            <textarea name="Remark" cols="3" rows="3"></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <a name="btnTrainingRecord_CheckPass" class="btn btn-success btn-sm">通&nbsp;过</a>
+                <a name="btnTrainingRecord_CheckNoPass" class="btn btn-danger btn-sm">不通过</a>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="mdlTrainingRecord_StudyInfo">
+    <div class="modal-dialog modal-lg ">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">
+                    <span>&times;</span>
+                </button>
+                <h4 class="modal-title">在线学习记录</h4>
+            </div>
+            <div class="modal-body">
+                <div id="divTrainingRecord_StudyInfo" class="form-horizontal">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-sm" data-dismiss="modal">关闭</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<script src="~/Public/datetimepicker/js/bootstrap-datetimepicker.js"></script>
+<script src="~/Public/datetimepicker/js/bootstrap-datetimepicker.zh-CN.js"></script>
+<script src="~/Public/content/trainingrecord/js/trainingrecord.js?v=@DateTime.Now.ToString("yyyyMMddHHmmss")"></script>

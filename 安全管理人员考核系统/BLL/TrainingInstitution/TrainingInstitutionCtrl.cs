@@ -1,0 +1,170 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+
+using Model;
+using Library.baseFn;
+using DAL;
+using System.Reflection;
+
+namespace BLL
+{
+    public class TrainingInstitutionCtrl : ITrainingInstitutionCtrl
+    {
+        private Sys_Account account;
+        private Uow uow;
+
+        public TrainingInstitutionCtrl(Sys_Account account)
+        {
+            // TODO: Complete member initialization
+            this.account = account;
+            if (uow == null)
+            {
+                uow = new Uow();
+            }
+        }
+        public void InsertTrainingInstitution(Biz_TrainingInstitution traininginstitution)
+        {
+            bool exaistSocialCreditCode = uow.Biz_TrainingInstitution.GetAll().Where(p => p.SocialCreditCode == traininginstitution.SocialCreditCode).Where(p => p.Id != traininginstitution.Id).Count() > 0 ? true : false;
+            if (exaistSocialCreditCode)
+            {
+                throw new Exception("社会信用代码已经存在");
+            }
+            uow.Biz_TrainingInstitution.Add(traininginstitution);
+            uow.Commit();
+            string defaultPassword = System.Web.Configuration.WebConfigurationManager.AppSettings["DefaultPassword"];
+
+            IAccountCtrl accountCtrl = new AccountCtrl(account);
+            Sys_Account newaccount = new Sys_Account()
+            {
+                AccountName = traininginstitution.SocialCreditCode,
+                Password = defaultPassword,
+                UserId = traininginstitution.Id
+            };
+            accountCtrl.AddAccount(newaccount);
+            IRoleCtrl roleCtrl = new RoleCtrl(account);
+            roleCtrl.Assigning2Role(newaccount.Id, "TrainingInstitution");
+        }
+        public void DeleteTrainingInstitutionById(int trainingInstitutionId)
+        {
+            Biz_TrainingInstitution trainingInstitution = uow.Biz_TrainingInstitution.GetById(trainingInstitutionId);
+            if (trainingInstitution.IsNull())
+            {
+                throw new Exception("人员信息不存在");
+            }
+            uow.Biz_TrainingInstitution.Delete(trainingInstitution);
+            uow.Commit();
+        }
+        public void UpdateTrainingInstitution(Biz_TrainingInstitution traininginstitution)
+        {
+
+            bool exaistSocialCreditCode = uow.Biz_TrainingInstitution.GetAll().Where(p => p.SocialCreditCode == traininginstitution.SocialCreditCode).Where(p => p.Id != traininginstitution.Id).Count() > 0 ? true : false;
+            if (exaistSocialCreditCode)
+            {
+                throw new Exception("社会信用代码已经存在");
+            }
+            Biz_TrainingInstitution oldTrainingInstitution = uow.Biz_TrainingInstitution.GetById(traininginstitution.Id);
+            oldTrainingInstitution.Id = traininginstitution.Id;
+            oldTrainingInstitution.InstitutionName = traininginstitution.InstitutionName;
+            oldTrainingInstitution.SocialCreditCode = traininginstitution.SocialCreditCode;
+            oldTrainingInstitution.LegalRepresentative = traininginstitution.LegalRepresentative;
+            oldTrainingInstitution.LegalRepresentativeNumber = traininginstitution.LegalRepresentativeNumber;
+            oldTrainingInstitution.ContactPerson = traininginstitution.ContactPerson;
+            oldTrainingInstitution.ContactNumber = traininginstitution.ContactNumber;
+            oldTrainingInstitution.City = traininginstitution.City;
+            oldTrainingInstitution.Area = traininginstitution.Area;
+            oldTrainingInstitution.Email = traininginstitution.Email;
+            oldTrainingInstitution.Address = traininginstitution.Address;
+            uow.Biz_TrainingInstitution.Update(oldTrainingInstitution);
+            uow.Commit();
+        }
+        public List<Biz_TrainingInstitution> GetTrainingInstitutionList(string InstitutionName, string SocialCreditCode, string City, string Area, int page, int rows, ref int totalCount, List<string> cityList)
+        {
+            IQueryable<Biz_TrainingInstitution> iQueryable = uow.Biz_TrainingInstitution.GetAll();
+
+            #region //数据权限 本市看本市自己的考核点 管理员和省总站看所有
+            if (account.RoleList.Where(p => p.RoleType == RoleCtrl.RoleType.Admin).Count() > 0)
+            {
+
+            }
+            else if (account.RoleList.Where(p => p.RoleType == RoleCtrl.RoleType.Master).Count() > 0)
+            {//不显示测试市 数据
+                iQueryable = iQueryable.Where(p => p.City != "测试市");
+            }
+            else if (account.RoleList.Where(p => p.RoleType == RoleCtrl.RoleType.Manager).Count() > 0)
+            {
+                iQueryable = iQueryable.Where(p => cityList.Contains(p.City));
+            }
+            else
+            {
+                iQueryable = iQueryable.Where(p => false);
+            }
+            #endregion
+
+            if (!InstitutionName.IsNull())
+            {
+                iQueryable = iQueryable.Where(p => p.InstitutionName.Contains(InstitutionName));
+            }
+            if (!SocialCreditCode.IsNull())
+            {
+                iQueryable = iQueryable.Where(p => p.SocialCreditCode == SocialCreditCode);
+            }
+            if (!City.IsNull())
+            {
+                iQueryable = iQueryable.Where(p => p.City == City);
+            }
+            if (!Area.IsNull())
+            {
+                iQueryable = iQueryable.Where(p => p.Area == Area);
+            }
+
+            totalCount = iQueryable.Count();
+            int indexBegin = (page - 1) * rows;
+            iQueryable = iQueryable.OrderBy(P => P.Id).Skip(indexBegin).Take(rows);
+
+            List<Biz_TrainingInstitution> trainingInstitutionList = iQueryable.ToList();
+
+            return trainingInstitutionList;
+        }
+        public List<Biz_TrainingInstitution> GetTrainingInstitutionListByCityList(List<string> cityList)
+        {
+            List<Biz_TrainingInstitution> trainingInstitutionList = uow.Biz_TrainingInstitution.GetAll().Where(p => cityList.Contains(p.City)).OrderBy(p => p.Id).ToList();
+            return trainingInstitutionList;
+        }
+        public List<Biz_TrainingInstitution> GetAccreditTrainingInstitutionList()
+        {
+            List<Biz_TrainingInstitution> trainingInstitutionList = uow.Biz_TrainingInstitution.GetAll()
+                .Join(uow.Biz_TrainingInstitutionAccredit.GetAll(), a => a.Id, b => b.TrainingInstitutionId, (a, b) => new { a,b}).Select(o=>o.a).OrderBy(p => p.Id).ToList();
+            return trainingInstitutionList;
+        }
+        public List<Biz_TrainingInstitution> GetTrainingInstitutionList()
+        {
+            List<Biz_TrainingInstitution> trainingInstitutionList = uow.Biz_TrainingInstitution.GetAll().ToList();
+            return trainingInstitutionList;
+        }
+        public Biz_TrainingInstitution GetTrainingInstitutionById(int trainingInstitutionId)
+        {
+            Biz_TrainingInstitution trainingInstitution = uow.Biz_TrainingInstitution.GetById(trainingInstitutionId);
+            return trainingInstitution;
+        }
+        public List<Biz_TrainingInstitution> GetTrainingInstitutionByIdList(List<int> trainingInstitutionIdList)
+        {
+            List<Biz_TrainingInstitution> trainingInstitutionList = uow.Biz_TrainingInstitution.GetAll().Where(p => trainingInstitutionIdList.Contains(p.Id)).ToList();
+            return trainingInstitutionList;
+        }
+
+        public bool VerifyTrainingInstitutionAccredit(int trainingInstitutionId)
+        {
+            int existsCount = uow.Biz_TrainingInstitutionAccredit.GetAll().Where(p => p.TrainingInstitutionId == trainingInstitutionId).Count();
+            if (existsCount > 0)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+    }
+}

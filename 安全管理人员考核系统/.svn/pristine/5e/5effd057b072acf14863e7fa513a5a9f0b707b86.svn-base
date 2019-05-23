@@ -1,0 +1,349 @@
+﻿
+'use strict'
+$(function () {
+
+    var controllerName = "ExamStatisticalChart";
+    var $gridEnterprisePassRate = $("#gridExamStatisticalChart_PassRateForEnterpriseGrid");
+    var $pagerEnterprisePassRate = $("#pagerExamStatisticalChart_PassRateForEnterpriseGrid");
+
+    var initPassRateByCityChart = function () {
+
+        var $divQueryArea = $("#formExamStatisticalChart_PassRateForCityQueryArea");
+
+        var $divChartContainer = $("#divExamStatisticalChart_PassRateForCityChartContainer");
+
+        var getPassRateDataByCity = function () {
+            var dataResult = {};
+            var queryData = getJson($divQueryArea)
+            ajaxRequest({
+                url: "/" + controllerName + "/GetPassRateDataForCity",
+                type: "post",
+                datatype: "json",
+                data: queryData,
+                async: false,
+                success: function (jdata) {
+                    dataResult = jdata;
+                },
+                error: function () {
+                    dataResult = null;
+                }
+            });
+            return dataResult;
+        }
+
+        var getCityList = function () {
+            var dataResult = {};
+            ajaxRequest({
+                url: "/" + controllerName + "/GetCityList",
+                type: "post",
+                datatype: "json",
+                async: false,
+                success: function (jdata) {
+                    dataResult = jdata;
+                },
+                error: function () {
+                    dataResult = null;
+                }
+            });
+            return dataResult;
+
+        }
+
+        var passRateData = getPassRateDataByCity();
+
+        var cityList = getCityList();
+
+        $divChartContainer.empty();
+
+        var $divChart = $("<div id='divExamStatisticalChart_PassRateForCityChart'>");
+
+        $divChartContainer.append($divChart);
+
+        debugger;
+
+        //var $chart = new Highcharts.Chart('divExamStatisticalChart_PassRateForCityChart', {
+
+        //    //var $chart = $divChart.highcharts({
+        //    chart: {
+        //        type: 'column',
+        //        reflow: true
+        //    },
+        //    credits: {
+        //        enabled: false
+        //    },
+        //    title: {
+        //        text: ''
+        //    },
+        //    subtitle: {
+        //        text: ''
+        //    },
+        //    xAxis: {
+        //        categories: cityList,
+        //        crosshair: true
+        //    },
+        //    yAxis: {
+        //        min: 0,
+        //        title: {
+        //            text: '人数'
+        //        }
+        //    },
+        //    tooltip: {
+        //        headerFormat: '<span style="font-size:10px">{point.key}</span><table>',
+        //        pointFormat: '<tr><td style="color:{series.color};padding:0">{series.name}: </td>' +
+        //        '<td style="padding:0"><b>{point.y:.0f}</b></td></tr>',
+        //        footerFormat: '</table>',
+        //        shared: true,
+        //        useHTML: true
+        //    },
+        //    plotOptions: {
+        //        column: {
+        //            pointPadding: 0.2,
+        //            borderWidth: 0
+        //        }
+        //    },
+        //    series: passRateData
+        //});
+
+        //var $chart = new Highcharts.Chart('divExamStatisticalChart_PassRateForCityChart', {
+        //    chart: {
+        //        zoomType: 'xy'
+        //    },
+        //    title: {
+        //        text: '东京月平均温度和降雨量'
+        //    },
+        //    subtitle: {
+        //        text: '数据来源: WorldClimate.com'
+        //    },
+        //    xAxis: [{
+        //        categories: cityList,
+        //        crosshair: true
+        //    }],
+        //    yAxis: [{ // Primary yAxis
+        //        labels: {
+        //            format: '{value}°C',
+        //            style: {
+        //                color: Highcharts.getOptions().colors[1]
+        //            }
+        //        },
+        //        title: {
+        //            text: '温度',
+        //            style: {
+        //                color: Highcharts.getOptions().colors[1]
+        //            }
+        //        }
+        //    }, { // Secondary yAxis
+        //        title: {
+        //            text: '降雨量',
+        //            style: {
+        //                color: Highcharts.getOptions().colors[0]
+        //            }
+        //        },
+        //        labels: {
+        //            format: '{value} mm',
+        //            style: {
+        //                color: Highcharts.getOptions().colors[0]
+        //            }
+        //        },
+        //        opposite: true
+        //    }],
+        //    tooltip: {
+        //        shared: true
+        //    },
+        //    legend: {
+        //        layout: 'vertical',
+        //        align: 'left',
+        //        x: 120,
+        //        verticalAlign: 'top',
+        //        y: 100,
+        //        floating: true,
+        //        backgroundColor: (Highcharts.theme && Highcharts.theme.legendBackgroundColor) || '#FFFFFF'
+        //    },
+        //    series: passRateData
+        //});
+
+
+        var $chart = new Highcharts.Chart('divExamStatisticalChart_PassRateForCityChart', {
+            chart: {
+                zoomType: 'xy'
+            },
+            title: {
+                text: ''
+            },
+            xAxis: [{
+                categories: cityList,
+                crosshair: true
+            }],
+            yAxis: [{ // Primary yAxis
+                labels: {
+                    format: '{value}人',
+                    style: {
+                        color: Highcharts.getOptions().colors[1]
+                    }
+                },
+                title: {
+                    text: '人数',
+                    style: {
+                        color: Highcharts.getOptions().colors[1]
+                    }
+                }
+            }, { // Secondary yAxis
+                title: {
+                    text: '通过率',
+                    style: {
+                        color: Highcharts.getOptions().colors[0]
+                    }
+                },
+                labels: {
+                    format: '{value}%',
+                    style: {
+                        color: Highcharts.getOptions().colors[0]
+                    }
+                },
+                opposite: true
+            }],
+            tooltip: {
+                shared: true
+            },
+
+            series: passRateData
+        });
+
+        $chart.reflow();
+
+    }
+
+    var initQueryArea = function () {
+
+        var $passRateForCityExamDateTimeBegin = $("#formExamStatisticalChart_PassRateForCityQueryArea").find("[name='ExamDateTimeBegin']");
+        var $passRateForCityExamDateTimeEnd = $("#formExamStatisticalChart_PassRateForCityQueryArea").find("[name='ExamDateTimeEnd']");
+
+        var $passRateForEnterpriseExamDateTimeBegin = $("#divExamStatisticalChart_PassRateForEnterpriseQueryArea").find("[name='ExamDateTimeBegin']");
+        var $passRateForEnterpriseExamDateTimeEnd = $("#divExamStatisticalChart_PassRateForEnterpriseQueryArea").find("[name='ExamDateTimeEnd']");
+
+        setInputAsDatePlug($passRateForCityExamDateTimeBegin);
+        setInputAsDatePlug($passRateForCityExamDateTimeEnd);
+
+        setInputAsDatePlug($passRateForEnterpriseExamDateTimeBegin);
+        setInputAsDatePlug($passRateForEnterpriseExamDateTimeEnd);
+
+        var dateBegin = (new Date()).addDays(-30).toFormatString("yyyy-MM-dd");
+        $passRateForCityExamDateTimeBegin.val(dateBegin);
+        $passRateForEnterpriseExamDateTimeBegin.val(dateBegin);
+
+        var dateEnd = (new Date()).toFormatString("yyyy-MM-dd");
+        $passRateForCityExamDateTimeEnd.val(dateEnd);
+        $passRateForEnterpriseExamDateTimeEnd.val(dateEnd);
+
+        $("#btnExamStatisticalChart_PassRateForCityQuery").on("click", function () {
+
+            initPassRateByCityChart();
+
+        })
+
+        $("#btnExamStatisticalChart_PassRateForEnterpriseQuery").on("click", function () {
+
+            var queryData = {};
+            var divQueryArea = $("#divExamStatisticalChart_PassRateForEnterpriseQueryArea")
+            queryData = getJson(divQueryArea)
+            $gridEnterprisePassRate.jqGrid("setGridParam", { page: 1, postData: queryData }).trigger("reloadGrid");
+
+
+        })
+
+    }
+
+    var initEnterprisePassRateGrid = function () {
+        var queryData = {};
+        var divQueryArea = $("#divExamStatisticalChart_PassRateForEnterpriseQueryArea")
+        queryData = getJson(divQueryArea)
+        debugger;
+        $gridEnterprisePassRate.jqGrid({
+            url: "/" + controllerName + "/GetPassRateDataForEnterprise",
+            datatype: "json",
+            postData: queryData,
+            colNames: ["企业名称", "报名人数", "参考人数", "合格人数", "通过率"],
+            colModel: [
+                    { name: "EnterpriseName", index: "EnterpriseName", align: "center", width: 200 },
+                    { name: "TotalCount", index: "LegalRepresentative", align: "center", width: 50 },
+                    { name: "TakeCount", index: "LegalRepresentativeNumber", align: "center", width: 80 },
+                    { name: "PassCount", index: "ContactPerson", align: "center", width: 50 },
+                    { name: "PassRate", index: "ContactNumber", align: "center", width: 80 }
+            ],
+            autowidth: true,
+            rowNum: 20,
+            altRows: true,
+            pgbuttons: true,
+            viewrecords: true,
+            shrinkToFit: true,
+            pginput: true,
+            rowList: [10, 20, 30, 50, 70, 100],
+            pager: $pagerEnterprisePassRate,
+            loadComplete: function () {
+                var table = this;
+                updatePagerIcons(table);
+                jqGridAutoWidth();
+                setGridHeight($gridEnterprisePassRate.selector);
+
+            }
+        });
+    }
+
+
+
+
+
+    $('#tabExamStatisticalChart_Chart2_Container').highcharts({
+        chart: {
+            plotBackgroundColor: null,
+            plotBorderWidth: null,
+            marginRight: 120,
+            plotShadow: false
+        },
+        credits: {
+            enabled: false
+        },
+        legend: {
+            align: 'right',
+            verticalAlign: 'top',
+            layout: "vertical",
+            x: 0,
+            y: 100
+        },
+        title: { text: '' },
+        tooltip: { pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>' },
+        plotOptions: {
+            pie: {
+                allowPointSelect: true,
+                cursor: 'pointer',
+                dataLabels: { enabled: false },
+                showInLegend: true
+            }
+        },
+        series: [{
+            type: 'pie', name: '百分比',
+            data: [['A类人员', 45.0], ['B类人员', 26.8], { name: 'C1类人员', y: 12.8, sliced: true, selected: true }, ['C2类人员', 8.5], ['C3类人员', 6.2]]
+        }]
+    });
+
+
+
+    $("#tabExamStatisticalChart_Chart2").on("click", function () {
+
+        setTimeout(function () {
+            $('#tabExamStatisticalChart_Chart2_Container').highcharts().reflow();
+        }, 10)
+
+
+
+    })
+
+
+    //页面加载时运行
+    $(document).ready(function () {
+        initQueryArea();
+        initPassRateByCityChart();
+        initEnterprisePassRateGrid();
+
+    })
+
+})

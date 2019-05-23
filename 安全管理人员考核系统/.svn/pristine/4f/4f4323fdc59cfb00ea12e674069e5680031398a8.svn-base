@@ -1,0 +1,87 @@
+﻿using System.Data.Entity;
+using Model;
+
+
+namespace DAL
+{
+    public class DatabaseContext : DbContext
+    {
+
+        public DatabaseContext()
+            : base("DefaultConnection")
+        {
+        }
+
+
+        public DatabaseContext(string connection)
+            : base(connection)
+        {
+        }
+
+        public DbSet<Sys_Account> Sys_Account { get; set; }
+        public DbSet<Sys_Role> Sys_Role { get; set; }
+        public DbSet<Sys_Permission> Sys_Permission { get; set; }
+        public DbSet<Sys_Page> Sys_Page { get; set; }
+        public DbSet<Sys_DataPermissionHead> Sys_DataPermissionHead { get; set; }
+        public DbSet<Sys_DataPermissionDetail> Sys_DataPermissionDetail { get; set; }
+        public DbSet<Sys_RelAccountRole> Sys_RelAccountRole { get; set; }
+        public DbSet<Sys_RelRolePermission> Sys_RelRolePermission { get; set; }
+        public DbSet<Sys_RelPermissionPage> Sys_RelPermissionPage { get; set; }
+        public DbSet<Sys_RelRoleDataPermissionDetail> Sys_RelRoleDataPermissionDetail { get; set; }
+
+        public DbSet<Biz_Employee> Biz_Employee { get; set; }
+
+        public DbSet<Biz_EmployeeCheckedRecord> Biz_EmployeeCheckedRecord { get; set; }
+        public DbSet<Biz_ExamPlanRecord> Biz_ExamPlanRecord { get; set; }
+        public DbSet<Biz_EmployeeForExamPlanRecord> Biz_EmployeeForExamPlanRecord { get; set; }
+        public DbSet<Biz_EmployeeExamResultRecord> Biz_EmployeeExamResultRecord { get; set; }
+        public DbSet<Biz_EmployeeExamResultCheckedRecord> Biz_EmployeeExamResultCheckedRecord { get; set; }
+        public DbSet<Biz_EmployeeCertificateIssuanceRecord> Biz_EmployeeCertificateIssuanceRecord { get; set; }
+        public DbSet<Biz_City> Biz_CityRecord { get; set; }
+        public DbSet<Biz_Area> Biz_AreaRecord { get; set; }
+        public DbSet<Sys_DropdownListItem> Sys_DropdownListItem { get; set; }
+        public DbSet<Biz_Enterprise> Biz_Enterprise { get; set; }
+        public DbSet<Biz_ExaminationPoint> Biz_ExaminationPoint { get; set; }
+        public DbSet<Biz_TrainingInstitution> Biz_TrainingInstitution { get; set; }
+        public DbSet<Biz_ExaminationRoom> Biz_ExaminationRoom { get; set; }
+        public DbSet<Biz_EmployeeExamResultRecordFile> Biz_EmployeeExamResultRecordFile { get; set; }
+        public DbSet<Biz_PaperForExamType> Biz_PaperForExamType { get; set; }
+        public DbSet<Biz_EmployeeFile> Biz_EmployeeFile { get; set; }
+        public DbSet<Biz_TrainingRecord> Biz_TrainingRecord { get; set; }
+        public DbSet<Biz_CertificatePrintRecord> Biz_CertificatePrintRecord { get; set; }
+        public DbSet<Biz_Certificate> Biz_Certificate { get; set; }
+        public DbSet<Biz_News> Biz_News { get; set; }
+        public DbSet<Biz_EnterpriseWebServiceResult> Biz_EnterpriseWebServiceResult { get; set; }
+        public DbSet<Biz_CertificateOperationRecord> Biz_CertificateOperationRecord { get; set; }
+        public DbSet<Biz_CertificateChangeRecord> Biz_CertificateChangeRecord { get; set; }
+        public DbSet<Biz_StudyByVideoRecoder> Biz_StudyByVideoRecoder { get; set; }
+        public DbSet<Biz_ExamRoomNVR> Biz_ExamRoomNVR { get; set; }
+        public DbSet<Biz_OnlineExerciseRecord> Biz_OnlineExerciseRecord { get; set; }
+        public DbSet<Biz_SimulatedExamRecord> Biz_SimulatedExamRecord { get; set; }
+
+        public DbSet<Biz_StudyByVideoComplete> Biz_StudyByVideoComplete { get; set; }
+
+        public DbSet<Biz_RP_EmployeeRegistration> Biz_RP_EmployeeRegistration { get; set; }
+        public DbSet<Biz_RP_EmployeeDataCheckedRecord> Biz_RP_EmployeeDataCheckedRecord { get; set; }
+        public DbSet<Biz_RP_EmployeeCheckedRecord> Biz_RP_EmployeeCheckedRecord { get; set; }
+        public DbSet<Biz_RelEmployeeCertificate> Biz_RelEmployeeCertificate { get; set; }
+        public DbSet<Biz_RelRPEmployeeCertificate> Biz_RelRPEmployeeCertificate { get; set; }
+        public DbSet<Biz_EmployeeAuthentication> Biz_EmployeeAuthentication { get; set; }
+        public DbSet<Biz_RP_CertificatePrintRecord> Biz_RP_CertificatePrintRecord { get; set; }
+        public DbSet<Biz_RP_EmployeeFile> Biz_RP_EmployeeFile { get; set; }
+        public DbSet<Biz_CertificateAuthenticationLog> Biz_CertificateAuthenticationLog { get; set; }
+        public DbSet<Biz_CertificateDelayApplyRecord> Biz_CertificateDelayApplyRecord { get; set; }
+        public DbSet<Biz_CertificateDelayDataCheckedRecord> Biz_CertificateDelayDataCheckedRecord { get; set; }
+        public DbSet<Biz_CertificateDelayConfirmRecord> Biz_CertificateDelayConfirmRecord { get; set; }
+        public DbSet<Biz_CertificateDelayFile> Biz_CertificateDelayFile { get; set; }
+
+        public DbSet<Biz_XX_CertificateDelayApplyRecord> Biz_XX_CertificateDelayApplyRecord { get; set; }
+        public DbSet<Biz_XX_CertificateDelayDataCheckedRecord> Biz_XX_CertificateDelayDataCheckedRecord { get; set; }
+        public DbSet<Biz_XX_CertificateDelayFile> Biz_XX_CertificateDelayFile { get; set; }
+        public DbSet<Biz_TrainingInstitutionAccredit> Biz_TrainingInstitutionAccredit { get; set; }
+        public DbSet<Biz_CertificateDelayAuthentication> Biz_CertificateDelayAuthentication { get; set; }
+        public DbSet<Biz_RelCertificateDelayAuthentication> Biz_RelCertificateDelayAuthentication { get; set; }
+        public DbSet<Biz_XX_CertificateDelayAuthentication> Biz_XX_CertificateDelayAuthentication { get; set; }
+
+    }
+}

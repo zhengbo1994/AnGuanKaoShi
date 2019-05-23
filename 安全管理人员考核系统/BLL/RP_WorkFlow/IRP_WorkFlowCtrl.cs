@@ -1,0 +1,23 @@
+﻿using Model;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+
+namespace BLL
+{
+    public interface IRP_WorkFlowCtrl
+    {
+
+        void RegisterRPEmployee(Biz_RP_EmployeeRegistration rp_employeeRegistration);
+        void SubmitRPEmployeeRegistrationRecord(List<int> RPEmployeeIdList);
+        void CheckEmployeeData(bool inValidityDate, bool annualSafetyTraining, bool notBadBehavior, bool trainingWith24Hours, bool delayConditions, bool passStatus, string checkedMark, List<int> rpEmployeeList);
+        void CheckRPEmployee(List<int> RPEmployeeIdList, bool checkPass, string checkedMark);
+        RP_WorkFlowCtrl.WorkFlowStatus GetCurrentWorkFlowStatus(int employeeId);
+        List<RP_WorkFlowCtrl.WorkFlowStatus> GetCurrentWorkFlowStatusByEmployeeIdList(List<int> employeeIdList);
+
+        List<RP_WorkFlowCtrl.WorkFlowStatus> GetCurrentWorkFlowStatusByCertificateNoList(List<string> certificateNoList);
+
+        IQueryable<Biz_Certificate> GetCertificateWorkFlowStatusQueryable(string workflowStatus);
+    }
+}

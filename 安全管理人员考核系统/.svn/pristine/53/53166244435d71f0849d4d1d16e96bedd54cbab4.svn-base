@@ -1,0 +1,160 @@
+﻿@{
+    Layout = null;
+}
+
+<link href="~/Public/datetimepicker/css/bootstrap-datetimepicker.css" rel="stylesheet" />
+<link href="~/Public/content/employee/css/employeeinformation.css" rel="stylesheet" />
+
+<div class="row">
+    <div class="col-xs-12">
+        <div class="widget-box">
+            <div class="widget-header">
+                <h4 class="widget-title">查询区域</h4>
+
+                <div class="widget-toolbar">
+                    <a href="#" data-action="collapse">
+                        <i class="ace-icon fa fa-chevron-up"></i>
+                    </a>
+                </div>
+                <div class="widget-toolbar">
+                    <a id="btnEmployeeInformation_Query" href="#">
+                        <i class="ace-icon fa fa-search">查询</i>
+                    </a>
+                </div>
+            </div>
+
+            <div class="widget-body" style="display: block;">
+                <div id="divEmployeeInformation_QueryArea" class="widget-main form-horizontal ">
+                    <div class="row">
+                        <div class="col-md-4 ">
+                            <label class="control-label col-xs-4 ">姓名</label>
+                            <input class="col-xs-8" type="text" name="EmployeeName">
+                        </div>
+                        <div class="col-md-4 ">
+                            <label class="control-label col-xs-4 ">身份证号</label>
+                            <input class="col-xs-8" type="text" name="IDNumber">
+                        </div>
+                        <div class="col-md-4 ">
+                            <label class="control-label col-xs-4 ">企业名称</label>
+                            <input class="col-xs-8" type="text" name="EnterpriseName">
+                        </div>
+                    </div>
+                    <br />
+                    <div class="row">
+                        <div class="col-md-4 ">
+                            <label class="control-label col-xs-4 ">报考科目</label>
+                            <select class="col-xs-8" name="ExamType"></select>
+                        </div>
+                        <div class="col-md-4 ">
+                            <label class="control-label col-xs-4 ">报考行业</label>
+                            <select class="col-xs-8" name="Industry"></select>
+                        </div>
+
+                        <div class="col-md-4 ">
+                            <label class="control-label col-xs-4 ">当前状态</label>
+                            <select class="col-xs-8" name="WorkFlowStatus">
+                                <option value="">全部</option>
+                                <option value="报名未提交">报名未提交</option>
+                                <option value="报名已提交">报名已提交</option>
+                                <option value="培训中">培训中</option>
+                                <option value="培训完成">培训完成</option>
+                                <option value="报名确认未通过">报名确认未通过</option>
+                                <option value="报名确认通过">报名确认通过</option>
+                                <option value="考试计划已制定">考试计划已制定</option>
+                                <option value="考试计划已提交">考试计划已提交</option>
+                                <option value="考核结果已提交">考核结果已提交</option>
+                                <option value="考核结果审核通过">考核结果审核通过</option>
+                                <option value="考核结果审核未通过">考核结果审核未通过</option>
+                                <option value="证书已发放">证书已发放</option>
+                            </select>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<br />
+
+<div class="row">
+    <div class="col-xs-12">
+        <div class="widget-box">
+            <div class="widget-header">
+                <h4 class="widget-title">人员信息</h4>
+            </div>
+            <table id="gridEmployeeInformation_main"></table>
+            <div id="pagerEmployeeInformation_main"></div>
+        </div>
+    </div>
+
+</div>
+
+<div class="modal fade" id="mdlEmployeeInformation_EmployeeInfo">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">
+                    <span>&times;</span>
+                </button>
+                <h3 class="modal-title">报名信息明细</h3>
+            </div>
+            <div class="modal-body">
+                <div id="divEmployeeInformation_EmployeeInfo" class="form-horizontal">
+                    <input type="hidden" name="Id" />
+                    <table class="table table-bordered text-center table">
+                        <tr>
+                            <td colspan="1">姓名<span class="text-danger"> ❉ </span></td>
+                            <td colspan="1"><input type="text" name="EmployeeName" data-verify="notempty" data-verify-errormessage="姓名为必填项，请检查" @*data-placement="right"*@ /></td>
+                            <td colspan="1">性别</td>
+                            <td colspan="1">
+                                <label><input type="radio" checked name="Sex" value="男" />男</label>
+                                <label><input type="radio" name="Sex" value="女" />女</label>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="1">身份证号<span class="text-danger"> ❉ </span></td>
+                            <td colspan="1"><input type="text" id="divEmployee_EmployeeInfoIDNumber" name="IDNumber" data-verify="notempty" data-verify-errormessage="身份证号为必填项，请检查" /></td>
+                            <td colspan="1">出生年月</td>
+                            <td colspan="1"><input type="text" id="divEmployee_EmployeeInfoBirthday" name="Birthday" readonly /></td>
+                        </tr>
+
+                        <tr>
+                            <td colspan="1">职务<span class="text-danger"> ❉ </span></td>
+                            <td colspan="1"><input type="text" name="Job" data-verify="notempty" data-verify-errormessage="职务为必填项，请检查" /></td>
+                            <td colspan="1">技术职称<span class="text-danger"> ❉ </span></td>
+                            <td colspan="1"><input type="text" name="Title4Technical" data-verify="notempty" data-verify-errormessage="技术职称为必填项，请检查" /></td>
+                        </tr>
+                        <tr>
+                            <td colspan="1">报考行业<span class="text-danger"> ❉ </span></td>
+                            <td colspan="1"><select id="divEmployee_EmployeeInfoIndustry" name="Industry" data-verify="notempty" data-verify-errormessage="报考行业为必填项，请检查"></select></td>
+                            <td colspan="1">报考类型<span class="text-danger"> ❉ </span></td>
+                            <td colspan="1"><select id="divEmployee_EmployeeInfoExamType" name="ExamType" data-verify="notempty" data-verify-errormessage="报考类型为必填项，请检查"></select></td>
+                        </tr>
+                        <tr>
+                            <td colspan="1">所属企业</td>
+                            <td colspan="3">
+
+                                <input type="text" id="txtEmployee_SelectedEnterpriseName" readonly />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="1">备注</td>
+                            <td colspan="3"><input type="text" name="Remark" /></td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="btnEmployeeInformation_EmployeeInfoConfirm" class="btn btn-info btn-sm">确定</button>
+                <button class="btn btn-sm" data-dismiss="modal">关闭</button>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<script src="~/Public/datetimepicker/js/bootstrap-datetimepicker.js"></script>
+<script src="~/Public/datetimepicker/js/bootstrap-datetimepicker.zh-CN.js"></script>
+<script src="~/Public/content/employeeinformation/js/employeeinformation.js?v=@DateTime.Now.ToString("yyyyMMddHHmmss")"></script>

@@ -1,0 +1,80 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using Model;
+using DAL;
+
+namespace BLL
+{
+    public interface IEmployeeCtrl
+    {
+        // string GetEmployeeExamResultRecordByIdNumber(string iDNumber);
+        Biz_Employee GetEmployeeById(int id);
+        List<Biz_EmployeeExamResultRecord> GetEmployeeExamResultRecordListByEmployeeId(List<int> employeeIdList);
+
+        List<Biz_EmployeeExamResultRecord> GetEmployeeExamResultRecordListByEmployeeIdList(List<int> employeeIdList);
+        void SaveStudyByVideoRecord(Biz_StudyByVideoRecoder studyByVideoRecoder);
+        void SaveStudyByVideoComplete(Biz_StudyByVideoComplete StudyByVideoComplete);
+        List<Biz_StudyByVideoComplete> GetStudyByVideoCompleteList(List<string> idNumberList);
+        List<Biz_StudyByVideoComplete> GetStudyByVideoCompleteList(string idNumber);
+        List<Biz_StudyByVideoRecoder> GetStudyByVideoRecoderListByEmployeeId(int employeeId);
+        List<Biz_StudyByVideoRecoder> GetStudyByVideoRecoderListByIDNumber(string idNumber);
+        List<Biz_OnlineExerciseRecord> GetOnlineExerciseRecordListByIDNumber(string iDNumber);
+        Biz_EmployeeFile GetEmployeeFile(int employeeId, string fileType);
+
+        void AddOnlineExerciseRecord(Biz_OnlineExerciseRecord onlineExerciseRecord);
+        void AddSimulatedExamRecord(Biz_SimulatedExamRecord simulatedExamRecord);
+
+        Biz_EmployeeFile GetEmployeeFile(int certificateId);
+
+        List<Biz_Employee> GetEmployeeListForAuthentication(string examPlanNumber, int examRoomId);
+
+        List<double> GetTotalEmployeeCityAndCountList(DateTime beginDate, DateTime endDate);
+        List<double> GetTakeEmployeeCityAndCountList(DateTime beginDate, DateTime endDate);
+        List<double> GetPassEmployeeCityAndCountList(DateTime beginDate, DateTime endDate);
+        List<EnterpriseExamPassRate> GetEnterpriseExamPassRate(DateTime beginDate, DateTime endDate, string enterpriseName, int page, int rows, ref int totalCount);
+        List<InstitutionExamPassRate> GetInstitutionExamPassRate(DateTime beginDate, DateTime endDate, string institutionName, int page, int rows, ref int totalCount);
+
+        List<DateTime> GetQueryableMonthList();
+
+        List<double> GetTotalEmployeeMonthAndCountList();
+        List<double> GetTakeEmployeeMonthAndCountList();
+        List<double> GetPassEmployeeMonthAndCountList();
+
+        List<Biz_PaperForExamType> GetPaperForExamType();
+
+        List<Biz_EmployeeExamResultRecord> GetEmployeeExamResultRecord(List<int> employeeIdList);
+
+        bool VerifyEmployeeForAuthentication(string idNumber, string examPlanNumber, int examRoomId);
+        int GetEmployeeIdForAuthentication(string idNumber, string examPlanNumber, int examRoomId);
+        void AddEmployeeAuthentication(Biz_EmployeeAuthentication employeeAuthentication);
+        Biz_EmployeeAuthentication GetEmployeeAuthenticationByEmployeeId(int employeeId);
+        List<Biz_EmployeeAuthentication> GetEmployeeAuthenticationListByEmployeeIdList(List<int> employeeIdList);
+        void SaveEmployeeFile(int employeeId, string fileType, string fileName, string filePath);
+        List<Biz_EmployeeFile> GetEmployeePhotoListByEmployeeIdList(List<int> employeeIdList);
+        Biz_EmployeeFile GetEmployeePhoto(int employeeId);
+        Biz_EmployeeExamResultRecord GetPublishEmployeeExamResultRecordByIdNumber(string iDNumber);
+
+        #region 近一年在线学习记录查询
+
+        List<EmployeeCtrl.StudyRecord> GetOneYearGetOnlineStudyRecord(List<string> idNumberList);
+
+        #endregion
+
+        #region 获取近一年视频学习记录
+        List<Biz_StudyByVideoComplete> GetOneYearStudyByVideoComplete(List<string> idNumberList);
+
+        #endregion
+
+        #region 获取近一年在线练习记录
+        List<Biz_OnlineExerciseRecord> GetOneYearOnlineExerciseRecord(List<string> idNumberList);
+
+        #endregion
+
+        #region 获取近一年在模拟考试记录
+        List<Biz_SimulatedExamRecord> GetOneYearSimulatedExamRecord(List<string> idNumberList);
+
+        #endregion
+    }
+}

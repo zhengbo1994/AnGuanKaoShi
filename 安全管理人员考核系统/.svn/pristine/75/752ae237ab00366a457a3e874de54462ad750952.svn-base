@@ -1,0 +1,38 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using Model;
+using DAL;
+
+namespace BLL
+{
+    public interface IEmployeeCtrl
+    {
+       // string GetEmployeeExamResultRecordByIdNumber(string iDNumber);
+        List<Biz_EmployeeExamResultRecord> GetEmployeeExamResultRecordListByEmployeeId(List<int> employeeIdList);
+        void SaveStudyByVideoRecord(Biz_StudyByVideoRecoder studyByVideoRecoder);
+        void SaveStudyByVideoComplete(Biz_StudyByVideoComplete StudyByVideoComplete);
+        List<Biz_StudyByVideoComplete> GetStudyByVideoCompleteList(List<string> idNumberList);
+        List<Biz_StudyByVideoComplete> GetStudyByVideoCompleteList(string idNumber);
+        List<Biz_StudyByVideoRecoder> GetStudyByVideoRecoderListByEmployeeId(int employeeId);
+        List<Biz_StudyByVideoRecoder> GetStudyByVideoRecoderListByIDNumber(string idNumber);
+        List<Biz_OnlineExerciseRecord> GetOnlineExerciseRecordListByIDNumber(string iDNumber);
+        Biz_EmployeeFile GetEmployeeFile(int employeeId, string fileType);
+
+        void AddOnlineExerciseRecord(Biz_OnlineExerciseRecord onlineExerciseRecord);
+        void AddSimulatedExamRecord(Biz_SimulatedExamRecord simulatedExamRecord);
+        Biz_EmployeeFile GetEmployeeFile(int certificateId);
+
+        List<Biz_Employee> GetEmployeeListForAuthentication(string examPlanNumber, int examRoomId);
+        bool VerifyEmployeeForAuthentication(string idNumber, string examPlanNumber, int examRoomId);
+        int GetEmployeeIdForAuthentication(string idNumber, string examPlanNumber, int examRoomId);
+        void AddEmployeeAuthentication(Biz_EmployeeAuthentication employeeAuthentication);
+        Biz_EmployeeAuthentication GetEmployeeAuthenticationByEmployeeId(int employeeId);
+        List<Biz_EmployeeAuthentication> GetEmployeeAuthenticationListByEmployeeIdList(List<int> employeeIdList);
+        void SaveEmployeeFile(int employeeId, string fileType, string fileName, string filePath);
+        List<Biz_EmployeeFile> GetEmployeePhotoListByEmployeeIdList(List<int> employeeIdList);
+        Biz_EmployeeFile GetEmployeePhoto(int employeeId);
+        Biz_EmployeeExamResultRecord GetPublishEmployeeExamResultRecordByIdNumber(string iDNumber);
+    }
+}

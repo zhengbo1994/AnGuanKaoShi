@@ -1,0 +1,57 @@
+﻿@{
+    Layout = null;
+}
+
+<link href="~/Public/calendar/css/fullcalendar.css" rel="stylesheet" />
+
+
+<div id="calendar"></div>
+
+<div class="modal fade" id="ExamPlanRemind_CalemdarEvent">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">
+                    <span>&times;</span>
+                </button>
+                <h4 class="modal-title">考试计划明细</h4>
+            </div>
+            <div id="divExamPlanRemind_ExamPlanInfo" class="modal-body">
+                <table class="table table-bordered text-center table">
+                    <tr>
+                        <td colspan="1">考试计划流水号：</td>
+                        <td colspan="1"><span id="spanExamPlanRemind_ExamPlanInfo_ExamPlanNumber"></span></td>
+                    </tr>
+                    <tr>
+                        <td colspan="1">安排人数：</td>
+                        <td colspan="1"><span id="spanExamPlanRemind_ExamPlanInfo_EmployeeCount"></span></td>
+                    </tr>
+                    <tr>
+                        <td colspan="1">安排考核点 - 考场：</td>
+                        <td colspan="1"><span id="spanExamPlanRemind_ExamPlanInfo_ExamPlanRoom"></span></td>
+                    </tr>
+                    <tr>
+                        <td colspan="1">考试开始时间：</td>
+                        <td colspan="1"><span id="spanExamPlanRemind_ExamPlanInfo_StartTime"></span></td>
+                    </tr>
+                    <tr>
+                        <td colspan="1">考试结束时间：</td>
+                        <td colspan="1"><span id="spanExamPlanRemind_ExamPlanInfo_EndTime"></span></td>
+                    </tr>
+                    <tr>
+                        <td colspan="1">提交状态：</td>
+                        <td colspan="1"><span id="spanExamPlanRemind_ExamPlanInfo_SubmitStatus"></span></td>
+                    </tr>
+
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-sm" data-dismiss="modal">关闭</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="~/Public/moment/js/moment.js"></script>
+<script src="~/Public/calendar/js/fullcalendar.js"></script>
+<script src="~/Public/content/examplanremind/js/examplanremind.js?v=@DateTime.Now.ToString("yyyyMMddHHmmss")"></script>

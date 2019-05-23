@@ -1,0 +1,70 @@
+﻿$(function () {
+    var controllerName = "CertificatePrintOnline";
+    var $pagerCertificatePrintOnline = $("#pagerCertificatePrintOnline_main");
+    var $gridCertificatePrintOnline = $("#gridCertificatePrintOnline_main");
+
+    var initQueryArea = function () {
+        //初始化查询按钮
+        var initQueryButton = function () {
+            $("#btnCertificatePrintOnline_Query").on("click", function () {
+                var queryData = {};
+                var divQueryArea = $("#divCertificatePrintOnline_QueryArea")
+                queryData = getJson(divQueryArea)
+                $gridCertificatePrintOnline.jqGrid("setGridParam", { postData: queryData }).trigger("reloadGrid");
+            })
+        }
+        initQueryButton();
+    }
+
+
+    var initCertificatePrintOnlineGrid = function () {
+        debugger;
+        var queryData = {};
+        var divQueryArea = $("#divCertificatePrintOnline_QueryArea")
+        queryData = getJson(divQueryArea)
+        $gridCertificatePrintOnline.jqGrid({
+            url: "/" + controllerName + "/GetCertificateListForJqGrid",
+            datatype: "json",
+            mtype: "post",
+            postData: queryData,
+            colNames: [ "持证人姓名", "性别", "出生年月", "身份证号", "企业名称", "职务", "技术职称", "证书编号", "证书类别","证书有效期"],
+            colModel: [
+                    { name: "employeeName", index: "employeeName", align: "center", width: 50 },
+                    { name: "sex", index: "sex", align: "center", width: 30 },
+                    { name: "birthday", index: "birthday", align: "center", width: 50 },
+                    { name: "iDNumber", index: "iDNumber", align: "center", width: 100 },
+                    { name: "enterpriseName", index: "enterpriseName", align: "center", width: 100 },
+                    { name: "job", index: "job", align: "center", width: 80 },
+                    { name: "title4Technical", index: "title4Technical", align: "center", width: 80 },
+                    { name: "certificateNo", index: "certificateNo", align: "center", width: 120 },
+                    { name: "examType", index: "examType", align: "center", width: 50 },
+                    { name: "endCertificateDate", index: "endCertificateDate", align: "center", width: 60 },
+
+            ],
+            autowidth: true,
+            rowNum: 20,
+            altRows: true,
+            pgbuttons: true,
+            viewrecords: true,
+            shrinkToFit: true,
+            pginput: true,
+            rowList: [10, 20, 30, 50, 70, 100],
+            pager: $pagerCertificatePrintOnline,
+            loadComplete: function () {
+                var table = this;
+                updatePagerIcons(table);
+                jqGridAutoWidth();
+                setGridHeight($gridCertificatePrintOnline.selector);
+            }
+        });
+    }
+
+
+
+    $(document).ready(function () {
+
+        initQueryArea();
+        initCertificatePrintOnlineGrid();
+        
+    })
+})

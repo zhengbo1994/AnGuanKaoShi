@@ -1,0 +1,271 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using Model;
+using DAL;
+
+namespace BLL
+{
+    public class EmployeeCtrl : IEmployeeCtrl
+    {
+        private Uow uow;
+        private Sys_Account account;
+        public EmployeeCtrl(Sys_Account account)
+        {
+            if (uow == null)
+            {
+                uow = new Uow();
+            }
+            this.account = account;
+
+        }
+        public List<Biz_EmployeeExamResultRecord> GetEmployeeExamResultRecordListByEmployeeId(List<int> employeeIdList)
+        {
+
+            List<Biz_EmployeeExamResultRecord> employeeExamResultRecordList = uow.Biz_EmployeeExamResultRecord.GetAll().Where(p => employeeIdList.Contains(p.EmployeeId)).ToList();
+
+            List<Biz_Employee> employeeList = uow.Biz_Employee.GetAll().Where(p => employeeIdList.Contains(p.Id)).ToList();
+            //找到相关试卷
+            List<string> indeustryList = employeeList.Select(p => p.Industry).ToList();
+            List<string> examTypeList = employeeList.Select(p => p.ExamType).ToList();
+            List<Biz_PaperForExamType> paperForExamTypeList = uow.Biz_PaperForExamType.GetAll().Where(p => indeustryList.Contains(p.Industry) && examTypeList.Contains(p.ExamType)).ToList();
+
+
+            foreach (Biz_EmployeeExamResultRecord employeeExamResultRecord in employeeExamResultRecordList)
+            {
+                Biz_Employee employee = employeeList.Where(p => p.Id == employeeExamResultRecord.EmployeeId).Single();
+                //判断安全知识考核是否合格
+                Biz_PaperForExamType safetyKnowledgeExamPaper = paperForExamTypeList.Where(p => p.Industry == employee.Industry && p.ExamType == employee.ExamType && p.PaperType == "SafetyKnowledgeExam").Single();
+                employeeExamResultRecord.SafetyKnowledgeExamResult = employeeExamResultRecord.SafetyKnowledgeExamScore >= safetyKnowledgeExamPaper.PassScore ? "合格" : "不合格";
+                //判断管理能力是否合格
+                Biz_PaperForExamType managementAbilityExamPaper = paperForExamTypeList.Where(p => p.Industry == employee.Industry && p.ExamType == employee.ExamType && p.PaperType == "ManagementAbilityExam").Single();
+                employeeExamResultRecord.ManagementAbilityExamResult = employeeExamResultRecord.ManagementAbilityExamScore >= managementAbilityExamPaper.PassScore ? "合格" : "不合格";
+                employeeExamResultRecord.ActualOperationExamResult = employeeExamResultRecord.FieldExamResult == true ? "合格" : employeeExamResultRecord.FieldExamResult == false ? "不合格" : "";
+
+                bool ActualOperationFlag = false;
+                int count = employeeList.Where(p => (p.ExamType == "C1" || p.ExamType == "C3") && p.Id == employeeExamResultRecord.EmployeeId).Count();
+                if (count > 0)
+                {
+                    ActualOperationFlag = true;
+                }
+
+                if (ActualOperationFlag)
+                {
+                    if (employeeExamResultRecord.SafetyKnowledgeExamResult == "" || employeeExamResultRecord.ManagementAbilityExamResult == "" || employeeExamResultRecord.ActualOperationExamResult == "")
+                    {
+                        employeeExamResultRecord.FinalExamResult = "";
+                        continue;
+                    }
+                    else if (employeeExamResultRecord.SafetyKnowledgeExamResult == "合格" && employeeExamResultRecord.ManagementAbilityExamResult == "合格" && employeeExamResultRecord.ActualOperationExamResult == "合格")
+                    {
+                        employeeExamResultRecord.FinalExamResult = "合格";
+                        continue;
+                    }
+                    else
+                    {
+                        employeeExamResultRecord.FinalExamResult = "不合格";
+                        continue;
+                    }
+                }
+                else
+                {
+                    if (employeeExamResultRecord.SafetyKnowledgeExamResult == "" || employeeExamResultRecord.ManagementAbilityExamResult == "")
+                    {
+                        employeeExamResultRecord.FinalExamResult = "";
+                        continue;
+                    }
+                    else if (employeeExamResultRecord.SafetyKnowledgeExamResult == "合格" && employeeExamResultRecord.ManagementAbilityExamResult == "合格")
+                    {
+                        employeeExamResultRecord.FinalExamResult = "合格";
+                        continue;
+                    }
+                    else
+                    {
+                        employeeExamResultRecord.FinalExamResult = "不合格";
+                        continue;
+                    }
+                }
+
+            }
+
+            return employeeExamResultRecordList;
+        }
+        public void SaveStudyByVideoRecord(Biz_StudyByVideoRecoder studyByVideoRecoder)
+        {
+            Biz_StudyByVideoRecoder oldStudyByVideoRecoder = uow.Biz_StudyByVideoRecoder.GetAll().Where(p => p.IDNumber == studyByVideoRecoder.IDNumber && p.VideoName == studyByVideoRecoder.VideoName).FirstOrDefault();
+            if (oldStudyByVideoRecoder == null)
+            {
+                studyByVideoRecoder.CreateDateTime = DateTime.Now;
+                studyByVideoRecoder.UpdateDateTime = DateTime.Now;
+                uow.Biz_StudyByVideoRecoder.Add(studyByVideoRecoder);
+
+            }
+            else
+            {
+                oldStudyByVideoRecoder.Studyhours = studyByVideoRecoder.Studyhours;
+                oldStudyByVideoRecoder.UpdateDateTime = DateTime.Now;
+                uow.Biz_StudyByVideoRecoder.Update(oldStudyByVideoRecoder);
+            }
+            uow.Commit();
+        }
+        public void SaveStudyByVideoComplete(Biz_StudyByVideoComplete StudyByVideoComplete)
+        {
+            Biz_StudyByVideoComplete oldStudyByVideoComplete = uow.Biz_StudyByVideoComplete.GetAll()
+                .Where(p => p.IDNumber == StudyByVideoComplete.IDNumber)
+                .Where(p => p.VideoName == StudyByVideoComplete.VideoName)
+                .Where(p => p.VideoId == StudyByVideoComplete.VideoId)
+                .SingleOrDefault();
+            if (oldStudyByVideoComplete == null)
+            {
+                uow.Biz_StudyByVideoComplete.Add(StudyByVideoComplete);
+                uow.Commit();
+            }
+        }
+        public List<Biz_StudyByVideoComplete> GetStudyByVideoCompleteList(List<string> idNumberList)
+        {
+            IQueryable<Biz_StudyByVideoComplete> studyByVideoCompleteQueryable = uow.Biz_StudyByVideoComplete.GetAll().Where(p => idNumberList.Contains(p.IDNumber));
+            return studyByVideoCompleteQueryable.ToList();
+        }
+        public List<Biz_StudyByVideoComplete> GetStudyByVideoCompleteList(string idNumber)
+        {
+            IQueryable<Biz_StudyByVideoComplete> studyByVideoCompleteQueryable = uow.Biz_StudyByVideoComplete.GetAll().Where(p => p.IDNumber == idNumber);
+            return studyByVideoCompleteQueryable.ToList();
+        }
+        public List<Biz_StudyByVideoRecoder> GetStudyByVideoRecoderListByEmployeeId(int employeeId)
+        {
+            Biz_Employee employee = uow.Biz_Employee.GetById(employeeId);
+            return this.GetStudyByVideoRecoderListByIDNumber(employee.IDNumber);
+        }
+        public List<Biz_StudyByVideoRecoder> GetStudyByVideoRecoderListByIDNumber(string idNumber)
+        {
+            IQueryable<Biz_StudyByVideoRecoder> StudyByVideoRecoderQueryable = uow.Biz_StudyByVideoRecoder.GetAll().Where(p => p.IDNumber == idNumber);
+            return StudyByVideoRecoderQueryable.ToList();
+        }
+        public List<Biz_OnlineExerciseRecord> GetOnlineExerciseRecordListByIDNumber(string iDNumber)
+        {
+            IQueryable<Biz_OnlineExerciseRecord> onlineExerciseRecordQueryable = uow.Biz_OnlineExerciseRecord.GetAll().Where(p => p.IDNumber == iDNumber);
+            List<Biz_OnlineExerciseRecord> onlineExerciseRecordList = onlineExerciseRecordQueryable.ToList();
+            return onlineExerciseRecordList;
+        }
+        public Biz_EmployeeFile GetEmployeeFile(int employeeId, string fileType)
+        {
+            Biz_EmployeeFile employeeFile = uow.Biz_EmployeeFile.GetAll().Where(p => p.EmployeeId == employeeId).Where(p => p.FileType == fileType).OrderByDescending(p => p.Id).FirstOrDefault();
+            return employeeFile;
+        }
+        public Biz_EmployeeFile GetEmployeeFile(int certificateId)
+        {
+            Biz_EmployeeFile employeeFile = uow.Biz_Certificate.GetAll()
+              .Join(uow.Biz_RelEmployeeCertificate.GetAll(), a => a.Id, b => b.CertificateId, (a, b) => new { a, b })
+              .Join(uow.Biz_EmployeeFile.GetAll(), o => o.b.EmployeeId, c => c.EmployeeId, (o, c) => new { o.a, o.b, c })
+              .Where(o => o.a.Id == certificateId && o.c.FileType == "进场照片").OrderByDescending(o => o.c.Id).Select(o => o.c).FirstOrDefault();
+            return employeeFile;
+        }
+        public void AddOnlineExerciseRecord(Biz_OnlineExerciseRecord onlineExerciseRecord)
+        {
+            onlineExerciseRecord.CreateDate = DateTime.Now;
+            uow.Biz_OnlineExerciseRecord.Add(onlineExerciseRecord);
+            uow.Commit();
+        }
+
+        public void AddSimulatedExamRecord(Biz_SimulatedExamRecord simulatedExamRecord)
+        {
+            simulatedExamRecord.CreateDate = DateTime.Now;
+            uow.Biz_SimulatedExamRecord.Add(simulatedExamRecord);
+            uow.Commit();
+        }
+
+        public List<Biz_Employee> GetEmployeeListForAuthentication(string examPlanNumber, int examRoomId)
+        {
+            Biz_ExamPlanRecord examPlan = uow.Biz_ExamPlanRecord.GetAll().Where(p => p.ExamPlanNumber == examPlanNumber).Single();
+            List<Biz_Employee> employeeList = uow.Biz_Employee.GetAll()
+                .Join(uow.Biz_EmployeeForExamPlanRecord.GetAll(), p => p.Id, q => q.EmployeeId, (p, q) => new { p, q })
+                .Where(o => o.q.ExamPlanRecordId == examPlan.Id && o.q.ExamRoomId == examRoomId).Select(o => o.p).ToList();
+            return employeeList;
+        }
+        public bool VerifyEmployeeForAuthentication(string idNumber, string examPlanNumber, int examRoomId)
+        {
+            bool result = false;
+
+            Biz_ExamPlanRecord examPlan = uow.Biz_ExamPlanRecord.GetAll().Where(p => p.ExamPlanNumber == examPlanNumber).Single();
+            IQueryable<Biz_Employee> employeeQueryable = uow.Biz_Employee.GetAll()
+                .Join(uow.Biz_EmployeeForExamPlanRecord.GetAll(), p => p.Id, q => q.EmployeeId, (p, q) => new { p, q })
+                .Where(o => o.q.ExamPlanRecordId == examPlan.Id && o.q.ExamRoomId == examRoomId && o.p.IDNumber == idNumber).Select(o => o.p);
+
+            if (employeeQueryable.Count() > 0)
+            {
+                result = true;
+            }
+            return result;
+
+        }
+        public int GetEmployeeIdForAuthentication(string idNumber, string examPlanNumber, int examRoomId)
+        {
+
+
+            Biz_ExamPlanRecord examPlan = uow.Biz_ExamPlanRecord.GetAll().Where(p => p.ExamPlanNumber == examPlanNumber).Single();
+            Biz_Employee employee = uow.Biz_Employee.GetAll()
+                .Join(uow.Biz_EmployeeForExamPlanRecord.GetAll(), p => p.Id, q => q.EmployeeId, (p, q) => new { p, q })
+                .Where(o => o.q.ExamPlanRecordId == examPlan.Id && o.q.ExamRoomId == examRoomId && o.p.IDNumber == idNumber).Select(o => o.p).Single();
+            return employee.Id;
+
+        }
+
+        public void AddEmployeeAuthentication(Biz_EmployeeAuthentication employeeAuthentication)
+        {
+            IQueryable<Biz_EmployeeAuthentication> employeeAuthenticationQueryable = uow.Biz_EmployeeAuthentication.GetAll().Where(p => p.EmployeeId == employeeAuthentication.EmployeeId);
+            if (employeeAuthenticationQueryable.Count() > 0)
+            {
+                return;
+            }
+            uow.Biz_EmployeeAuthentication.Add(employeeAuthentication);
+            uow.Commit();
+        }
+        public Biz_EmployeeAuthentication GetEmployeeAuthenticationByEmployeeId(int employeeId)
+        {
+            return uow.Biz_EmployeeAuthentication.GetAll().Where(p => p.EmployeeId == employeeId).Single();
+
+        }
+        public List<Biz_EmployeeAuthentication> GetEmployeeAuthenticationListByEmployeeIdList(List<int> employeeIdList)
+        {
+            IQueryable<Biz_EmployeeAuthentication> employeeAuthenticationQueryable = uow.Biz_EmployeeAuthentication.GetAll().Where(p => employeeIdList.Contains(p.EmployeeId));
+            return employeeAuthenticationQueryable.ToList();
+        }
+
+        public void SaveEmployeeFile(int employeeId, string fileType, string fileName, string filePath)
+        {
+            Biz_EmployeeFile rpEmployeeFile = uow.Biz_EmployeeFile.GetAll().Where(p => p.FileType == fileType && p.EmployeeId == employeeId).OrderByDescending(p => p.Id).FirstOrDefault();
+            if (rpEmployeeFile == null)
+            {
+                Biz_EmployeeFile newEmployeeFile = new Biz_EmployeeFile()
+                {
+                    EmployeeId = employeeId,
+                    FileType = fileType,
+                    FileName = fileName,
+                    FilePath = filePath
+                };
+                uow.Biz_EmployeeFile.Add(newEmployeeFile);
+            }
+            else
+            {
+                rpEmployeeFile.FileName = fileName;
+                rpEmployeeFile.FilePath = filePath;
+                uow.Biz_EmployeeFile.Update(rpEmployeeFile);
+            }
+            uow.Commit();
+        }
+
+        public List<Biz_EmployeeFile> GetEmployeePhotoListByEmployeeIdList(List<int> employeeIdList)
+        {
+            IQueryable<Biz_EmployeeFile> employeeFileQueryable = uow.Biz_EmployeeFile.GetAll().Where(p => employeeIdList.Contains(p.EmployeeId) && p.FileType == "进场照片");
+            return employeeFileQueryable.ToList();
+        }
+
+        public Biz_EmployeeFile GetEmployeePhoto(int employeeId)
+        {
+            IQueryable<Biz_EmployeeFile> employeeFileQueryable = uow.Biz_EmployeeFile.GetAll().Where(p => p.EmployeeId == employeeId && p.FileType == "进场照片");
+            return employeeFileQueryable.OrderByDescending(p => p.Id).FirstOrDefault();
+        }
+
+    }
+}

@@ -1,0 +1,424 @@
+﻿using DAL;
+using Model;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using Library.baseFn;
+using EntityFramework.Extensions;
+
+namespace BLL
+{
+    public class CertificateDelay_WorkFlowCtrl : ICertificateDelay_WorkFlowCtrl
+    {
+        private Uow uow;
+        private Sys_Account loginAccount;
+
+        public CertificateDelay_WorkFlowCtrl(Sys_Account account)
+        {
+            if (uow == null)
+            {
+                uow = new Uow();
+            }
+            this.loginAccount = account;
+        }
+
+
+        #region 证书延期申请
+        public void CertificateDelayApply(int trainingInstitutionId, int certificateId, string remark)
+        {
+
+            List<string> notDelayExamType = new List<string>() { "C" };
+            int existsNotDelayExamType = uow.Biz_Certificate.GetAll().Where(p => notDelayExamType.Contains(p.ExamType)).Count();
+            if (existsNotDelayExamType > 0)
+            {
+                throw new Exception("C类证书不能延期");
+            }
+
+            int existsCnt = uow.Biz_CertificateDelayApplyRecord.GetAll().Where(p => p.CertificateId == certificateId).Count();
+            if (existsCnt > 0)
+            {
+                throw new Exception("已经提交申请,不能再提交");
+            }
+            int existsXXCnt = uow.Biz_XX_CertificateDelayApplyRecord.GetAll().Where(p => p.CertificateId == certificateId).Count();
+            if (existsXXCnt > 0)
+            {
+                throw new Exception("已经提交线上延期申请,不能提交");
+            }
+            Biz_CertificateDelayApplyRecord certificateDelayApplyRecord = new Biz_CertificateDelayApplyRecord()
+            {
+
+                CertificateId = certificateId,
+                TrainingInstitutionId = trainingInstitutionId,
+                Remark = remark,
+                CreateById = this.loginAccount.Id,
+                CreateDate = DateTime.Now,
+                SummitById = 0,
+                SubmitStatus = false,
+                SummitDate = null,
+                OperationStatus = false,
+                Invalid = false
+            };
+            uow.Biz_CertificateDelayApplyRecord.Add(certificateDelayApplyRecord);
+            uow.Commit();
+        }
+        #endregion
+
+        #region 提交证书延期申请
+        public void SubmitCertificateDelayApply(List<int> certificateIdList)
+        {
+
+            int existCnt = uow.Biz_CertificateDelayApplyRecord.GetAll().Where(p => certificateIdList.Contains(p.CertificateId) && p.OperationStatus == true).Count();
+            if (existCnt > 0)
+            {
+                throw new Exception("存在已经提交的延期申请");
+            }
+            uow.Biz_CertificateDelayApplyRecord.GetAll().Where(p => certificateIdList.Contains(p.CertificateId)).Update(p => new Biz_CertificateDelayApplyRecord()
+            {
+                SubmitStatus = true,
+                SummitById = this.loginAccount.Id,
+                SummitDate = DateTime.Now
+            });
+            uow.Commit();
+        }
+        #endregion
+
+        #region 审核证书延期资料
+        public void CheckCertificateDelayData(bool inValidityDate, bool annualSafetyTraining, bool notBadBehavior, bool trainingWith24Hours, bool passStatus, string checkedMark, List<int> certificateIdList)
+        {
+            //验证是否存在审核过的人
+            int existsCheckCnt = uow.Biz_CertificateDelayDataCheckedRecord.GetAll().Where(p => certificateIdList.Contains(p.CertificateId)).Count();
+            if (existsCheckCnt > 0)
+            {
+                throw new Exception("存在已经审核过的人员");
+            }
+            //审核
+            foreach (int certificateId in certificateIdList)
+            {
+                Biz_CertificateDelayApplyRecord certificateDelayApplyRecord = uow.Biz_CertificateDelayApplyRecord.GetAll().Where(p => p.CertificateId == certificateId).Single();
+                certificateDelayApplyRecord.OperationStatus = true;
+                uow.Biz_CertificateDelayApplyRecord.Update(certificateDelayApplyRecord);
+
+                Biz_CertificateDelayDataCheckedRecord newDataCheckedRecord = new Biz_CertificateDelayDataCheckedRecord()
+                {
+                    CertificateId = certificateId,
+                    InValidityDate = inValidityDate,
+                    AnnualSafetyTraining = annualSafetyTraining,
+                    NotBadBehavior = notBadBehavior,
+                    TrainingWith24Hours = trainingWith24Hours,
+                    // DelayConditions = delayConditions,`
+                    PassStatus = passStatus,
+                    OperationStatus = false,
+                    CreateDate = DateTime.Now,
+                    CreateById = loginAccount.Id,
+                    CheckedMark = checkedMark
+                };
+                uow.Biz_CertificateDelayDataCheckedRecord.Add(newDataCheckedRecord);
+            }
+            uow.Commit();
+        }
+        #endregion
+
+        #region 换证审核
+        public void CertificateDelayConfirm(List<int> certificateIdList, bool checkPass, string checkedMark)
+        {
+            int existsCheckedCount = uow.Biz_CertificateDelayConfirmRecord.GetAll().Where(p => certificateIdList.Contains(p.CertificateId)).Count();
+            if (existsCheckedCount > 0)
+            {
+                throw new Exception("不能重复确认");
+            }
+            int notExistsDataCheckedCount = uow.Biz_CertificateDelayDataCheckedRecord.GetAll().Where(p => certificateIdList.Contains(p.CertificateId)).Count();
+            if (notExistsDataCheckedCount < certificateIdList.Distinct().Count())
+            {
+                throw new Exception("未进行延期资格审核的人,不能进行延期确认");
+            }
+            int notExistsDataCheckPassCount = uow.Biz_CertificateDelayDataCheckedRecord.GetAll().Where(p => certificateIdList.Contains(p.CertificateId) && p.PassStatus == true).Count();
+            if (notExistsDataCheckPassCount < certificateIdList.Distinct().Count())
+            {
+                throw new Exception("延期资格审核不通过人,不能进行延期确认");
+            }
+
+            List<Biz_CertificateDelayDataCheckedRecord> certificateDelayDataCheckedRecordList = uow.Biz_CertificateDelayDataCheckedRecord.GetAll().Where(p => certificateIdList.Contains(p.CertificateId)).ToList();
+
+
+            foreach (Biz_CertificateDelayDataCheckedRecord certificateDelayDataCheckedRecord in certificateDelayDataCheckedRecordList)
+            {
+                //流程推进
+                {
+                    //将报名记录的操作状态改为 已操作
+                    certificateDelayDataCheckedRecord.OperationStatus = true;
+                    uow.Biz_CertificateDelayDataCheckedRecord.Update(certificateDelayDataCheckedRecord);
+                    Biz_CertificateDelayConfirmRecord certificateDelayConfirmRecord = new Biz_CertificateDelayConfirmRecord()
+                    {
+                        CertificateId = certificateDelayDataCheckedRecord.CertificateId,
+                        PassStatus = checkPass,
+                        OperationStatus = false,
+                        CreateDate = DateTime.Now,
+                        CreateById = this.loginAccount.Id,
+                        CheckedMark = checkedMark
+                    };
+                    uow.Biz_CertificateDelayConfirmRecord.Add(certificateDelayConfirmRecord);
+
+                    if (checkPass == false)
+                    {
+                        continue;
+                    }
+                }
+                //发证
+                {
+                    ICertificateCtrl certificateCtrl = new CertificateCtrl(this.loginAccount);
+                    Biz_CertificateDelayFile certificateDelayPhoto = certificateCtrl.GetCertificateDelayPhoto(certificateDelayDataCheckedRecord.CertificateId);
+                    if (certificateDelayPhoto == null)
+                    {
+                        throw new Exception("未拍照的人不能确认延期");
+                    }
+                    int certificateAuthenticationCount = certificateCtrl.GetCertificateDelayAuthenticationList(new List<int>() { certificateDelayDataCheckedRecord.CertificateId }).Count;
+                    if (certificateAuthenticationCount < 1)
+                    {
+                        throw new Exception("未实名认证的人不能确认延期");
+                    }
+                    certificateCtrl.CertificateDelay(certificateDelayDataCheckedRecord.CertificateId, certificateDelayPhoto.FilePath);
+                }
+            }
+            uow.Commit();
+        }
+        #endregion
+
+
+        #region 获取证书Id对应的流程状态
+        public CertificateDelay_WorkFlowCtrl.WorkFlowStatus GetCurrentWorkFlowStatus(int certificateId)
+        {
+            WorkFlowStatus workFlowStatus = null;
+            //延期确认
+            {
+                Biz_CertificateDelayConfirmRecord certificateDelayConfirmRecord = uow.Biz_CertificateDelayConfirmRecord.GetAll().Where(p => p.CertificateId == certificateId).FirstOrDefault();
+                if (!certificateDelayConfirmRecord.IsNull())
+                {
+                    workFlowStatus = new WorkFlowStatus();
+                    if (certificateDelayConfirmRecord.PassStatus)
+                    {
+                        workFlowStatus.WorkFlowStatusTag = CertificateDelay_WorkFlowCtrl.WorkFlowStatusTag.ConfirmPassed;
+                    }
+                    else
+                    {
+                        workFlowStatus.WorkFlowStatusTag = CertificateDelay_WorkFlowCtrl.WorkFlowStatusTag.ConfirmUnpassed;
+                    }
+                    workFlowStatus.CreateDate = certificateDelayConfirmRecord.CreateDate;
+                    workFlowStatus.CreateById = certificateDelayConfirmRecord.CreateById;
+                    workFlowStatus.Sequence = 4;
+                    return workFlowStatus;
+                }
+            }
+            //资料审核
+            {
+                Biz_CertificateDelayDataCheckedRecord certificateDelayDataCheckedRecord = uow.Biz_CertificateDelayDataCheckedRecord.GetAll().Where(p => p.CertificateId == certificateId).FirstOrDefault();
+                if (!certificateDelayDataCheckedRecord.IsNull())
+                {
+                    workFlowStatus = new WorkFlowStatus();
+                    if (certificateDelayDataCheckedRecord.PassStatus)
+                    {
+                        workFlowStatus.WorkFlowStatusTag = CertificateDelay_WorkFlowCtrl.WorkFlowStatusTag.DataCheckPassed;
+                    }
+                    else
+                    {
+                        workFlowStatus.WorkFlowStatusTag = CertificateDelay_WorkFlowCtrl.WorkFlowStatusTag.DataCheckUnpassed;
+                    }
+                    workFlowStatus.CreateDate = certificateDelayDataCheckedRecord.CreateDate;
+                    workFlowStatus.CreateById = certificateDelayDataCheckedRecord.CreateById;
+                    workFlowStatus.Sequence = 3;
+                    return workFlowStatus;
+                }
+            }
+            //延期申报
+            {
+                Biz_CertificateDelayApplyRecord certificateDelayApplyRecord = uow.Biz_CertificateDelayApplyRecord.GetAll().Where(p => p.Id == certificateId).FirstOrDefault();
+                if (!certificateDelayApplyRecord.IsNull())
+                {
+                    workFlowStatus = new WorkFlowStatus()
+                    {
+
+                        WorkFlowStatusTag = WorkFlowStatusTag.DelayApplySubmited,
+                        CreateDate = certificateDelayApplyRecord.CreateDate,
+                        CreateById = certificateDelayApplyRecord.CreateById,
+                        Sequence = 2
+                    };
+                }
+            }
+            //延期申报未提交
+            {
+                Biz_Certificate certificate = uow.Biz_Certificate.GetAll().Where(p => p.Id == certificateId).FirstOrDefault();
+                if (!certificate.IsNull())
+                {
+                    workFlowStatus = new WorkFlowStatus()
+                    {
+
+                        certificateId = certificate.Id,
+                        WorkFlowStatusTag = CertificateDelay_WorkFlowCtrl.WorkFlowStatusTag.DelayApplied,
+                        CreateDate = DateTime.Now,
+                        CreateById = 0,
+                        Sequence = 1,
+                    };
+                }
+            }
+            return workFlowStatus;
+        }
+        #endregion
+
+        #region 获取证书当前的流程状态
+        public List<CertificateDelay_WorkFlowCtrl.WorkFlowStatus> GetCurrentWorkFlowStatusByCertificateIdList(List<int> certificateIdList)
+        {
+            List<CertificateDelay_WorkFlowCtrl.WorkFlowStatus> WorkFlowStatusListResult = new List<CertificateDelay_WorkFlowCtrl.WorkFlowStatus>();
+            //延期确认
+            {
+                List<Biz_CertificateDelayConfirmRecord> CertificateDelayConfirmRecordList = uow.Biz_CertificateDelayConfirmRecord.GetAll().Where(p => certificateIdList.Contains(p.CertificateId)).ToList();
+                if (CertificateDelayConfirmRecordList.Count() > 0)
+                {
+
+                    List<CertificateDelay_WorkFlowCtrl.WorkFlowStatus> WorkFlowStatusList = CertificateDelayConfirmRecordList.Select(p => new CertificateDelay_WorkFlowCtrl.WorkFlowStatus()
+                    {
+                        certificateId = p.CertificateId,
+                        WorkFlowStatusTag = p.PassStatus ? CertificateDelay_WorkFlowCtrl.WorkFlowStatusTag.ConfirmPassed : CertificateDelay_WorkFlowCtrl.WorkFlowStatusTag.ConfirmUnpassed,
+                        CreateDate = p.CreateDate,
+                        CreateById = p.CreateById,
+                        Sequence = 4
+                    }).ToList();
+                    WorkFlowStatusListResult.AddRange(WorkFlowStatusList);
+                    certificateIdList.RemoveAll(p => WorkFlowStatusList.Select(q => q.certificateId).Contains(p));
+                }
+            }
+            //资料审核
+            {
+                List<Biz_CertificateDelayDataCheckedRecord> certificateDelayDataCheckedRecordList = uow.Biz_CertificateDelayDataCheckedRecord.GetAll().Where(p => certificateIdList.Contains(p.CertificateId)).ToList();
+                if (certificateDelayDataCheckedRecordList.Count() > 0)
+                {
+
+                    List<CertificateDelay_WorkFlowCtrl.WorkFlowStatus> WorkFlowStatusList = certificateDelayDataCheckedRecordList.Select(p => new CertificateDelay_WorkFlowCtrl.WorkFlowStatus()
+                    {
+                        certificateId = p.CertificateId,
+                        WorkFlowStatusTag = p.PassStatus ? CertificateDelay_WorkFlowCtrl.WorkFlowStatusTag.DataCheckPassed : CertificateDelay_WorkFlowCtrl.WorkFlowStatusTag.DataCheckUnpassed,
+                        CreateDate = p.CreateDate,
+                        CreateById = p.CreateById,
+                        Sequence = 3
+                    }).ToList();
+                    WorkFlowStatusListResult.AddRange(WorkFlowStatusList);
+                    certificateIdList.RemoveAll(p => WorkFlowStatusList.Select(q => q.certificateId).Contains(p));
+                }
+            }
+            //延期申报
+            {
+                List<Biz_CertificateDelayApplyRecord> certificateDelayApplyRecordList = uow.Biz_CertificateDelayApplyRecord.GetAll().Where(p => certificateIdList.Contains(p.CertificateId)).ToList();
+                if (certificateDelayApplyRecordList.Count() > 0)
+                {
+                    List<CertificateDelay_WorkFlowCtrl.WorkFlowStatus> WorkFlowStatusList = certificateDelayApplyRecordList.Select(p => new CertificateDelay_WorkFlowCtrl.WorkFlowStatus()
+                    {
+                        certificateId = p.CertificateId,
+                        WorkFlowStatusTag = CertificateDelay_WorkFlowCtrl.WorkFlowStatusTag.DelayApplySubmited,
+                        CreateDate = p.CreateDate,
+                        CreateById = p.CreateById,
+                        Sequence = 2,
+                    }).ToList();
+                    WorkFlowStatusListResult.AddRange(WorkFlowStatusList);
+                    certificateIdList.RemoveAll(p => WorkFlowStatusList.Select(q => q.certificateId).Contains(p));
+                }
+            }
+            //延期申报未提交
+            {
+                List<Biz_Certificate> certificateList = uow.Biz_Certificate.GetAll().Where(p => certificateIdList.Contains(p.Id)).ToList();
+                if (certificateList.Count() > 0)
+                {
+                    List<CertificateDelay_WorkFlowCtrl.WorkFlowStatus> WorkFlowStatusList = certificateList.Select(p => new CertificateDelay_WorkFlowCtrl.WorkFlowStatus()
+                    {
+                        certificateId = p.Id,
+                        WorkFlowStatusTag = CertificateDelay_WorkFlowCtrl.WorkFlowStatusTag.DelayApplied,
+                        CreateDate = DateTime.Now,
+                        CreateById = 0,
+                        Sequence = 1,
+                    }).ToList();
+                    WorkFlowStatusListResult.AddRange(WorkFlowStatusList);
+                    certificateIdList.RemoveAll(p => WorkFlowStatusList.Select(q => q.certificateId).Contains(p));
+                }
+            }
+            if (certificateIdList.Count() > 0)
+            {
+                throw new Exception("异常的延期申报流程状态");
+            }
+            return WorkFlowStatusListResult;
+
+        }
+        #endregion
+
+        #region 获取对应状态下的证书Queryable
+        public IQueryable<Biz_Certificate> GetCertificateWorkFlowStatusQueryable(string workflowStatus, Uow workUnit)
+        {
+            IQueryable<Biz_Certificate> certificateQueryable = workUnit.Biz_Certificate.GetAll();
+            if (!workflowStatus.IsNull())
+            {
+                if (workflowStatus == CertificateDelay_WorkFlowCtrl.WorkFlowStatusTag.DelayApplied)
+                {
+                    IQueryable<Biz_CertificateDelayApplyRecord> certificateDelayApplyRecordQueryable = workUnit.Biz_CertificateDelayApplyRecord.GetAll().Where(p => p.OperationStatus == false);
+                    certificateQueryable = certificateQueryable.Where(p => !certificateDelayApplyRecordQueryable.Select(q => q.CertificateId).Contains(p.Id));
+                }
+
+                if (workflowStatus == CertificateDelay_WorkFlowCtrl.WorkFlowStatusTag.DelayApplySubmited)
+                {
+                    IQueryable<Biz_CertificateDelayApplyRecord> certificateDelayApplyRecordQueryable = workUnit.Biz_CertificateDelayApplyRecord.GetAll().Where(p => p.OperationStatus == false);
+                    certificateQueryable = certificateQueryable.Join(certificateDelayApplyRecordQueryable, a => a.Id, b => b.CertificateId, (a, b) => new { a, b }).Select(o => o.a);
+                }
+                if (workflowStatus == CertificateDelay_WorkFlowCtrl.WorkFlowStatusTag.DataCheckUnpassed)
+                {
+                    IQueryable<Biz_CertificateDelayDataCheckedRecord> certificateDelayDataCheckedRecordQueryable = workUnit.Biz_CertificateDelayDataCheckedRecord.GetAll().Where(p => p.PassStatus == false && p.OperationStatus == false);
+                    certificateQueryable = certificateQueryable.Join(certificateDelayDataCheckedRecordQueryable, a => a.Id, b => b.CertificateId, (a, b) => new { a, b }).Select(o => o.a);
+                }
+                if (workflowStatus == CertificateDelay_WorkFlowCtrl.WorkFlowStatusTag.DataCheckPassed)
+                {
+                    IQueryable<Biz_CertificateDelayDataCheckedRecord> certificateDelayDataCheckedRecordQueryable = workUnit.Biz_CertificateDelayDataCheckedRecord.GetAll().Where(p => p.PassStatus == true && p.OperationStatus == false);
+                    certificateQueryable = certificateQueryable.Join(certificateDelayDataCheckedRecordQueryable, a => a.Id, b => b.CertificateId, (a, b) => new { a, b }).Select(o => o.a);
+                }
+                if (workflowStatus == CertificateDelay_WorkFlowCtrl.WorkFlowStatusTag.ConfirmUnpassed)
+                {
+                    IQueryable<Biz_CertificateDelayConfirmRecord> certificateDelayConfirmRecordQueryable = workUnit.Biz_CertificateDelayConfirmRecord.GetAll().Where(p => p.PassStatus == false && p.OperationStatus == false);
+                    certificateQueryable = certificateQueryable.Join(certificateDelayConfirmRecordQueryable, a => a.Id, b => b.CertificateId, (a, b) => new { a, b }).Select(o => o.a);
+                }
+                if (workflowStatus == CertificateDelay_WorkFlowCtrl.WorkFlowStatusTag.ConfirmPassed)
+                {
+                    IQueryable<Biz_CertificateDelayConfirmRecord> certificateDelayConfirmRecordQueryable = workUnit.Biz_CertificateDelayConfirmRecord.GetAll().Where(p => p.PassStatus == true && p.OperationStatus == false);
+                    certificateQueryable = certificateQueryable.Join(certificateDelayConfirmRecordQueryable, a => a.Id, b => b.CertificateId, (a, b) => new { a, b }).Select(o => o.a);
+                }
+            }
+            else
+            {
+                certificateQueryable = certificateQueryable.Where(p => 1 == 2);
+            }
+            return certificateQueryable;
+
+        }
+        #endregion
+
+        public static class WorkFlowStatusTag
+        {
+            public static string DelayApplied { get { return "延期申请未提交"; } }
+            public static string DelayApplySubmited { get { return "延期申请已提交"; } }
+            public static string DataCheckUnpassed { get { return "延期资格审核未通过"; } }
+            public static string DataCheckPassed { get { return "延期资格审核通过"; } }
+            public static string ConfirmUnpassed { get { return "延期确认未通过"; } }
+            public static string ConfirmPassed { get { return "延期确认通过"; } }
+        }
+
+        public class WorkFlowStatus
+        {
+            public int certificateId { get; set; }
+            public string WorkFlowStatusTag { get; set; }
+            public int Sequence { get; set; }
+            public DateTime CreateDate { get; set; }
+            public int CreateById { get; set; }
+
+        }
+
+
+        public List<Biz_CertificateDelayApplyRecord> GetCertificateDelayApplyRecordListByCertificateIdList(List<int> certificateIdList)
+        {
+            IQueryable<Biz_CertificateDelayApplyRecord> certificateDelayApplyRecordQueryable = uow.Biz_CertificateDelayApplyRecord.GetAll().Where(p => certificateIdList.Contains(p.CertificateId));
+            return certificateDelayApplyRecordQueryable.ToList();
+        }
+    }
+}

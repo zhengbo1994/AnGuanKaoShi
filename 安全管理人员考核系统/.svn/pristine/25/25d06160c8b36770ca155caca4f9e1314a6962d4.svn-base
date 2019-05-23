@@ -1,0 +1,261 @@
+﻿@{
+    Layout = null;
+}
+
+<link href="~/Public/datetimepicker/css/bootstrap-datetimepicker.css" rel="stylesheet" />
+<link href="~/Public/content/certificatedelayapprove/css/certificatedelayapprove.css" rel="stylesheet" />
+<!--查询区-->
+<div class="row">
+    <div class="col-xs-12">
+        <div class="widget-box">
+            <div class="widget-header">
+                <h4 class="widget-title">查询区域</h4>
+                <div class="widget-toolbar">
+                    <a href="#" data-action="collapse">
+                        <i class="ace-icon fa fa-chevron-up"></i>
+                    </a>
+                </div>
+                <div class="widget-toolbar">
+                    <a id="btnCertificateDelayApprove_Query" href="#">
+                        <i class="ace-icon fa fa-search">查询</i>
+                    </a>
+                </div>
+            </div>
+
+            <div class="widget-body" style="display: block;">
+                <div id="divCertificateDelayApprove_QueryArea" class="widget-main form-horizontal ">
+                    <div class="row">
+                        <div class="col-xs-4 ">
+                            <label class="control-label col-xs-4 ">姓名</label>
+                            <input class="col-xs-8" type="text" name="employeeName">
+                        </div>
+                        <div class="col-xs-4 ">
+                            <label class="control-label col-xs-4 ">身份证号</label>
+                            <input class="col-xs-8" type="text" name="iDNumber">
+                        </div>
+                        <div class="col-xs-4 ">
+                            <label class="control-label col-xs-4 ">企业名称</label>
+                            <input class="col-xs-8" type="text" name="enterpriseName">
+                        </div>
+                    </div>
+                    <br />
+                    <div class="row">
+                        <div class="col-xs-4 ">
+                            <label class="control-label col-xs-4 ">证书编号</label>
+                            <input class="col-xs-8" type="text" name="certificateNo">
+                        </div>
+                        <div class="col-xs-4 ">
+                            <label class="control-label col-xs-4 ">延期资格审核</label>
+                            <select class="col-xs-8" name="dataCheckStatus">
+                                <option value="">全部</option>
+                                <option value="审核通过">审核通过</option>
+                                <option value="审核不通过">审核不通过</option>
+                            </select>
+                        </div>
+                        <div class="col-xs-4 ">
+                            <label class="control-label col-xs-4 ">延期确认</label>
+                            <select class="col-xs-8" name="approveStatus">
+                                <option value="">全部</option>
+                                <option selected value="未确认">未确认</option>
+                                <option value="确认延期">同意</option>
+                                <option value="确认不延期">不同意</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<br />
+<!--grid-->
+<div class="row">
+    <div class="col-xs-12">
+        <div class="widget-box">
+            <div class="widget-header">
+                <h4 class="widget-title">人员资料审核记录</h4>
+                <div class="widget-toolbar">
+                    <a href="#" id="btnCertificateDelayApprove_Check">
+                        <i class="ace-icon fa fa-check">批量确认</i>
+                    </a>
+                </div>
+
+            </div>
+            <table id="gridCertificateDelayApprove_main"></table>
+            <div id="pagerCertificateDelayApprove_main"></div>
+
+        </div>
+    </div>
+
+</div>
+
+<!--审核modal--开始-->
+<div class="modal fade" id="mdlCertificateDelayApprove_CheckListInfo">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header no-padding">
+                <div class="table-header">
+                    延期确认
+                </div>
+            </div>
+            <div class="modal-body">
+                <div id="divCertificateDelayApprove_CheckListInfo" class="form-horizontal">
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">延期确认意见</label>
+                        <div class="col-sm-8">
+                            <textarea name="approviedMark" class="width-100" cols="3" rows="3" data-verify="notempty" data-verify-errormessage="确认意见为必填项，请检查"></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button name="btnCheckedPass" class="btn btn-info btn-sm">同意</button>
+                <button name="btnCheckedNoPass" class="btn btn-danger btn-sm">不同意</button>
+                <button class="btn btn-sm" data-dismiss="modal">关闭</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!--审核modal--结束-->
+
+<div class="modal fade" id="mdlCertificateDelayApprove_CheckInfo">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">
+                    <span>&times;</span>
+                </button>
+                <h4 class="modal-title">延期资格信息</h4>
+            </div>
+            <div class="modal-body">
+                <div id="divCertificateDelayApprove_CheckInfo" class="form-horizontal">
+                    <input type="hidden" name="certificateId" />
+                    <table class="table table-bordered">
+                        <tr name="baseInfo">
+                            <td colspan="4" class="text-left">
+                                基本信息
+                            </td>
+                        </tr>
+                        <tr name="baseInfo">
+                            <td colspan="1">
+                                证书编号
+                            </td>
+                            <td colspan="3">
+                                <input type="text" name="certificateNo" class="width-100" />
+                            </td>
+                        </tr>
+                        <tr name="baseInfo">
+                            <td colspan="1">姓名</td>
+                            <td colspan="1"><input type="text" name="employeeName" class="width-100" /></td>
+                            <td colspan="1">性别</td>
+                            <td colspan="1">
+                                <label><input type="radio" name="sex" value="男" />男</label>
+                                &nbsp;&nbsp;
+                                <label><input type="radio" name="Sex" value="女" />女</label>
+                            </td>
+                        </tr>
+                        <tr name="baseInfo">
+                            <td colspan="1">身份证号</td>
+                            <td colspan="1"><input type="text" name="iDNumber" class="width-100" /></td>
+                            <td colspan="1">出生年月</td>
+                            <td colspan="1"><input type="text" name="birthday" class="width-100" /></td>
+                        </tr>
+                        <tr name="baseInfo">
+                            <td colspan="1">
+                                企业名称
+                            </td>
+                            <td colspan="3">
+                                <input type="text" name="enterpriseName" class="width-100" />
+                            </td>
+                        </tr>
+                        <tr name="baseInfo">
+                            <td colspan="1">职务</td>
+                            <td colspan="1"><input type="text" name="job" class="width-100" /></td>
+                            <td colspan="1">技术职称</td>
+                            <td colspan="1"><input type="text" name="title4Technical" class="width-100" /></td>
+                        </tr>
+                        <tr name="baseInfo">
+                            <td colspan="1">行业</td>
+                            <td colspan="1">
+                                <input type="text" name="industry" class="width-100" />
+                            </td>
+                            <td colspan="1">证书类别</td>
+                            <td colspan="1">
+                                <input type="text" name="examType" class="width-100" />
+                            </td>
+                        </tr>
+                        <tr name="baseInfo">
+                            <td colspan="1">发证时间</td>
+                            <td colspan="1">
+                                <input type="text" name="certificateStartDate" class="width-100" />
+                            </td>
+                            <td colspan="1">有效期</td>
+                            <td colspan="1">
+                                <input type="text" name="certificateEndDate" class="width-100" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="4" class="text-left">
+                                延期条件
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="1">1.证书在有效期内</td>
+                            <td colspan="3">
+                                <label><input type="radio" name="inValidityDate" value="True" />是</label>
+                                &nbsp;&nbsp;
+                                <label><input type="radio" name="inValidityDate" value="False" />否</label>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="1">2.人员经过年度安全培训</td>
+                            <td colspan="3">
+                                <label><input type="radio" name="annualSafetyTraining" value="True" />是</label>
+                                &nbsp;&nbsp;
+                                <label><input type="radio" name="annualSafetyTraining" value="False" />否</label>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="1">3.无安全事故，无不良行为记录</td>
+                            <td colspan="3">
+                                <label><input type="radio" name="notBadBehavior" value="True" />是</label>
+                                &nbsp;&nbsp;
+                                <label><input type="radio" name="notBadBehavior" value="False" />否</label>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="1">4.培训时长满24学时</td>
+                            <td colspan="3">
+                                <label><input type="radio" name="trainingWith24Hours" value="True" />是</label>
+                                &nbsp;&nbsp;
+                                <label><input type="radio" name="trainingWith24Hours" value="False" />否</label>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="1">延期资格审核意见</td>
+                            <td colspan="3">
+                                <textarea name="checkedMark" class="width-100" cols="3" rows="3"></textarea>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="1">确认意见</td>
+                            <td colspan="3">
+                                <textarea name="approviedMark" class="width-100" cols="3" rows="3"></textarea>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <a name="btnCheckPass" class="btn btn-success btn-sm">同意</a>
+                <a name="btnCheckNoPass" class="btn btn-danger btn-sm">不同意</a>
+                <a class="btn btn-sm" data-dismiss="modal">取消</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="~/Public/datetimepicker/js/bootstrap-datetimepicker.js"></script>
+<script src="~/Public/datetimepicker/js/bootstrap-datetimepicker.zh-CN.js"></script>
+<script src="~/Public/content/certificatedelayapprove/js/certificatedelayapprove.js?v=@DateTime.Now.ToString("ffff")"></script>

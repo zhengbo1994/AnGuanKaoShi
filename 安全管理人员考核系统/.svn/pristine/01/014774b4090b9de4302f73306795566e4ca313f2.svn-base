@@ -1,0 +1,16 @@
+﻿$(function () {
+    var initQueryArea = function () {
+        //初始化查询按钮
+        var initQueryButton = function () {
+            $("#btnCertificatePrintOnline_Query").on("click", function () {
+                var queryData = {};
+                var divQueryArea = $("#divCertificatePrintOnline_QueryArea")
+                queryData = getJson(divQueryArea)
+                $gridCertificateManagement.jqGrid("setGridParam", { postData: queryData }).trigger("reloadGrid");
+            })
+        }
+    }
+
+
+
+})

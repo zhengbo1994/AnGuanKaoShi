@@ -1,0 +1,241 @@
+﻿@{
+    Layout = null;
+}
+
+<link href="~/Public/datetimepicker/css/bootstrap-datetimepicker.css" rel="stylesheet" />
+<link href="~/Public/content/employee/css/employee.css" rel="stylesheet" />
+
+<div class="row">
+    <div class="col-xs-12">
+        <div class="widget-box">
+            <div class="widget-header">
+                <h4 class="widget-title">查询区域</h4>
+
+                <div class="widget-toolbar">
+                    <a href="#" data-action="collapse">
+                        <i class="ace-icon fa fa-chevron-up"></i>
+                    </a>
+                </div>
+                <div class="widget-toolbar">
+                    <a id="btnEmployee_Query" href="#">
+                        <i class="ace-icon fa fa-search">查询</i>
+                    </a>
+                </div>
+            </div>
+
+            <div class="widget-body" style="display: block;">
+                <div id="divEmployee_QueryArea" class="widget-main form-horizontal ">
+                    <div class="row">
+                        <div class="col-xs-4 ">
+                            <label class="control-label col-xs-4 ">姓名</label>
+                            <input class="col-xs-8" type="text" name="EmployeeName">
+                        </div>
+                        <div class="col-xs-4 ">
+                            <label class="control-label col-xs-4 ">身份证号</label>
+                            <input class="col-xs-8" type="text" name="IDNumber">
+                        </div>
+                        <div class="col-xs-4 ">
+                            <label class="control-label col-xs-4 ">报考科目</label>
+                            <select id="divEmployee_QueryAreaExamType" class="col-xs-8" name="ExamType"></select>
+                        </div>
+                    </div>
+                    <br />
+                    <div class="row">
+                        <div class="col-xs-4 ">
+                            <label class="control-label col-xs-4 ">报考行业</label>
+                            <select id="divEmployee_QueryAreaIndustry" class="col-xs-8" name="Industry"></select>
+                        </div>
+                        <div class="col-xs-4 ">
+                            <label class="control-label col-xs-4 ">培训类型</label>
+                            <select class="col-xs-8" name="TrainingType">
+                                <option value="">全部</option>
+                                @*<option value="不培训">内训</option>*@
+                                <option value="线上培训">线上培训</option>
+                                <option value="线下培训">线下培训</option>
+                            </select>
+                        </div>
+                        <div class="col-xs-4 ">
+                            <label class="control-label col-xs-4 ">当前状态</label>
+                            <select class="col-xs-8" name="WorkFlowStatus">
+                                <option value="">全部</option>
+                                <option value="报名未提交">报名未提交</option>
+                                <option value="报名已提交">报名已提交</option>
+                                <option value="培训中">培训中</option>
+                                <option value="培训完成">培训完成</option>
+                                <option value="报名确认未通过">报名确认未通过</option>
+                                <option value="报名确认通过">报名确认通过</option>
+                                <option value="考试计划已制定">考试计划已制定</option>
+                                <option value="考试计划已提交">考试计划已提交</option>
+                                <option value="考核结果已提交">考核结果已提交</option>
+                                <option value="考核通过">考核通过</option>
+                                <option value="考核未通过">考核未通过</option>
+                                <option value="证书已发放">证书已发放</option>
+                            </select>
+                        </div>
+                        @*<div class="col-md-4 ">
+                                <label class="control-label col-xs-4 ">审核状态：</label>
+                                <select class="col-xs-8" name="CheckStatus">
+                                    <option value="">全部</option>
+                                    <option value="审核通过">审核通过</option>
+                                    <option value="审核未通过">审核未通过</option>
+
+                                </select>
+                            </div>*@
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<br />
+
+<div class="row">
+    <div class="col-xs-12">
+        <div class="widget-box">
+            <div class="widget-header">
+                <h4 class="widget-title">网上报名</h4>
+                <div class="widget-toolbar">
+                    <a href="#" id="btnEmployee_Submit">
+                        <i class="ace-icon glyphicon glyphicon-ok">提交</i>
+                    </a>
+                </div>
+                <div class="widget-toolbar">
+                    <a href="#" id="btnEmployee_Insert">
+                        <i class="ace-icon glyphicon glyphicon-plus">新增</i>
+                    </a>
+                </div>
+            </div>
+            <table id="gridEmployee_main"></table>
+            <div id="pagerEmployee_main"></div>
+
+        </div>
+    </div>
+
+</div>
+
+<div class="modal fade" id="mdlEmployee_EmployeeInfo">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">
+                    <span>&times;</span>
+                </button>
+                <h3 class="modal-title">网上报名</h3>
+            </div>
+            <div class="modal-body">
+                <form id="divEmployee_EmployeeInfo" class="form-horizontal">
+                    <input type="hidden" name="Id" />
+                    <table class="table table-bordered text-center table">
+                        <tr>
+                            <td colspan="1">姓名<span class="text-danger"> ❉ </span></td>
+                            <td colspan="1"><input type="text" name="EmployeeName" data-verify="notempty" data-verify-errormessage="姓名为必填项，请检查" @*data-placement="right"*@ /></td>
+                            <td colspan="1">性别</td>
+                            <td colspan="1">
+                                <label><input type="radio" checked name="Sex" value="男" />男</label>
+                                <label><input type="radio" name="Sex" value="女" />女</label>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="1" style="display:none;">培训方式<span class="text-danger"> ❉ </span></td>
+                            <td colspan="1" style="display:none;">
+                                <label><input type="radio" name="IsTraining" checked value="True" />参加培训</label>
+                                <label><input type="radio" name="IsTraining" value="False" />内训</label>
+                            </td>
+                            <td colspan="1" name="tdTrainingType">培训类型<span class="text-danger" name="span_TrainingType"> ❉ </span></td>
+                            <td colspan="1" name="tdTrainingType">
+                                <label><input type="radio" name="TrainingType" checked value="线上培训" />线上培训</label>
+                                <label><input type="radio" name="TrainingType" value="线下培训" />线下培训</label>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="1">报考城市<span class="text-danger" name="span_City"> ❉ </span></td>
+                            <td colspan="1">
+                                <select name="City" data-verify="notempty" data-verify-errormessage="报考城市为必填项，请检查"></select>
+                            </td>
+                            <td colspan="1">培训机构<span class="text-danger" name="span_TrainingInstitutionId"> ❉ </span></td>
+                            <td colspan="1"><select name="TrainingInstitutionId" data-verify="notempty" data-verify-errormessage="培训机构为必填项，请检查"></select></td>
+                        </tr>
+                        <tr>
+                            <td colspan="1">身份证号<span class="text-danger"> ❉ </span></td>
+                            <td colspan="1"><input type="text" id="divEmployee_EmployeeInfoIDNumber" name="IDNumber" data-verify="notempty" data-verify-errormessage="身份证号为必填项，请检查" /></td>
+                            <td colspan="1">出生年月</td>
+                            <td colspan="1"><input type="text" id="divEmployee_EmployeeInfoBirthday" name="Birthday" readonly /></td>
+                        </tr>
+
+                        <tr>
+                            <td colspan="1">职务<span class="text-danger"> ❉ </span></td>
+                            <td colspan="1"><input type="text" name="Job" data-verify="notempty" data-verify-errormessage="职务为必填项，请检查" /></td>
+                            <td colspan="1">技术职称<span class="text-danger"> ❉ </span></td>
+                            <td colspan="1"><input type="text" name="Title4Technical" data-verify="notempty" data-verify-errormessage="技术职称为必填项，请检查" /></td>
+                        </tr>
+                        <tr>
+                            <td colspan="1">报考行业<span class="text-danger"> ❉ </span></td>
+                            <td colspan="1"><select id="divEmployee_EmployeeInfoIndustry" name="Industry" data-verify="notempty" data-verify-errormessage="报考行业为必填项，请检查"></select></td>
+                            <td colspan="1">报考类型<span class="text-danger"> ❉ </span></td>
+                            <td colspan="1"><select id="divEmployee_EmployeeInfoExamType" name="ExamType" data-verify="notempty" data-verify-errormessage="报考类型为必填项，请检查"></select></td>
+                        </tr>
+                        <tr>
+                            <td colspan="1">是否打印证书<span class="text-danger"> ❉ </span></td>
+                            <td colspan="1">
+                                <label><input type="radio" name="PrintCertificate" checked value="True" />是</label>
+                                <label><input type="radio" name="PrintCertificate" value="False" />否</label>
+                            </td>
+                            <td colspan="1">注册建造师证书编号<span name="span_ConstructorCertificateNo" class="text-danger"> ❉ </span></td>
+                            <td colspan="1"><input type="text" name="ConstructorCertificateNo" data-verify="notempty" data-verify-errormessage="注册建造师证书编号为必填项，请检查" /></td>
+                        </tr>
+                        <tr>
+                            <td colspan="1">所属企业</td>
+                            <td colspan="3">
+                                <input type="text" id="txtEmployee_SelectedEnterpriseName" readonly />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="1">备注</td>
+                            <td colspan="3"><input type="text" name="Remark" /></td>
+                        </tr>
+                    </table>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button id="btnEmployee_EmployeeInfoConfirm" class="btn btn-info btn-sm">确定</button>
+                <button class="btn btn-sm" data-dismiss="modal">关闭</button>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<div class="modal fade" id="mdlEmployee_Checked">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">
+                    <span>&times;</span>
+                </button>
+                <h4 class="modal-title">报名人员提交确认</h4>
+            </div>
+            <div class="modal-body">
+                <div id="divEmployee_Checked" class="form-horizontal">
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">备注</label>
+                        <div class="col-sm-10">
+                            <textarea id="txtEmployee_SubmitRemark"></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="btnEmployee_SubmitOk" class="btn btn-info btn-sm">提交</button>
+                <button id="btnEmployee_SubmitCancle" class="btn btn-danger btn-sm">取消</button>
+                <button class="btn btn-sm" data-dismiss="modal">关闭</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="~/Public/datetimepicker/js/bootstrap-datetimepicker.js"></script>
+<script src="~/Public/datetimepicker/js/bootstrap-datetimepicker.zh-CN.js"></script>
+<script src="~/Public/imageUpload/js/imageUpload.js"></script>
+<script src="~/Public/content/employee/js/employee.js?v=@DateTime.Now.ToString("yyyyMMddHHmm")"></script>

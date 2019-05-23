@@ -1,0 +1,200 @@
+﻿@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+
+<link href="~/Public/datetimepicker/css/bootstrap-datetimepicker.css" rel="stylesheet" />
+<link href="~/Public/content/PrintCertificate/css/PrintCertificate.css" rel="stylesheet" />
+
+
+<div class="row">
+    <div class="col-xs-12">
+        <div class="widget-box">
+            <div class="widget-header">
+                <h4 class="widget-title">证书打印</h4>
+
+                <div class="widget-toolbar">
+                    <a href="#" data-action="collapse">
+                        <i class="ace-icon fa fa-chevron-up"></i>
+                    </a>
+                </div>
+                <div class="widget-toolbar">
+                    <a id="btnPrintCertificate_Query" href="#">
+                        <i class="ace-icon fa fa-search">查询</i>
+                    </a>
+                </div>
+            </div>
+
+            <div class="widget-body" style="display: block;">
+                <div id="divPrintCertificate_QueryArea" class="widget-main form-horizontal ">
+                    <div class="row">
+                        <div class="col-xs-4 ">
+                            <label class="control-label col-xs-4 ">持证人姓名</label>
+                            <input class="col-xs-8" type="text" name="EmployeeName">
+                        </div>
+                        <div class="col-xs-4 ">
+                            <label class="control-label col-xs-4 ">身份证号</label>
+                            <input class="col-xs-8" type="text" name="IDNumber">
+                        </div>
+                        <div class="col-xs-4 ">
+                            <label class="control-label col-xs-4 ">企业名称</label>
+                            <input class="col-xs-8" type="text" name="EnterpriseName">
+                        </div>
+                    </div>
+                    <br />
+                    <div class="row">
+                        <div class="col-xs-4 ">
+                            <label class="control-label col-xs-4 ">考试计划流水号</label>
+                            <input class="col-xs-8" type="text" name="ExamPlanNumber">
+                        </div>
+                        <div class="col-md-4 ">
+                            <label class="control-label col-xs-4 ">考核点名称</label>
+                            <input class="col-xs-8" type="text" name="TraningInstutionName">
+                        </div>
+                        <div class="col-xs-4 ">
+                            <label class="control-label col-xs-4 ">证书类别</label>
+                            <select class="col-xs-8" name="ExamType">
+                                <option value="">全部</option>
+                                <option value="A">A</option>
+                                <option value="B">B</option>
+                                <option value="C1">C1</option>
+                                <option value="C2">C2</option>
+                                <option value="C3">C3</option>
+                            </select>
+                        </div>
+                    </div>
+                    <br />
+                    <div class="row">
+                        <div class="col-xs-4 ">
+                            <label class="control-label col-xs-4 ">打印状态</label>
+                            <select class="col-xs-8" name="IsPrinted">
+                                <option value="">全部</option>
+                                <option value="True">已打印</option>
+                                <option value="False">未打印</option>
+                            </select>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<br />
+
+<div class="row">
+    <div class="col-xs-12">
+        <div class="widget-box">
+            <div class="widget-header">
+                <h4 class="widget-title">基本信息</h4>
+                <div class="widget-toolbar">
+                    <a href="#" id="btnPrintCertificate_Print">
+                        <i class="ace-icon fa fa-print">证书打印</i>
+                    </a>
+                </div>
+            </div>
+            <table id="gridPrintCertificate_main"></table>
+            <div id="pagerPrintCertificate_main"></div>
+
+        </div>
+    </div>
+
+</div>
+
+<div class="modal fade" id="mdlCertificateManagement_CertificateManagementInfo">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">
+                    <span>&times;</span>
+                </button>
+                <h3 class="modal-title">证书变更申请</h3>
+            </div>
+            <div class="modal-body">
+                <div id="divCertificateManagement_CertificateManagementInfo" class="form-horizontal">
+
+
+                    <input type="hidden" name="Id" />
+                    <table class="table table-bordered text-center table">
+                        <tr>
+                            <td colspan="1">证书编号<span class="text-danger"> ❉ </span></td>
+                            <td colspan="1"><input type="text" name="CertificateNumber" data-verify="notempty" data-verify-errormessage="姓名为必填项，请检查" @*data-placement="right"*@ /></td>
+                            <td colspan="1">证书状态</td>
+                            <td colspan="1"><input type="text" name="CertificateStatus" data-verify="notempty" data-verify-errormessage="姓名为必填项，请检查" @*data-placement="right"*@ /></td>
+                        </tr>
+                        <tr>
+                            <td colspan="1">证书有效期<span class="text-danger"> ❉ </span></td>
+                            <td colspan="1"><input type="text" name="ValidityOfTheCertificate" data-verify="notempty" data-verify-errormessage="身份证号为必填项，请检查" /></td>
+                            <td colspan="1">姓名</td>
+                            <td colspan="1"><input type="text" name="HolderOfTheCertificate" data-verify="notempty" data-verify-errormessage="身份证号为必填项，请检查" /></td>
+                        </tr>
+
+                        <tr>
+                            <td colspan="1">身份证号<span class="text-danger"> ❉ </span></td>
+                            <td colspan="1"><input type="text" name="IDNumber" data-verify="notempty" data-verify-errormessage="职务为必填项，请检查" /></td>
+                            <td colspan="1">联系方式<span class="text-danger"> ❉ </span></td>
+                            <td colspan="1"><input type="text" name="Title4Technical" data-verify="notempty" data-verify-errormessage="技术职称为必填项，请检查" /></td>
+                        </tr>
+                        <tr>
+                            <td colspan="1">证书类别<span class="text-danger"> ❉ </span></td>
+                            <td colspan="1"><input type="text" name="City" data-verify="notempty" data-verify-errormessage="报考城市为必填项，请检查"></td>
+                            <td colspan="1">所属公司<span class="text-danger"> ❉ </span></td>
+                            <td colspan="1"><input type="text" name="EnterpriseName" data-verify="notempty" data-verify-errormessage="报考科目为必填项，请检查"></td>
+                        </tr>
+                        <tr>
+                            <td colspan="1">备注</td>
+                            <td colspan="3"><input type="text" name="Remark" /></td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="btnCertificateManagement_CertificateManagementInfoConfirm" class="btn btn-info btn-sm">确定</button>
+                <button class="btn btn-sm" data-dismiss="modal">关闭</button>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<div class="modal fade" id="mdlPrintCertificate_CertificateInfo">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">证书明细</h4>
+            </div>
+            <div class="modal-body">
+                <div name="divCertificatePrint" style="background-image:url(../../Public/content/PrintCertificate/img/证书打印背景图片.png); background-repeat:no-repeat; width:680px;height:460px; background-color:blue;padding:0px;font-family:'Microsoft YaHei';">
+                    <div name="EmployeeName" style="width:200px;height:25px;margin-top:235px;margin-left:60px; position:absolute;padding:0px;color:black;text-align:center; vertical-align:bottom;"></div>
+                    <div name="Sex" style="width:200px;height:25px;margin-top:275px;margin-left:60px; position:absolute;padding:0px;color:black;text-align:center; vertical-align:bottom;"></div>
+                    <div name="Birthday" style="width:200px;height:25px;margin-top:310px;margin-left:60px; position:absolute;padding:0px;color:black;text-align:center; vertical-align:bottom;"></div>
+                    <div name="IDNumber" style="width:200px;height:25px;margin-top:345px;margin-left:75px; position:absolute;padding:0px;color:black;text-align:center; vertical-align:bottom;"></div>
+                    <div name="EnterpriseName" style="width:180px;height:65px;margin-top:80px;margin-left:410px; position:absolute;padding:0px;color:black;text-align:center; vertical-align:bottom;"></div>
+                    <div name="Job" style="width:180px;height:25px;margin-top:150px;margin-left:410px; position:absolute;padding:0px;color:black;text-align:center; vertical-align:bottom;"></div>
+                    <div name="Title4Technical" style="width:180px;height:25px;margin-top:185px;margin-left:410px; position:absolute;padding:0px;color:black;text-align:center; vertical-align:bottom;"></div>
+                    <div name="CertificateNo" style="width:190px;height:25px;margin-top:220px;margin-left:415px; position:absolute;padding:0px;color:black;text-align:center; vertical-align:bottom;"></div>
+                    <div name="StartCertificateDate_Year" style="width:40px;height:25px;margin-top:350px;margin-left:460px; position:absolute;padding:0px;color:black;text-align:center; vertical-align:bottom;"></div>
+                    <div name="StartCertificateDate_Month" style="width:20px;height:25px;margin-top:350px;margin-left:520px; position:absolute;padding:0px;color:black;text-align:center; vertical-align:bottom;"></div>
+                    <div name="StartCertificateDate_Day" style="width:20px;height:25px;margin-top:350px;margin-left:560px; position:absolute;padding:0px;color:black;text-align:center; vertical-align:bottom;"></div>
+                    @*<img name="img_photo" style="width:120px;height:150px;position:absolute;top:80px;left:100px;" src="">
+                        <img name="img_QrCode" style="width:100px;height:100px;position:absolute;top:250px;left:340px;" src="">
+                    *@
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button name="btnPrintCertificate" class="btn btn-sm btn-info">打印</button>
+                <button class="btn btn-sm" data-dismiss="modal">关闭</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script src="~/Public/datetimepicker/js/bootstrap-datetimepicker.js"></script>
+<script src="~/Public/datetimepicker/js/bootstrap-datetimepicker.zh-CN.js"></script>
+<script src="~/Public/jquery.jqprint/js/jquery-browser.js"></script>
+<script src="~/Public/jquery.jqprint/js/jquery.jqprint-0.3.js"></script>
+<script src="~/Public/content/PrintCertificate/js/PrintCertificate.js?v=@DateTime.Now.ToString("yyyyMMddHHmmss")"></script>

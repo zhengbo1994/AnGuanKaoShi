@@ -1,0 +1,497 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wsdl:definitions xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:tns="http://tempuri.org/" xmlns:s="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tm="http://microsoft.com/wsdl/mime/textMatching/" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" targetNamespace="http://tempuri.org/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+  <wsdl:types>
+    <s:schema elementFormDefault="qualified" targetNamespace="http://tempuri.org/">
+      <s:element name="GetKeyLoginStr">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="keyJm" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="userName" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="pwdJm" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetKeyLoginStrResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="GetKeyLoginStrResult">
+              <s:complexType>
+                <s:sequence>
+                  <s:element ref="s:schema" />
+                  <s:any />
+                </s:sequence>
+              </s:complexType>
+            </s:element>
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetKeyLogin">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="keyJm" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="zzjgdm" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="userName" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="pwdJm" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetKeyLoginResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="GetKeyLoginResult" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetZSByZSBH">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="StrZSBH" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="userName" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="pwdJm" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetZSByZSBHResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="GetZSByZSBHResult">
+              <s:complexType>
+                <s:sequence>
+                  <s:element ref="s:schema" />
+                  <s:any />
+                </s:sequence>
+              </s:complexType>
+            </s:element>
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetZSBySFZH">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="StrSFZH" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="userName" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="pwdJm" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetZSBySFZHResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="GetZSBySFZHResult">
+              <s:complexType>
+                <s:sequence>
+                  <s:element ref="s:schema" />
+                  <s:any />
+                </s:sequence>
+              </s:complexType>
+            </s:element>
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="AddOrUpdateRyksl">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="model" type="tns:RyxxModel" />
+            <s:element minOccurs="0" maxOccurs="1" name="userName" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="pwdJm" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:complexType name="RyxxModel">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="1" name="XM" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="XB" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="MZ" type="s:string" />
+          <s:element minOccurs="1" maxOccurs="1" name="CSRQ" nillable="true" type="s:dateTime" />
+          <s:element minOccurs="0" maxOccurs="1" name="JTDZ" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="SFZH" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="FZJG" type="s:string" />
+          <s:element minOccurs="1" maxOccurs="1" name="SFZYXKSRQ" nillable="true" type="s:dateTime" />
+          <s:element minOccurs="1" maxOccurs="1" name="SFZYXJZRQ" nillable="true" type="s:dateTime" />
+          <s:element minOccurs="0" maxOccurs="1" name="SBH" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="ZP" type="s:base64Binary" />
+          <s:element minOccurs="0" maxOccurs="1" name="SJHM" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="QYMC" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="ZZJGDM" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="ZW" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="ZC" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="ZSLX" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="ZSBH" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="ZSBM" type="s:string" />
+          <s:element minOccurs="1" maxOccurs="1" name="FZRQ" nillable="true" type="s:dateTime" />
+          <s:element minOccurs="1" maxOccurs="1" name="ZSYXJZRQ" nillable="true" type="s:dateTime" />
+          <s:element minOccurs="0" maxOccurs="1" name="STATE" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="ZSMC" type="s:string" />
+          <s:element minOccurs="1" maxOccurs="1" name="ZSSCSJ" nillable="true" type="s:dateTime" />
+        </s:sequence>
+      </s:complexType>
+      <s:element name="AddOrUpdateRykslResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="AddOrUpdateRykslResult" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="DataSet" nillable="true">
+        <s:complexType>
+          <s:sequence>
+            <s:element ref="s:schema" />
+            <s:any />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="string" nillable="true" type="s:string" />
+    </s:schema>
+  </wsdl:types>
+  <wsdl:message name="GetKeyLoginStrSoapIn">
+    <wsdl:part name="parameters" element="tns:GetKeyLoginStr" />
+  </wsdl:message>
+  <wsdl:message name="GetKeyLoginStrSoapOut">
+    <wsdl:part name="parameters" element="tns:GetKeyLoginStrResponse" />
+  </wsdl:message>
+  <wsdl:message name="GetKeyLoginSoapIn">
+    <wsdl:part name="parameters" element="tns:GetKeyLogin" />
+  </wsdl:message>
+  <wsdl:message name="GetKeyLoginSoapOut">
+    <wsdl:part name="parameters" element="tns:GetKeyLoginResponse" />
+  </wsdl:message>
+  <wsdl:message name="GetZSByZSBHSoapIn">
+    <wsdl:part name="parameters" element="tns:GetZSByZSBH" />
+  </wsdl:message>
+  <wsdl:message name="GetZSByZSBHSoapOut">
+    <wsdl:part name="parameters" element="tns:GetZSByZSBHResponse" />
+  </wsdl:message>
+  <wsdl:message name="GetZSBySFZHSoapIn">
+    <wsdl:part name="parameters" element="tns:GetZSBySFZH" />
+  </wsdl:message>
+  <wsdl:message name="GetZSBySFZHSoapOut">
+    <wsdl:part name="parameters" element="tns:GetZSBySFZHResponse" />
+  </wsdl:message>
+  <wsdl:message name="AddOrUpdateRykslSoapIn">
+    <wsdl:part name="parameters" element="tns:AddOrUpdateRyksl" />
+  </wsdl:message>
+  <wsdl:message name="AddOrUpdateRykslSoapOut">
+    <wsdl:part name="parameters" element="tns:AddOrUpdateRykslResponse" />
+  </wsdl:message>
+  <wsdl:message name="GetKeyLoginStrHttpGetIn">
+    <wsdl:part name="keyJm" type="s:string" />
+    <wsdl:part name="userName" type="s:string" />
+    <wsdl:part name="pwdJm" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="GetKeyLoginStrHttpGetOut">
+    <wsdl:part name="Body" element="tns:DataSet" />
+  </wsdl:message>
+  <wsdl:message name="GetKeyLoginHttpGetIn">
+    <wsdl:part name="keyJm" type="s:string" />
+    <wsdl:part name="zzjgdm" type="s:string" />
+    <wsdl:part name="userName" type="s:string" />
+    <wsdl:part name="pwdJm" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="GetKeyLoginHttpGetOut">
+    <wsdl:part name="Body" element="tns:string" />
+  </wsdl:message>
+  <wsdl:message name="GetZSByZSBHHttpGetIn">
+    <wsdl:part name="StrZSBH" type="s:string" />
+    <wsdl:part name="userName" type="s:string" />
+    <wsdl:part name="pwdJm" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="GetZSByZSBHHttpGetOut">
+    <wsdl:part name="Body" element="tns:DataSet" />
+  </wsdl:message>
+  <wsdl:message name="GetZSBySFZHHttpGetIn">
+    <wsdl:part name="StrSFZH" type="s:string" />
+    <wsdl:part name="userName" type="s:string" />
+    <wsdl:part name="pwdJm" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="GetZSBySFZHHttpGetOut">
+    <wsdl:part name="Body" element="tns:DataSet" />
+  </wsdl:message>
+  <wsdl:message name="GetKeyLoginStrHttpPostIn">
+    <wsdl:part name="keyJm" type="s:string" />
+    <wsdl:part name="userName" type="s:string" />
+    <wsdl:part name="pwdJm" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="GetKeyLoginStrHttpPostOut">
+    <wsdl:part name="Body" element="tns:DataSet" />
+  </wsdl:message>
+  <wsdl:message name="GetKeyLoginHttpPostIn">
+    <wsdl:part name="keyJm" type="s:string" />
+    <wsdl:part name="zzjgdm" type="s:string" />
+    <wsdl:part name="userName" type="s:string" />
+    <wsdl:part name="pwdJm" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="GetKeyLoginHttpPostOut">
+    <wsdl:part name="Body" element="tns:string" />
+  </wsdl:message>
+  <wsdl:message name="GetZSByZSBHHttpPostIn">
+    <wsdl:part name="StrZSBH" type="s:string" />
+    <wsdl:part name="userName" type="s:string" />
+    <wsdl:part name="pwdJm" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="GetZSByZSBHHttpPostOut">
+    <wsdl:part name="Body" element="tns:DataSet" />
+  </wsdl:message>
+  <wsdl:message name="GetZSBySFZHHttpPostIn">
+    <wsdl:part name="StrSFZH" type="s:string" />
+    <wsdl:part name="userName" type="s:string" />
+    <wsdl:part name="pwdJm" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="GetZSBySFZHHttpPostOut">
+    <wsdl:part name="Body" element="tns:DataSet" />
+  </wsdl:message>
+  <wsdl:portType name="SmrzServiceSoap">
+    <wsdl:operation name="GetKeyLoginStr">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">参数加密后的锁号，返回DataSet，字段qymc表示企业名称，字段zzjgdm3表示组织机构代码，字段zhuxiao 0表示注销1表示正常</wsdl:documentation>
+      <wsdl:input message="tns:GetKeyLoginStrSoapIn" />
+      <wsdl:output message="tns:GetKeyLoginStrSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GetKeyLogin">
+      <wsdl:input message="tns:GetKeyLoginSoapIn" />
+      <wsdl:output message="tns:GetKeyLoginSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GetZSByZSBH">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">根据证书号查找一条有效信息</wsdl:documentation>
+      <wsdl:input message="tns:GetZSByZSBHSoapIn" />
+      <wsdl:output message="tns:GetZSByZSBHSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GetZSBySFZH">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">根据身份证号码查找所有有效证件</wsdl:documentation>
+      <wsdl:input message="tns:GetZSBySFZHSoapIn" />
+      <wsdl:output message="tns:GetZSBySFZHSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="AddOrUpdateRyksl">
+      <wsdl:input message="tns:AddOrUpdateRykslSoapIn" />
+      <wsdl:output message="tns:AddOrUpdateRykslSoapOut" />
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:portType name="SmrzServiceHttpGet">
+    <wsdl:operation name="GetKeyLoginStr">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">参数加密后的锁号，返回DataSet，字段qymc表示企业名称，字段zzjgdm3表示组织机构代码，字段zhuxiao 0表示注销1表示正常</wsdl:documentation>
+      <wsdl:input message="tns:GetKeyLoginStrHttpGetIn" />
+      <wsdl:output message="tns:GetKeyLoginStrHttpGetOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GetKeyLogin">
+      <wsdl:input message="tns:GetKeyLoginHttpGetIn" />
+      <wsdl:output message="tns:GetKeyLoginHttpGetOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GetZSByZSBH">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">根据证书号查找一条有效信息</wsdl:documentation>
+      <wsdl:input message="tns:GetZSByZSBHHttpGetIn" />
+      <wsdl:output message="tns:GetZSByZSBHHttpGetOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GetZSBySFZH">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">根据身份证号码查找所有有效证件</wsdl:documentation>
+      <wsdl:input message="tns:GetZSBySFZHHttpGetIn" />
+      <wsdl:output message="tns:GetZSBySFZHHttpGetOut" />
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:portType name="SmrzServiceHttpPost">
+    <wsdl:operation name="GetKeyLoginStr">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">参数加密后的锁号，返回DataSet，字段qymc表示企业名称，字段zzjgdm3表示组织机构代码，字段zhuxiao 0表示注销1表示正常</wsdl:documentation>
+      <wsdl:input message="tns:GetKeyLoginStrHttpPostIn" />
+      <wsdl:output message="tns:GetKeyLoginStrHttpPostOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GetKeyLogin">
+      <wsdl:input message="tns:GetKeyLoginHttpPostIn" />
+      <wsdl:output message="tns:GetKeyLoginHttpPostOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GetZSByZSBH">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">根据证书号查找一条有效信息</wsdl:documentation>
+      <wsdl:input message="tns:GetZSByZSBHHttpPostIn" />
+      <wsdl:output message="tns:GetZSByZSBHHttpPostOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GetZSBySFZH">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">根据身份证号码查找所有有效证件</wsdl:documentation>
+      <wsdl:input message="tns:GetZSBySFZHHttpPostIn" />
+      <wsdl:output message="tns:GetZSBySFZHHttpPostOut" />
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="SmrzServiceSoap" type="tns:SmrzServiceSoap">
+    <soap:binding transport="http://schemas.xmlsoap.org/soap/http" />
+    <wsdl:operation name="GetKeyLoginStr">
+      <soap:operation soapAction="http://tempuri.org/GetKeyLoginStr" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetKeyLogin">
+      <soap:operation soapAction="http://tempuri.org/GetKeyLogin" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetZSByZSBH">
+      <soap:operation soapAction="http://tempuri.org/GetZSByZSBH" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetZSBySFZH">
+      <soap:operation soapAction="http://tempuri.org/GetZSBySFZH" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="AddOrUpdateRyksl">
+      <soap:operation soapAction="http://tempuri.org/AddOrUpdateRyksl" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:binding name="SmrzServiceSoap12" type="tns:SmrzServiceSoap">
+    <soap12:binding transport="http://schemas.xmlsoap.org/soap/http" />
+    <wsdl:operation name="GetKeyLoginStr">
+      <soap12:operation soapAction="http://tempuri.org/GetKeyLoginStr" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetKeyLogin">
+      <soap12:operation soapAction="http://tempuri.org/GetKeyLogin" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetZSByZSBH">
+      <soap12:operation soapAction="http://tempuri.org/GetZSByZSBH" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetZSBySFZH">
+      <soap12:operation soapAction="http://tempuri.org/GetZSBySFZH" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="AddOrUpdateRyksl">
+      <soap12:operation soapAction="http://tempuri.org/AddOrUpdateRyksl" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:binding name="SmrzServiceHttpGet" type="tns:SmrzServiceHttpGet">
+    <http:binding verb="GET" />
+    <wsdl:operation name="GetKeyLoginStr">
+      <http:operation location="/GetKeyLoginStr" />
+      <wsdl:input>
+        <http:urlEncoded />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetKeyLogin">
+      <http:operation location="/GetKeyLogin" />
+      <wsdl:input>
+        <http:urlEncoded />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetZSByZSBH">
+      <http:operation location="/GetZSByZSBH" />
+      <wsdl:input>
+        <http:urlEncoded />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetZSBySFZH">
+      <http:operation location="/GetZSBySFZH" />
+      <wsdl:input>
+        <http:urlEncoded />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:binding name="SmrzServiceHttpPost" type="tns:SmrzServiceHttpPost">
+    <http:binding verb="POST" />
+    <wsdl:operation name="GetKeyLoginStr">
+      <http:operation location="/GetKeyLoginStr" />
+      <wsdl:input>
+        <mime:content type="application/x-www-form-urlencoded" />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetKeyLogin">
+      <http:operation location="/GetKeyLogin" />
+      <wsdl:input>
+        <mime:content type="application/x-www-form-urlencoded" />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetZSByZSBH">
+      <http:operation location="/GetZSByZSBH" />
+      <wsdl:input>
+        <mime:content type="application/x-www-form-urlencoded" />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetZSBySFZH">
+      <http:operation location="/GetZSBySFZH" />
+      <wsdl:input>
+        <mime:content type="application/x-www-form-urlencoded" />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="SmrzService">
+    <wsdl:port name="SmrzServiceSoap" binding="tns:SmrzServiceSoap">
+      <soap:address location="http://59.175.169.120/smrzxt/Services/SmrzService.asmx" />
+    </wsdl:port>
+    <wsdl:port name="SmrzServiceSoap12" binding="tns:SmrzServiceSoap12">
+      <soap12:address location="http://59.175.169.120/smrzxt/Services/SmrzService.asmx" />
+    </wsdl:port>
+    <wsdl:port name="SmrzServiceHttpGet" binding="tns:SmrzServiceHttpGet">
+      <http:address location="http://59.175.169.120/smrzxt/Services/SmrzService.asmx" />
+    </wsdl:port>
+    <wsdl:port name="SmrzServiceHttpPost" binding="tns:SmrzServiceHttpPost">
+      <http:address location="http://59.175.169.120/smrzxt/Services/SmrzService.asmx" />
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>

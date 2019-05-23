@@ -1,0 +1,122 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{E12FBC5B-ACA2-4F2F-9BC4-5C1C23E2C9C7}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Model</RootNamespace>
+    <AssemblyName>Model</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="EntityFramework">
+      <HintPath>..\packages\EntityFramework.6.1.3\lib\net40\EntityFramework.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework.SqlServer">
+      <HintPath>..\packages\EntityFramework.6.1.3\lib\net40\EntityFramework.SqlServer.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Data.Entity" />
+    <Reference Include="System.Transactions" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Biz_Area.cs" />
+    <Compile Include="Biz_CertificateChangeRecord.cs" />
+    <Compile Include="Biz_Certificate.cs" />
+    <Compile Include="Biz_XX_CertificateDelayAuthentication.cs" />
+    <Compile Include="Biz_RelCertificateAuthentication.cs" />
+    <Compile Include="Biz_CertificateAuthentication.cs" />
+    <Compile Include="Biz_TrainingInstitutionAccredit.cs" />
+    <Compile Include="Biz_XX_CertificateDelayFile.cs" />
+    <Compile Include="Biz_XX_CertificateDelayDataCheckedRecord.cs" />
+    <Compile Include="Biz_XX_CertificateDelayApplyRecord.cs" />
+    <Compile Include="Biz_CertificateOperationRecord.cs" />
+    <Compile Include="Biz_CertificateAuthenticationLog.cs" />
+    <Compile Include="Biz_CertificateDelayConfirmRecord.cs" />
+    <Compile Include="Biz_CertificateDelayDataCheckedRecord.cs" />
+    <Compile Include="Biz_CertificateDelayFile.cs" />
+    <Compile Include="Biz_RP_EmployeeFile.cs" />
+    <Compile Include="Biz_RP_CertificatePrintRecord.cs" />
+    <Compile Include="Biz_City.cs" />
+    <Compile Include="Biz_EmployeeAuthentication.cs" />
+    <Compile Include="Biz_CertificateDelayApplyRecord.cs" />
+    <Compile Include="Biz_SimulatedExamRecord.cs" />
+    <Compile Include="Biz_RelRPEmployeeCertificate.cs" />
+    <Compile Include="Biz_RelEmployeeCertificate.cs" />
+    <Compile Include="Biz_RP_EmployeeDataCheckedRecord.cs" />
+    <Compile Include="Biz_RP_EmployeeCheckedRecord.cs" />
+    <Compile Include="Biz_TrainingInstitution.cs" />
+    <Compile Include="Biz_RP_EmployeeRegistration.cs" />
+    <Compile Include="Biz_Employee.cs" />
+    <Compile Include="Biz_EmployeeCertificateIssuanceRecord.cs" />
+    <Compile Include="Biz_EmployeeCheckedRecord.cs" />
+    <Compile Include="Biz_EmployeeExamResultCheckedRecord.cs" />
+    <Compile Include="Biz_EmployeeExamResultRecord.cs" />
+    <Compile Include="Biz_EmployeeExamResultRecordFile.cs" />
+    <Compile Include="Biz_EmployeeFile.cs" />
+    <Compile Include="Biz_Enterprise.cs" />
+    <Compile Include="Biz_EnterpriseFile.cs" />
+    <Compile Include="Biz_EnterpriseWebServiceResult.cs" />
+    <Compile Include="Biz_ExaminationRoom.cs" />
+    <Compile Include="Biz_ExamPlanRecord.cs" />
+    <Compile Include="Biz_News.cs" />
+    <Compile Include="Biz_ExamRoomNVR.cs" />
+    <Compile Include="Biz_OnlineExerciseRecord.cs" />
+    <Compile Include="Biz_PaperForExamType.cs" />
+    <Compile Include="Biz_StudyByVideoComplete.cs" />
+    <Compile Include="Biz_StudyByVideoRecoder.cs" />
+    <Compile Include="Biz_ExaminationPoint.cs" />
+    <Compile Include="Biz_EmployeeForExamPlanRecord.cs" />
+    <Compile Include="Biz_CertificatePrintRecord.cs" />
+    <Compile Include="SessionModel.cs" />
+    <Compile Include="Sys_DropdownListItem.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Sys_RelPermissionPage.cs" />
+    <Compile Include="Sys_RelRoleDataPermissionDetail.cs" />
+    <Compile Include="Sys_RelAccountRole.cs" />
+    <Compile Include="Sys_RelRolePermission.cs" />
+    <Compile Include="Sys_Account.cs" />
+    <Compile Include="Sys_DataPermissionDetail.cs" />
+    <Compile Include="Sys_DataPermissionHead.cs" />
+    <Compile Include="Sys_Page.cs" />
+    <Compile Include="Sys_Permission.cs" />
+    <Compile Include="Sys_Role.cs" />
+    <Compile Include="Biz_TrainingRecord.cs" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

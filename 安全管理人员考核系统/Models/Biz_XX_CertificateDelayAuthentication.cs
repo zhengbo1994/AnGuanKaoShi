@@ -1,0 +1,29 @@
+﻿using System;
+using System.ComponentModel.DataAnnotations;
+
+namespace Model
+{
+    /// <summary>
+    /// XX证书延期实名认证表
+    /// </summary>
+    public class Biz_XX_CertificateDelayAuthentication
+    {
+        [Key]
+        public int Id { get; set; }
+        //要延期的证书ID
+        public int CertificateId { get; set; }
+        public string PartyName { get; set; }
+        public string Gender { get; set; }
+        public string Nation { get; set; }
+        public string BornDay { get; set; }
+        public string CertAddress { get; set; }
+        public string CertNumber { get; set; }
+        public string CertOrg { get; set; }
+        public string EffDate { get; set; }
+        public string ExpDate { get; set; }
+        public string PictureBase64 { get; set; }
+        public string SamId { get; set; }
+        public int CreateById { get; set; }
+        public DateTime CreateDate { get; set; }
+    }
+}

@@ -1,0 +1,28 @@
+﻿@{
+    ViewBag.Title = "Index";
+}
+
+
+
+
+
+
+
+
+
+
+
+
+<div id="camera">
+</div>
+<canvas id="pic" class="hidden"></canvas>
+<canvas id="picCut" class="hidden"></canvas>
+<div>
+    <img id="imgCut" src="#" alt="imgcut" />
+</div>
+<button id="btnTakePhoto">拍照</button>
+@section scripts
+{
+    <script src="~/Public/jquery-webcam/jquery.webcam.min.js"></script>
+    <script src="~/Public/content/idcardandcameraverify/js/idcardandcameraverify.js?v=@DateTime.Now.ToString("yyyyMMddHHmmss")"></script>
+}

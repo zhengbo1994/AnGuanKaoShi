@@ -1,0 +1,118 @@
+﻿@{
+    Layout = null;
+}
+<link href="~/Public/datetimepicker/css/bootstrap-datetimepicker.css" rel="stylesheet" />
+<link href="~/Public/content/delayrecord/css/delayReCord.css" rel="stylesheet" />
+
+<div id="divDelayReCord_PageContainer">
+    <div class="row">
+        <div class="col-xs-12">
+            <div class="widget-box">
+                <div class="widget-header">
+                    <h4 class="widget-title">查询区域</h4>
+                    <div class="widget-toolbar">
+                        <a href="#" data-action="collapse">
+                            <i class="ace-icon fa fa-chevron-up"></i>
+                        </a>
+                    </div>
+                    <div class="widget-toolbar">
+                        <a name="btnQuery" href="#">
+                            <i class="ace-icon fa fa-search">查询</i>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="widget-body" style="display: block;">
+                    <div name="divQueryArea" class="widget-main form-horizontal ">
+                        <div class="row">
+                            <div class="col-xs-3 ">
+                                <label class="control-label col-xs-4 ">姓名</label>
+                                <input class="col-xs-8" type="text" name="employeeName">
+                            </div>
+                            <div class="col-xs-3 ">
+                                <label class="control-label col-xs-4 ">身份证号</label>
+                                <input class="col-xs-8" type="text" name="iDNumber">
+                            </div>
+                            <div class="col-xs-3 ">
+                                <label class="control-label col-xs-4 ">受理点</label>
+                                <input class="col-xs-8" type="text" name="trainingInstitutionName">
+                            </div>
+
+                            <div class="col-xs-3 ">
+                                <label class="control-label col-xs-4 ">当前状态</label>
+                                <select class="col-xs-8" name="workFlowStatus">
+                                    <option value="">全部</option>
+                                    <option value="延期申请未提交">延期申请未提交</option>
+                                    <option value="延期申请已提交">延期申请已提交</option>
+                                    <option value="延期资格审核未通过">延期资格审核未通过</option>
+                                    <option value="延期资格审核通过">延期资格审核通过</option>
+                                    <option value="延期确认未通过">延期确认未通过</option>
+                                    <option value="延期确认通过">延期确认通过</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <br />
+
+    <div class="row">
+        <div class="col-xs-12">
+            <div class="widget-box">
+                <div class="widget-header">
+                    <div class="widget-toolbar">
+                        <a href="#" name="btnSubmit">
+                            <i class="ace-icon glyphicon glyphicon-ok">延期计划查询</i>
+                        </a>
+                    </div>
+                </div>
+                <table id="gridDelayReCord_main"></table>
+                <div id="pagerDelayReCord_main"></div>
+
+            </div>
+        </div>
+
+    </div>
+
+
+
+    <div class="modal fade" name="mdlSubmit">
+        @*<div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">
+                        <span>&times;</span>
+                    </button>
+                    <h4 class="modal-title">延期申请</h4>
+                </div>
+                <div class="modal-body">
+                    <div name="divSubmitInfo" class="form-horizontal">
+                        <div class="form-group">
+                            <label class="control-label col-xs-2 ">受理点</label>
+                            <div class="col-sm-9">
+                                <select name="trainingInstitutionId"></select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">备注</label>
+                            <div class="col-sm-9">
+                                <textarea name="submitRemark" style="resize:none;"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button name="btnSubmitOk" class="btn btn-danger btn-sm">提交</button>
+                    <button class="btn btn-sm" data-dismiss="modal">关闭</button>
+                </div>
+            </div>
+        </div>*@
+    </div>
+</div>
+<script src="~/Public/datetimepicker/js/bootstrap-datetimepicker.js"></script>
+<script src="~/Public/datetimepicker/js/bootstrap-datetimepicker.zh-CN.js"></script>
+<script src="~/Public/imageUpload/js/imageUpload.js"></script>
+<script src="~/Public/content/delayrecord/js/delayReCord.js?v=@DateTime.Now.ToString("ffff")"></script>

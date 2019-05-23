@@ -1,0 +1,42 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using Model;
+using DAL;
+
+namespace BLL
+{
+    public interface IRP_EmployeeCtrl
+    {
+        // 根据查询条件 获取继续教育报名人员列表
+        List<Biz_RP_EmployeeRegistration> GetEmployeeList(string employeeName, string idNumber, string trainingType, string examType, string industry, string workFlowStatus, int page, int rows, ref int totalCount);
+        void DeleteRP_EmployeeRegistrationById(int rp_employeeRegistrationId);
+        Biz_RP_EmployeeRegistration GetRP_EmployeeRegistrationById(int id);
+        List<Biz_RP_EmployeeRegistration> GetRP_EmployeeRegistrationByIdList(List<int> idList);
+        void UpdateEmployeeRegistrationInfo(Biz_RP_EmployeeRegistration rp_employee);
+        void VerifyRPEmployeeRegistration(Biz_RP_EmployeeRegistration rp_employeeRegistration);
+
+        List<Biz_RP_EmployeeRegistration> GetEmployeeListForDataCheck(string enterpriseName, string employeeName, string idNumber, string examType, string industry, string checkStatus, bool? photograph, int page, int rows, ref int totalCount);
+        List<Biz_RP_EmployeeDataCheckedRecord> GetEmployeeDataCheckedRecordListByRPEmployeeIdList(List<int> rpEmployeeIdList);
+        // void VerifyRPConstructorCertificateNo(Biz_RP_EmployeeRegistration rp_employeeRegistration);
+
+        List<Biz_RP_EmployeeRegistration> GetEmployeeListForViewStudyRecordCheck(
+             string employeeName, string enterpriseName, string trainingInstitutionName, string idNumber, string oldCertificateNo,
+             string examType, string checkSatus, string checkDateBegin, string checkDateEnd, int page, int rows, ref int totalCount, List<string> cityList);
+
+        List<Biz_RP_EmployeeCheckedRecord> GetEmployeeCheckedRecordByEmployeeIdList(List<int> employeeIdList);
+        List<RP_EmployeeCtrl.StudyRecord> GetOneYearGetOnlineStudyRecord(List<string> idNumberList);
+        List<Biz_StudyByVideoComplete> GetOneYearStudyByVideoComplete(List<string> idNumberList);
+        List<Biz_OnlineExerciseRecord> GetOneYearOnlineExerciseRecord(List<string> idNumberList);
+        List<Biz_SimulatedExamRecord> GetOneYearSimulatedExamRecord(List<string> idNumberList);
+        List<Biz_Certificate> GetEmployeeListInPrintCertificate(string employeeName, string idNumber, string examType, string industry, string enterpriseName, List<string> cityList, int page, int rows, ref int totalCount);
+        void SaveRPCertificatePrintRecord(Biz_RP_CertificatePrintRecord rpCertificatePrintRecord);
+        void SaveRPEmployeeFile(int rpEmployeeId, string fileType, string fileName, string filePath);
+        List<Biz_RP_EmployeeFile> GetRPEmployeePhotoListByRPEmployeeIdList(List<int> rpEmployeeIdList);
+        Biz_RP_EmployeeFile GetRPEmployeePhoto(int rpEmployeeId);
+        Biz_RP_EmployeeDataCheckedRecord GetRP_EmployeeDataCheckedRecordByRPEmployeeId(int rpEmployeeId);
+
+       
+    }
+}

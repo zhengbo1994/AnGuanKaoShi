@@ -1,0 +1,18 @@
+﻿@{
+    ViewBag.Title = "证书验证";
+}
+<div class="container">
+    <h2>证书信息</h2>
+    <br/>
+    <img src="~/CertificateVerify/GetPhoto?certificateId=@ViewBag.certificate.Id" style="width:100px;height:120px;" />
+    <br />
+    <p>姓名: @ViewBag.certificate.EmployeeName</p>
+    <p>性别:@ViewBag.certificate.Sex</p>
+    <p>出生年月:@ViewBag.certificate.Birthday</p>
+    <p>身份证号:@ViewBag.certificate.IDNumber</p>
+    <p>企业名称:@ViewBag.certificate.EnterpriseName</p>
+    <p>职务:@ViewBag.certificate.Job</p>
+    <p>技术职称:@ViewBag.certificate.Title4Technical</p>
+    <p>证书编号:@ViewBag.certificate.CertificateNo</p>
+    <p>证书有效期:@ViewBag.certificate.StartCertificateDate.ToString("yyyy-MM-dd") 至 @ViewBag.certificate.EndCertificateDate.ToString("yyyy-MM-dd")</p>
+</div>
